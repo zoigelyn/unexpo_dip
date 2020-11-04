@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+    <%- include ("partes/cabecera2") %>
+<body class="full-cover-background" >
+    <div class="form-container-p">
+        <p class="text-center" style="margin-top: 17px;">
+            <figure>
+                <img src="/../assets/icons/correcto.ico" alt="simbolo de tramite satisfactorio" class="img-responsive img-circle center-box">
+            </figure>
+            <h4 class="text-center all-tittles" style="margin-bottom: 30px;"><%= mensaje %></h4>
+
+        <% if (mensaje == 'Su respuestas fueron guardadas satisfactoriamente') { %>
+            <a href="/role"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a>
+        <% } %>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include ("partes/cabecera2") %>
+<body style="background-color: seashell;">
+    <div class="form-container" style="background-color: seashell;  "  >       
+   <div style="position: relative; display: flex;
+   align-items: center;">
+       <div style="position: absolute;">
+        <img src="/assets/icons/alerta.ico"width= "180" height= "180">
+       </div> 
+       
+    
+      <div style="position: absolute; margin-left: 190px;">
+          <p style=" font-weight:bold; font-size:30px; color: rgb(190, 29, 29);"> ¡Error!</p>
+       
+      </div>
+      
+</div>
+<br>
+<br>
+<br><br><br>
+<p class="text-center" style="font-size:20px; color: rgb(190, 29, 29);">
+        <%= tipoError %> (Error: <%= code %>) </p>
+  
+ </div>   
+</body>
+</html>

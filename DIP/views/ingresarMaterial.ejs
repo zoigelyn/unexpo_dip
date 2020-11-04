@@ -1,0 +1,217 @@
+<%- include ("partes/cabecera") %>
+<script src="/js/jspdf.min.js"></script>
+<script src="/js/jspdf.debug.js"></script>
+
+<script >
+
+        function addWaterMark(doc){
+              var totalPages = doc.internal.getNumberOfPages();
+              for ( var i=1; i<=totalPages; i++) {
+                  doc.setPage(i);
+                  doc.setTextColor(150);
+                  doc.text(50, doc.internal.pageSize.height - 30, 'Watermark');
+              
+              }
+              return doc;
+          }
+      
+          function genPDF(){
+  var doc = new jsPDF();
+            /*
+            let inputFile = $('input[type="file"]');
+           doc = inputFile.prop("files")[0];
+           if (doc != '') {
+            alert(doc);
+           }else {
+           alert('fine');
+           }
+           */
+            //doc = addWaterMark(doc);
+            let inputFile = $('input[type="file"]');
+            doc = inputFile.prop("files")[0];
+            var file = doc.output();
+            alert(doc);
+          
+      }
+          
+</script>
+<script>
+    function showModal() {
+  document.getElementById('openModal').style.display = 'block';
+}
+
+function CloseModal() {
+  document.getElementById('openModal').style.display = 'none';
+}
+</script>
+<script src="/js/ingresarMaterial.js"></script>
+
+<body >
+    <div id="openModal" class=" modalDialog">
+        <div >
+          <a href="#close" title="Close" class="close" onclick="javascript:CloseModal();">X</a>
+       <p class="text-center" id="mensaje-final"></p>
+        </div>
+      </div>
+    <%- include ("partes/navegacionB") %> 
+   <div class="content-page-container full-reset custom-scroll-containers">
+        <%- include ("partes/navegacionSuperiorB") %> 
+        <div class="container">
+            <div class="page-header">
+                <h1  class="all-tittles">UNEXPO DIP <small>Libros</small></h1>
+            </div>
+        </div>
+       
+       <div class="container-fluid" style="margin: 50px 0;" >
+            <div class="row">
+                 
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/flat-book.png" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a la sección para agregar nuevos libros a la biblioteca, deberas de llenar todos los campos para poder registrar el libro.
+                    Puedes registrar uno o varios libros con el mismo archivo PDF.
+                </div>
+            </div>
+        </div>
+        
+       <!-- <p class="text-center">
+            <a onclick="javascript:genPDF()">aqui has click</a>
+        </p>-->
+        <div class="container-fluid">
+          
+            <form  autocomplete="off" enctype="multipart/form-data" id="formato">
+              
+                <div class="container-flat-form">
+                   
+                    <div class="title-flat-form title-flat-blue">Nuevo libro</div>
+                    <div class="row">
+                       
+                        <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                            <legend><strong>Información básica</strong></legend><br>
+
+                            <div  class="group-material" >
+                                <span>Categoría</span>
+                                <select onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l" required="" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Elige la categoría del libro">
+                                    <option  disabled="" selected="">Selecciona una categoría</option>
+                                    <option>Libro</option>
+                                    <option>Revista</option>
+                                    <option>Trabajo de grado</option>
+                
+                                </select>
+                            </div>
+                           
+                            <div class="group-material">
+                                <input  id="ejemplar" onchange="ejemplares()" name="ejemplar" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el numero de ejemplares" required="" maxlength="4" data-toggle="tooltip" pattern="^[0-9]+" min="1"  data-placement="top" title="Numero de ejemplares">
+                                 <span class="highlight"></span>
+                                 <span class="bar"></span>
+                                 <label>ejemplares</label>
+                                 
+                             </div>  
+                 <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tb">
+                  <tr>
+                           <td  style="width: 30px; overflow: hidden; border: none;">
+                            <input  id="ejemplar1" name="ejemplar1" type="number" class="tooltips-general material-control" placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="1">
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>ejemplar</label>
+                           </td>
+                           <td style="width: 200px; overflow: hidden; border: none;">
+                            <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Cota</label>
+                           </td>
+                           <td id="imgs-cota" style="width: 20px; overflow: hidden; border: none;">
+                            <div class="tooltips-general material-control" id="img-cota-1"></div>
+                           </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 30px; overflow: hidden; border: none;"></td>
+                            <td id="mensaje-cota" style="width: 200px; border: none; overflow: hidden;"><div id="cota-unica-1" ></div></td>
+                            <td style="width: 20px; border: none; overflow: hidden;"></td>
+                        </tr>
+                    
+                    </table>
+             
+                            <div  class="group-material">
+                                <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[Aá-z- 1-9-ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el título o nombre del libro">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label>Título</label>
+                            </div>
+                            <div  class="group-material">
+                                <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label>Autor</label>
+                            </div>
+                            <div name="tutor" class="group-material" id="tutor">
+
+                            </div>
+                            <div name="volumen" class="group-material">
+                                <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label>Volumen</label>
+                            </div>
+
+                            <div  class="group-material">
+                                <input id="año" name="año" type="text" class="material-control tooltips-general" placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{1,4}" maxlength="4" data-toggle="tooltip" data-placement="top" title="Solamente números, sin espacios">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label>Año</label>
+                            </div>
+                            <div  class="group-material">
+                                <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[A-z- ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label>Editorial</label>
+                            </div>
+             <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf" >      
+                <tr id="tr-pdf-1" style="border: none;">
+                    <td  style="width: 200px;  border: none;" >
+                        <input onchange="comprobarF(this)" id="pdf-1" name="pdf" type="file" required="" class="material-control tooltips-general" data-toggle="tooltip" data-placement="top" title="Archivo PDF">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label >Archivo PDF</label>
+
+                    </td>
+                    <td  style="width: 30px;  border: none;" id="img-pdf-1">
+
+                    </td>
+                </tr>
+                <tr id="tr2-pdf-1">
+                    <td style="width: 200px; border: none;"><p class="text-center" id="formato-pdf-1"></p></td>
+                    <td style="width: 30px;  border: none;">
+                    </td>
+                </tr>
+            </table>
+         
+                        <div  class="group-material" >
+                           <p class="text-center"> <input onchange="mostrarCampo(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">No incluye archivo PDF</p>
+                        </div>
+                            
+                            <p class="text-center">
+                                <button onclick="resetear()" id="reset" type="reset" class="btn btn-info" style="margin-right: 20px;"><div><i class="zmdi zmdi-roller"></i></div><p>&nbsp;&nbsp; Limpiar</p> </button>
+                    <button id="guardar"  type="submit" class="btn btn-primary" ><div id="estatus"><i class="zmdi zmdi-floppy"></i></div> <p id="boton">&nbsp;&nbsp; Guardar</p> </button>
+                                
+                               <div id="mensaje"></div>
+                           </p>
+                        
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </form>
+            
+            
+       
+        </div>
+ 
+       <%- include ("partes/piePagina") %>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+  <html lang="es">
+<%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background" >
+    
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 100px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+        <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa las preguntas de seguridad</h4>
+    <% if (preguntaEliminada != '') { %>
+
+        <i class="zmdi zmdi-check zmdi-hc-1x">&nbsp; Su pregunta fue eliminada satisactoriamente</i></li>
+
+    <% } %>
+        
+        <h5 class="text-center all-tittles" style="margin-bottom: 30px;">Debe ingresar la pregunta faltante</h5>
+        
+
+        <form action="/unaPregunta" method="POST">
+
+            <div class="group-material">
+                <input name="pregunta_1" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Pregunta 1">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Pregunta 1</label>
+            </div>
+            
+            
+            <br>
+            <br>
+            <button class="btn-login" type="submit"> Guardar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+            
+        </form>
+        
+    </div>
+</body>
+
+</html>

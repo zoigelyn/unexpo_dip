@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+  <html lang="es">
+
+    <%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background" >
+
+
+<% if (conf == 1) { %>
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 50px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+    <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa tu correo electrónico </h4>
+
+    <% if (mensajeRecuperacion) { %>
+        <div>
+            <%= mensajeRecuperacion%>
+        </div>
+    <% } %> 
+    
+    
+    <form action= '/recuperacion' method="POST" autocomplete="off">
+
+        <div class="group-material-login">
+            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="70">
+            <span class="highlight-login"></span>
+            <span class="bar-login"></span>
+            <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
+        </div>
+
+           
+        <button class="btn-login" type="submit"> Aceptar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+        
+    </form>
+<% } %>
+ 
+<% if (conf == 2) { %>
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 200px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+    <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa  las respuestas correspondientes</h4>
+    
+    <form action= '/recuperar?id_1=<%=preguntas[matriz[0]].id_p%>&id_2=<%=preguntas[matriz[1]].id_p%>&id_3=<%=preguntas[matriz[2]].id_p%>&id_4=<%=preguntas[matriz[3]].id_p%>&id_5=<%=preguntas[matriz[4]].id_p%>&correo=<%=correo%>' method="POST" autocomplete="off">
+        
+
+        <div class="group-material">
+            <input name="r_1" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 1">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label><%= preguntas[matriz[0]].pregunta %></label>
+        </div>
+        <div class="group-material">
+            <input name="r_2" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 2">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label><%= preguntas[matriz[1]].pregunta %></label>
+        </div>
+        <div class="group-material">
+            <input name="r_3" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 3">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label><%= preguntas[matriz[2]].pregunta %></label>
+        </div>
+        <div class="group-material">
+            <input name="r_4" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 4">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label><%= preguntas[matriz[3]].pregunta %></label>
+        </div>
+        <div class="group-material">
+            <input name="r_5" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 5">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label><%= preguntas[matriz[4]].pregunta %></label>
+        </div>
+        
+        
+           
+        <button class="btn-login" type="submit"> Enviar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+        
+    </form>
+<% } %>
+
+    <% if (conf == 3) { %>
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 100px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+    <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa  tu nueva contraseña</h4>
+    <% if (mensajeRecuperacion) { %>
+        <div>
+            <%= mensajeRecuperacion%>
+        </div>
+    <% } %> 
+    
+    <form action= '/recuperar/cambio_clave?correo=<%=correo%>' method="POST" autocomplete="off">
+
+        <div class="group-material-login">
+            <input name="correodsds" type="email" class="material-login-control material-control" required="" maxlength="70">
+            <span class="highlight-login"></span>
+            <span class="bar-login"></span>
+            <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
+        </div>
+
+
+        <div class="group-material">
+            <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Contraseña</label>
+        </div>
+        <div class="group-material">
+            <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Repetir contraseña</label>
+        </div>
+        <button class="btn-login" type="submit"> Enviar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+        
+    </form>
+
+
+<% } %>
+
+
+    
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+
+   <%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background">
+    
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 350px;">
+            <i class="zmdi zmdi-accounts zmdi-hc-4x"></i>
+        </p>
+        <h4 class="text-center all-tittles" style="margin-bottom: 20px;">Ingresa tus datos</h4>
+        <% if (mensajeRegistro) { %>
+            <div>
+                <%= mensajeRegistro %>
+            </div>
+        <% } %> 
+        <form  action="/signup" method="POST" autocomplete="off">
+            <div class=" col-xs-16 col-sm-14 col-sm-offset-1 ">
+                <div class="group-material">
+                    <input name="nombres" type="text" class="material-control material-control-login" placeholder="Nombres" required="" maxlength="70" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Nombres</label>
+                </div>
+                <div class="group-material">
+                    <input name="apellidos" type="text" class="material-control material-control-login" placeholder="Apellidos" required="" maxlength="70" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Apellidos</label>
+                </div>
+                <div class="group-material">
+                    <select name="tipo_u" class="material-control-login">
+                    <option value="" disabled="" selected="">Tipo de usuario</option>
+                    <option >Estudiante</option>
+                    <option >Lector</option>
+                    <option >Docente</option>
+                </select>
+                </div>
+                <div class="group-material">
+                    <div class="div-table-row-list" >
+                        <div class="div-table-cell" style="width: 6%;">
+                            <select name="nacionalidad" class="material-control-login">
+                            <option value="" disabled="" selected="">Nacionalidad </option>
+                            <option >V</option>
+                            <option >E</option>
+                        </select></div>
+                        <div class="div-table-cell" style="width: 11%;">
+                            <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="8" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]{1,20}" data-toggle="tooltip" data-placement="top" >
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    </div>
+                    
+                </div>
+                </div>
+                <div class="group-material">
+                    <input name="correo" type="email" class="material-control material-control-login" placeholder="E-mail" maxlength="50" data-toggle="tooltip" data-placement="top" title="Escribe el Email del administrador">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Email</label>
+                </div>
+                <div class="group-material">
+                    <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Contraseña</label>
+                </div>
+                <div class="group-material">
+                    <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Repetir contraseña</label>
+                </div>
+
+            </div>
+
+            <button class="btn-login" type="submit">Guardar &nbsp; <i class="zmdi zmdi-arrow-right"></i></button>
+            
+        </form>
+        
+            <a href="/login"><button type="submit" class="btn-login-left"> Estoy registrado &nbsp; </button></a>
+       
+    </div>
+</body>
+
+</html>

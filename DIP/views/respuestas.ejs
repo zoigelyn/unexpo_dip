@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+  <html lang="es">
+<%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background" >
+    
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 600px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+        <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa las respuestas de seguridad</h4>
+        
+        <form action='/respuestas' method="POST" >
+
+            <div class="group-material">
+                <input name="r_1" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 1">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[0].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_2" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 2">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[1].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_3" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 3">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[2].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_4" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 4">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[3].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_5" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 5">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[4].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_6" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 6">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[5].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_7" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 7">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[6].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_8" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 8">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[7].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_9" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 9">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[8].pregunta %></label>
+            </div>
+            <div class="group-material">
+                <input name="r_10" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 10">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label><%= preguntas[9].pregunta %></label>
+            </div>
+            
+            <br>
+            <br>
+            
+               
+            <button class="btn-login" type="submit"> Guardar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+            
+        </form>
+        
+
+        
+
+    </div>
+</body>
+
+</html>

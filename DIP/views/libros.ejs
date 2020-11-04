@@ -1,0 +1,69 @@
+
+<%- include ("partes/cabecera") %>
+<body>
+    <%- include ("partes/navegacionB") %>
+    <div class="content-page-container full-reset custom-scroll-containers">
+       <%- include ("partes/navegacionSuperiorB") %>
+        <div  class="container">
+            <div class="page-header">
+              <h1 class="all-tittles">Sistema bibliotecario <small>Catálogo de libros</small></h1>
+            </div>
+        </div>
+         <div class="container-fluid"  style="margin: 40px 0;">
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/checklist.png" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido al catálogo, selecciona una categoría de la lista para empezar, si deseas buscar un libro por nombre o título has click en el icono &nbsp; <i class="zmdi zmdi-search"></i> &nbsp; que se encuentra en la barra superior
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" style="margin: 0 0 50px 0;">
+            <h2 class="text-center" style="margin: 0 0 25px 0;">Categorías</h2>
+            <ul class="list-unstyled text-center list-catalog-container">
+                <li class="list-catalog">Categoría</li>
+                <li class="list-catalog">Categoría</li>
+                <li class="list-catalog">Categoría</li>
+            </ul>
+        </div>
+        <div class="container-fluid">
+          
+               <% for ( var i=0; i < libros.length; i++) { %>
+             <div class="media media-hover">
+                <div class="media-left media-middle">
+                    <a href="#!" class="tooltips-general" data-toggle="tooltip" data-placement="right" title="Más información del libro">
+                      <img class="media-object" src="/assets/img/book.png" alt="Libro" width="48" height="48">
+                    </a>
+                </div>
+                
+                <div class="media-body">
+                    <h4 class="media-heading"><%=i+1%>-<%=libros[i].titulo%></h4>
+                    <div class="pull-left">
+                        <strong><%=libros[i].autor%><br>
+                        <strong><%=libros[i].año%><br>
+                    </div>
+                    <p class="text-center pull-right">
+                        <a href="#!" class="btn btn-info btn-xs" style="margin-right: 10px;"><i class="zmdi zmdi-info-outline"></i> &nbsp;&nbsp; Más información</a>
+                    </p>
+                    <% if (libros[i].estado_l === 'disponible') { %>
+                        
+                  <div class="text-center pull-right">
+                        <form method="POST"  action='/usuario/libros/reservar?cota=<%= libros[i].cota%>'>
+                            <button class="btn btn-success btn-xs" style="margin-right: 10px;">
+                             &nbsp;&nbsp; Reservar</button>
+                        </form>
+                    </div>
+                    <% } else { %>
+                        <p class="text-center pull-right">
+                            <a class="btn btn-danger btn-xs" style="margin-right: 10px;"> &nbsp;&nbsp; No disponible</a>
+                        </p>
+               <% } %>
+            </div>
+         </div>
+            
+             <% } %>
+        <%- include ("partes/piePagina") %>  
+        </div>        
+</body>
+</html>

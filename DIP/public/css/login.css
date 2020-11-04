@@ -1,0 +1,309 @@
+
+/*********==========Tablas con divs*/
+
+.div-table {
+    display: table !important;
+    width: 100%;
+    margin: 20px 0;
+    padding: 0;
+    background-color: rgb(13, 20, 61);
+    height: auto !important;
+}
+
+
+
+.div-table-row {
+    display: table-row !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    height: 40px;
+    line-height: 40px;
+}
+
+.div-table-row:hover {
+    background-color: #000000;
+}
+
+
+.div-table-row .div-table-cell:first-child {
+    border-left: 1px solid #E1E1E1;
+}
+
+.div-table-cell {
+    display: table-cell !important;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    height: 40px;
+    line-height: 40px;
+    border-bottom: 1px solid #E1E1E1;
+    border-right: 1px solid #E1E1E1;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    text-align: center;
+}
+
+.div-table-head,
+.div-table-head:hover {
+    background-color: #ffffff;
+    font-size: 17px;
+    font-weight: bolder;
+}
+
+.div-table-head .div-table-cell {
+    border-top: 1px solid #E1E1E1 !important;
+}
+
+.div-table-row-list .div-table-cell {
+    border: none;
+}
+
+.div-table-row-list {
+    border: none;
+}
+
+.div-table-row-list .div-table-cell:first-child {
+    border-left: none;
+}
+
+
+.form-container {
+    color: rgb(244, 243, 250);
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(45, 80, 236, 0.9);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+.form-error {
+    color: rgb(244, 243, 250);
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgb(3, 3, 107);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.form-container-g {
+    color: rgb(244, 243, 250);
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(45, 80, 236, 0.9);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.form-container-p {
+    color: rgb(53, 161, 10);
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.form-container-m {
+    color: rgb(0, 0, 0);
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgb(253, 88, 23);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+.group-material-login {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.material-login-control,
+.material-control-login {
+    background-color: transparent;
+    font-size: 17px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #fff;
+    outline: none;
+}
+
+.material-login-control:focus {
+    outline: none;
+}
+
+.group-material-login label {
+    color: #fff;
+    font-size: 17px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 10px;
+    transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -webkit-transition: all 0.2s ease;
+}
+
+
+/* Estado activo */
+
+input.material-login-control:focus:valid~label,
+input.material-login-control:valid~label {
+    top: -18px;
+    font-size: 13px;
+    color: #fff;
+}
+
+input.material-login-control:focus:invalid:required,
+input.material-login-control:invalid:required {
+    outline: none;
+    box-shadow: none;
+}
+
+
+/*Barra de formularios material desing ================*/
+
+.bar-login {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.bar-login:before,
+.bar-login:after {
+    content: '';
+    height: 2px;
+    width: 0;
+    bottom: 1px;
+    position: absolute;
+    background: #fff;
+    transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -webkit-transition: all 0.2s ease;
+}
+
+.bar-login:before {
+    left: 50%;
+}
+
+.bar-login:after {
+    right: 50%;
+}
+
+input.material-login-control:focus~.bar-login:before,
+input.material-login-control:focus~.bar-login:after {
+    width: 50%;
+}
+
+.btn-login {
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    box-shadow: none;
+    font-size: 19px;
+    line-height: 19px;
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    bottom: 3%;
+    right: 3%;
+}
+
+.btn-login-left {
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    box-shadow: none;
+    font-size: 19px;
+    line-height: 30px;
+    color: rgb(255, 255, 255);
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    bottom: 2%;
+    right: 70%;
+}
+
+.btn-login-center {
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    box-shadow: none;
+    font-size: 19px;
+    line-height: 19px;
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    bottom: -5%;
+    right: 25%;
+}
+
+.btn-login:hover {
+    border: none;
+    box-shadow: none;
+}
+
+.btn-login:focus,
+.btn-login:active {
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+.btn-login-left:focus,
+.btn-login-left:active {
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+label {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.radio-inline label:hover {
+    cursor: pointer;
+}
+
+select.material-control-login {
+    -ms-appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: rgb(15, 87, 168) url(../assets/icons/SelectMaterialIndicator-white.png) no-repeat scroll right 0.75rem center / 13px 8px;
+}
+
+select.material-control-login:hover {
+    cursor: pointer;
+}

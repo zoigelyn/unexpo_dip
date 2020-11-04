@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+    <%- include ("partes/cabecera2") %>
+<body class="full-cover-background" >
+    <div class="form-container-p">
+        <p class="text-center" style="margin-top: 17px;">
+            <figure>
+               <% if (tarea == 'fallida') { %>
+                <img src="/../assets/icons/notificacion-error.ico" alt="simbolo de tramite satisfactorio" class="img-responsive img-circle center-box">
+                <% } %>
+                <% if (tarea == 'correcta') { %>
+                    <img src="/../assets/icons/correcto.ico" alt="simbolo de tramite satisfactorio" class="img-responsive img-circle center-box">
+                <% } %>
+            </figure>
+            <h4 class="text-center all-tittles" style="margin-bottom: 30px; color: rgb(0,0,0);"><%= mensaje %></h4>
+
+        <% if (mensaje == 'Su respuestas fueron guardadas satisfactoriamente') { %>
+            <a href="/role"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a>
+        <% } %>
+        <% if (mensaje == 'Has respondido de manera errónea') { %>
+            <a href="/login"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a>
+        <% } %>
+        <% if (mensaje == 'Usted no esta registrado') { %>
+            <a href="/signup"> <button class="btn-login" style="color: rgb(0,0,0);" type="submit">Aceptar&nbsp;</button></a>
+        <% } %>
+        </p>
+    </div>
+</body>
+</html>

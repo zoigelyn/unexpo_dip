@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+  <html lang="es">
+
+    <%- include ("partes/cabecera2") %>
+    <script src="/js/alertaTiempo.js"></script>
+    <script>
+       
+        function existeCorreo(){
+            let correo = $('input#correo').val();
+            
+       $.ajax({
+            beforeSend: function(){
+                $('div#existeCorreo').html('');
+                $('div#existeCorreo').html('<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>');
+            },
+           url: '/ingresar/existe-c',
+           type: 'POST',
+           data: {correo: correo}        
+       })
+       .done(function(res){
+           $('div#existeCorreo').html('');
+           if(res===true){
+             $('div#existeCorreo').html('');  
+           }else{
+            $('div#existeCorreo').html(`<p class="text-center"><img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">No se encuentra registrado</p>`);
+           }
+           
+
+       })
+       .fail(function(error){
+           
+           $('div#existeCorreo').html('¡Ha fallado!');
+           console.log(error);
+       });
+        }
+    </script>
+
+<body class="full-cover-background" >
+
+    <div class="form-container ">
+        <p class="text-center" style="margin-top: 17px;">
+            <i class="zmdi zmdi-account-circle zmdi-hc-4x"></i>
+        </p>
+        <h4 class="text-center all-tittles" style="margin-bottom: 10px;">inicia sesión con tu cuenta</h4>
+        <% if (mensajeIngreso) { %>
+            <div id="mensaje">
+           <p class="text-center"> <%= mensajeIngreso %> </p> 
+            </div>
+        <% } %><br> 
+        <p class="text-center">
+            <a  href="/recuperacion" style="color: seashell;">&nbsp; ¿Has olvidado la contraseña? &nbsp;</a>
+        </p><br>
+        <form action="/login" method="POST">
+        
+            <div class="group-material-login">
+                <input onchange="existeCorreo()" id="correo" name="correo" type="email"class="material-login-control material-control" required="" maxlength="70">
+                <span class="highlight-login"></span>
+                <span class="bar-login"></span>
+                <label><i class="zmdi zmdi-email"> &nbsp; Correo electrónico</i> </label>
+                <br>
+                <br>
+                   <div id="existeCorreo"></div>
+            </div>
+            
+         
+            <div class="group-material-login">
+                <input id="clave" name="clave" type="password" class="material-login-control material-control" required="" maxlength="15">
+                <span class="highlight-login"></span>
+                <span class="bar-login"></span>
+                <label><i class="zmdi zmdi-lock"></i> &nbsp; Contraseña</label>
+            </div>
+            
+            <button class="btn-login" type="submit"> Ingresar al sistema &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+            
+        </form>
+        
+           
+    
+     <a  href="/signup"  style="color: seashell;"> Registarse &nbsp;</a>
+          
+  
+      
+  
+</div>
+
+</body>
+
+</html>

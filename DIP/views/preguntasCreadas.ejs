@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background">
+
+    <div class="form-container">
+        <p class="text-center" style="margin-top: 350px;">
+            <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
+        </p>
+        <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa las preguntas de seguridad</h4>
+
+        <% if (preguntas.length > 0) { %>
+        <div class="container-fluid">
+            <h2 class="text-center all-tittles">Preguntas</h2>
+            <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Solo deben ser 10</h4>
+            <div class="table-responsive">
+
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list" style="background-color:#29a3ac; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 3%;">#</div>
+                        <div class="div-table-cell" style="width: 11%;">Pregunta</div>
+
+                        <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                    </div>
+                </div>
+            </div>
+            <% for ( var i = 0; i < preguntas.length; i++) { %>
+            <div class="table-responsive">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list">
+                        <div class="div-table-cell" style="width: 3%;"><%= i+1 %></div>
+                        <div class="div-table-cell" style="width: 11%;"><%= preguntas[i].pregunta %></div>
+
+                        <div class="div-table-cell" style="width: 8%;">
+                            <form method="POST" action='/preguntas?id=<%= preguntas[i].id_p%>&_method=DELETE'
+                                onsubmit="return confirm('¿Estas seguro que deseas eliminar esta pregunta');">
+                                <button class="btn btn-success"><i class="zmdi zmdi-close"></i></button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            <br>
+            <br>
+            <% if ( preguntas.length < 10) { %>
+            <a href="/unaPregunta"> <button class="btn-login-center" type="submit">Añadir pregunta &nbsp;</button></a>
+
+            <% } else  if ( preguntas.length == 10) { %>
+            <a href="/logoutConfig"> <button class="btn-login-center" type="submit">Finalizar configuracion
+                    &nbsp;</button></a>
+            <% } %>
+
+            <% } else  { %>
+            <h2 class="text-center all-tittles">No has registrados las preguntas</h2>
+            <% } %>
+
+
+
+        </div>
+</body>
+
+</html>
