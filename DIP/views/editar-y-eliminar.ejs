@@ -408,10 +408,10 @@ function ocultarCampos(check){
                 <div class="div-table" style="margin:0 !important;">
                     <div class="div-table-row div-table-row-list">
                         <div  class="div-table-cell" style="width: 6%;">${i+1}</div>
-                        <div class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
-                        <div class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
+                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
                         
-                        <div class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
                         
                         <div class="div-table-cell" style="width: 6%;">
                             
@@ -451,7 +451,10 @@ function ocultarCampos(check){
         $("div#container").html('');
     }
    }
-
+function actualizarFormato(t, tp, libro){
+$(t).html(`${libro.titulo}`);
+$(tp).html(`${libro.tipo_l}`);
+}
  
    $(function(){
     $(document).on('click', '.modal', function(){
@@ -464,7 +467,6 @@ function ocultarCampos(check){
     if (isChecked) {
       data.delete("pdf");
     }
-    console.log(data);
     $.ajax({
       beforeSend: function () {
         
@@ -480,9 +482,13 @@ function ocultarCampos(check){
         $("div#estatus").html(
           `<img src="/assets/icons/correcto.ico"width= "20" height= "20">`
         );
-        $("div#mensaje").html(`<p class="text-center">${res}</p>`);
-        $("p#boton").html("Se ha guardado");
-        setTimeout(resetear, 30);
+        $("div#mensaje").html(`<p class="text-center">${res.mensaje}</p>`);
+        $("p#boton").html("Se ha actualizado");
+        alert(res.libro.titulo);
+        let titulo = `div#${res.libro.cota}_titulo`;
+        let tipo = `div#${res.libro.cota}_tipo`;
+        actualizarFormato(titulo, tipo, res.libro);
+
       })
       .fail(function (error) {
         $("div#estatus").html(

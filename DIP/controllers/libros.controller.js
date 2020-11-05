@@ -647,7 +647,10 @@ if (req.file){
         });
     
      if(nuevoLibro){
-      res.send('Actualizado con éxito');
+      res.json({
+        libro: libro,
+        mensaje: "Actualizado con éxito"
+      });
       }else{
         res.send('');
       }
