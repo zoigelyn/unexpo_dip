@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
       }
     });
 
-    const upload = multer({
+const upload = multer({
       storage: storage,
        dest: path.join(__dirname, '../public/uploads'),
        fileFilter: (req, file, cb) => {
@@ -45,14 +45,11 @@ const storage = multer.diskStorage({
          console.log(file[0]);
        }
     });
-    module.exports.upload = upload;
+module.exports.upload = upload;
     
 
 module.exports.insertarLibro = async function insertar(req, res, next) {
 const datosLibro = req.body;
-console.log(req.file);
-console.log(req.body);
-const nuevaC = {};
 
 if (datosLibro.autor && datosLibro.autor != '' ){
  datosLibro.autor = datosLibro.autor.toLowerCase();
@@ -65,7 +62,9 @@ if (datosLibro.editorial && datosLibro.editorial != ''){
   datosLibro.editorial = datosLibro.editorial.toLowerCase();
 }
 if (req.file){
-  datosLibro.destino = req.file.path
+ let nombre = req.file.filename;
+  let ruta = "/uploads"+"/"+nombre;
+  datosLibro.destino = ruta;
 }
 function cotas(i){
      let varia = "datosLibro.cota_"+i;
@@ -585,12 +584,10 @@ if (tipo_lb){
 
 
 module.exports.actualizarUnLibro = async function(req, res, next) {
- console.log(req.body);
+
   const { editorial, titulo, autor, tutor, año, volumen, tipo_l, cota, estado_l} = req.body;
   
-  const libro = {};
-
-
+let libro = {};
 if (editorial){
   libro.editorial = editorial.toLowerCase();
 }
@@ -621,12 +618,19 @@ if (tipo_l){
   libro.tipo_l = tipo_l.toLowerCase();
 }
 if (req.file){
-  libro.destino = req.file.path;
-} 
+  let nombre = req.file.filename;
+   let ruta = "/uploads"+"/"+nombre;
+   libro.destino = ruta;
+}
       
   try {
-    
-       const nuevoLibro = await Libros.update({
+    let otrosLibros = '';
+    const viejoLibro = await Libros.findOne({
+      where:{
+        cota: libro.cota
+      }
+    });
+    const nuevoLibro = await Libros.update({
 
           editorial: libro.editorial,
           titulo: libro.titulo,
@@ -645,7 +649,19 @@ if (req.file){
             cota: libro.cota
           }
         });
-    
+if(libro.destino !== viejoLibro.destino){
+        otrosLibros = await Libros.findAll({
+      where: {
+        destino: viejoLibro.destino
+      }
+    });
+if(otrosLibros.length === 0){
+  let direccion = `../public${viejoLibro.destino}`
+  let filePath =  path.join(__dirname, direccion);
+  console.log(filePath);
+  fs.unlinkSync(filePath);
+}
+}
      if(nuevoLibro){
       res.json({
         libro: libro,
@@ -657,7 +673,7 @@ if (req.file){
     
   } catch (error) {
     console.log(error);
-    response.json({
+    res.json({
       message: "ha ocurrido un error",
       data: {},
     });

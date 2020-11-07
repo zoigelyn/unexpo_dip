@@ -885,7 +885,7 @@ input.material-control:focus~.highlight {
         width: 100%;
     }
     .navbar-user-top>ul>li {
-        margin: 0 10px;
+        margin: 0 3px;
     }
     form.form_SRCB {
         padding: 7px;

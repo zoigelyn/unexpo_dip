@@ -26,6 +26,15 @@ module.exports.isAuthenticated = function isAuthenticated(req, res, next) {
   res.redirect('/index');
 };
 
+module.exports.isAuthenticatedAjax = function (req, res, next) {
+  
+  if (req.isAuthenticated()) {
+    return next();
+  }else{
+  
+  }
+};
+
 module.exports.existeUsuario = async function (req, res, next){
   
   console.log(req.body);

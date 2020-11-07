@@ -11,7 +11,7 @@ var path = require('path');
 
 
 const { insertarLibro, busquedaLibros, busquedaEspecifica, eliminarLibro, actualizarLibro, actualizarUnLibro, busquedaGeneral, totalLibros, upload, generateUUID, libros, existeCota, todosLibros, verLibro} = require('../controllers/libros.controller');
-const { isAuthenticated} = require('../controllers/usuarios.controllers');
+const { isAuthenticated, isAuthenticatedAjax} = require('../controllers/usuarios.controllers');
 
 //const consultaBooks = require('../controllers/digitalLibrary.controller');
 //const consultaBooksOne = require('../controllers/digitalLibrary.controller');
@@ -58,7 +58,7 @@ router.get('/bibliotecario/editar-y-eliminar', isAuthenticated, (req,res,next) =
   });*/
 router.post('/bibliotecario/busqueda-especifica', isAuthenticated, busquedaEspecifica);
 router.post('/bibliotecario/ver?', isAuthenticated, verLibro);
-router.post('/bibliotecario/todos-libros', isAuthenticated, todosLibros);
+router.post('/bibliotecario/todos-libros', isAuthenticatedAjax, todosLibros);
 router.post('/bibliotecario/ec', isAuthenticated, existeCota);  
 router.post('/bibliotecario/insert', isAuthenticated, upload.single('pdf'), (req, res, next) => {
  /* let mostrar = req.body.mostrar;

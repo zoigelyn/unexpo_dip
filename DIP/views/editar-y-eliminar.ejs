@@ -156,13 +156,13 @@ function tipoTrabajo(trabajo) {
 
   };
 */
-function verPdf(link){
-        let l = link 
-          window.open(l, '_target'); 
-          
-        
-        
-        
+function verPdf(lin){
+  alert(lin);
+  alert('entre');
+        let l = lin.attr('id').split('/').pop();
+        alert(l);
+        window.location.href=`/uploads/${l}`;
+       
     }
    
 function ver(input){
@@ -176,10 +176,13 @@ let cota = $(input).attr("id").split('-').pop();
         
       },
       url: `/bibliotecario/ver?cota=${cota}`,
+      timeout: 3000,
       type: 'POST'
+      
     })
-      .done(function (libro) {
-        $("div#cargando").html('')
+      .done(function (libro, url) {
+          
+        $("div#cargando").html('');
         $("div#modal-body").html('');
         $("div#tutor").html('');
         $("div#modal-body").append(`
@@ -187,7 +190,7 @@ let cota = $(input).attr("id").split('-').pop();
                           
                           <div class="container-flat-form">
                              
-                              <div class="title-flat-form title-flat-blue">Actualiza los datos</div>
+                              <div class="title-flat-form title-flat-blue">Ver/Editar</div>
                               <div class="row">
                                  
                                   <div class="col-xs-12 col-sm-8 col-sm-offset-2">
@@ -195,7 +198,7 @@ let cota = $(input).attr("id").split('-').pop();
               
                                       <div  class="group-material" >
                                           <span>Categoría</span>
-                                          <select  onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l"  required="" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Elige la categoría del libro">
+                                          <select  onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l"  required="" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Categoria del libro">
                                               <option selected="selected"  >${libro.libro[0].tipo_l}</option>
                                               <option>Libro</option>
                                               <option>Revista</option>
@@ -215,7 +218,7 @@ let cota = $(input).attr("id").split('-').pop();
                                     
                                      </td>
                                      <td style="width: 80%; overflow: hidden; border: none;">
-                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}"placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro" readonly>
+                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}"placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota no la puedes modificar" readonly>
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Cota</label>
@@ -227,13 +230,13 @@ let cota = $(input).attr("id").split('-').pop();
                               </table>
                        
                                       <div  class="group-material">
-                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[Aá-z- 1-9-ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Escribe el título o nombre del libro">
+                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[Aá-z- 1-9-ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Título</label>
                                       </div>
                                       <div  class="group-material">
-                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Escribe el nombre del autor del libro">
+                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Autor</label>
@@ -242,14 +245,14 @@ let cota = $(input).attr("id").split('-').pop();
                                         
                                       </div>
                                       <div class="group-material">
-                                          <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" value="${libro.libro[0].volumen}" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
+                                          <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" value="${libro.libro[0].volumen}" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Volumen del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Volumen</label>
                                       </div>
               
                                       <div  class="group-material">
-                                          <input id="año" name="año" type="text" class="material-control tooltips-general" placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{1,4}" maxlength="4" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].año}" title="Solamente números, sin espacios">
+                                          <input id="año" name="año" type="text" class="material-control tooltips-general" placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{1,4}" maxlength="4" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].año}" title="Año del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Año</label>
@@ -288,7 +291,7 @@ let cota = $(input).attr("id").split('-').pop();
                       </table>
                    
                                   <div  class="group-material" >
-                                     <p class="text-center"> <input onchange="mostrarCampo(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">No modificar el archivo Pdf</p>
+                                     <p class="text-center"> <input onchange="mostrarCampo(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">Mantener archivo PDF</p>
                                   </div>
                                       
                                       <p class="text-center">
@@ -308,14 +311,15 @@ let cota = $(input).attr("id").split('-').pop();
         `);
         if(libro.libro[0].tipo_l === 'trabajo de grado'){
             $("div#tutor").append(`
-           <input id="tutor" name="tutor_t" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" value="${libro.libro[0].tutor}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+           <input id="tutor" name="tutor_t" type="text" class="tooltips-general material-control" placeholder="Tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" value="${libro.libro[0].tutor}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label>Autor</label>`);
         };
         $("div#myModal").modal('show');
      //  window.open('/hola','_target');
-      })
+      
+    })
       .fail(function (error) {
         $("div#cargando").html(
           `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
@@ -379,7 +383,8 @@ function ocultarCampos(check){
         
       },
       url: '/bibliotecario/todos-libros',
-      type: 'POST'
+      type: 'POST',
+      timeout: 3000
     })
       .done(function (libros) { 
           let resultados = libros.libros.length;
@@ -394,8 +399,8 @@ function ocultarCampos(check){
                         <div class="div-table-cell" style="width: 10%;">Cota</div>
                         <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
                         <div class="div-table-cell" style="width: 8%;">Titulo</div>
-                        <div class="div-table-cell" style="width: 6%;">Ver</div>
-                        <div class="div-table-cell" style="width: 6%;">Editar</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
                         <div class="div-table-cell" style="width: 6%;"> 
                         Eliminar</div>
                     </div>
@@ -403,6 +408,7 @@ function ocultarCampos(check){
         <div id="libros"> </div>
         </div>`);
         for (var i=0; i< libros.libros.length; i++){
+          
         $("div#libros").append(`
         <div class="table-responsive" id="${libros.libros[i].cota}0">
                 <div class="div-table" style="margin:0 !important;">
@@ -413,11 +419,7 @@ function ocultarCampos(check){
                         
                         <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
                         
-                        <div class="div-table-cell" style="width: 6%;">
-                            
-                               <a href="${libros.libros[i].destino}" target="_blak" <button class="btn btn-info" ><i class="zmdi zmdi-file-text"></i></button></a>
-                            
-                        </div>
+                       
                         <div class="div-table-cell" style="width: 6%;">
                             
                             <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
@@ -460,7 +462,6 @@ $(tp).html(`${libro.tipo_l}`);
     $(document).on('click', '.modal', function(){
    $("form#actualizar").on('submit', function(e){
     e.preventDefault();
-    alert('entre a submit');
     let data = new FormData(this);
 
     var isChecked = document.getElementById("mostrar").checked;
@@ -479,15 +480,18 @@ $(tp).html(`${libro.tipo_l}`);
       contentType: false,
     })
       .done(function (res) {
+        $("div#myModal2").html("");
         $("div#estatus").html(
           `<img src="/assets/icons/correcto.ico"width= "20" height= "20">`
         );
         $("div#mensaje").html(`<p class="text-center">${res.mensaje}</p>`);
         $("p#boton").html("Se ha actualizado");
-        alert(res.libro.titulo);
         let titulo = `div#${res.libro.cota}_titulo`;
         let tipo = `div#${res.libro.cota}_tipo`;
         actualizarFormato(titulo, tipo, res.libro);
+        $("div#myModal").modal("hide");
+        $("div#modal-body2").html('<p class="text-center">Se ha actualizado exitosamente</p>');
+        $("div#myModal2").modal("show");
 
       })
       .fail(function (error) {
@@ -528,7 +532,8 @@ $(tp).html(`${libro.tipo_l}`);
                         <div class="div-table-cell" style="width: 10%;">Cota</div>
                         <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
                         <div class="div-table-cell" style="width: 8%;">Titulo</div>
-                        <div class="div-table-cell" style="width: 6%;">Ver</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
                         <div class="div-table-cell" style="width: 6%;"> 
                         Eliminar</div>
                     </div>
@@ -541,25 +546,27 @@ $(tp).html(`${libro.tipo_l}`);
                 <div class="div-table" style="margin:0 !important;">
                     <div class="div-table-row div-table-row-list">
                         <div  class="div-table-cell" style="width: 6%;">${i+1}</div>
-                        <div class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
-                        <div class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
+                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
                         
-                        <div class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        
                         
                         <div class="div-table-cell" style="width: 6%;">
                             
-                                <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
-                            
-                        </div>
+                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                        
+                    </div>
                         <div class="div-table-cell" style="width: 6%;">
                             
-                            <button  id="${libros.libros[i].cota}"  onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
+                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
                             
                             </div>
                     </div>
                 </div>
             </div>`);
         }
+   
         document.getElementsByTagName("button")[1].focus({preventScroll:true});
     }else{
         $("div#cargando").html(`<p class="text-center"><h3>No se obtuvieron resultados</h3></p>`);
@@ -577,39 +584,17 @@ $(tp).html(`${libro.tipo_l}`);
   
   });
 </script>
-<script>
-function scrollear(){
-    $(document).scrollTop();
-}
 
-   function scrollear2(){
-       alert('alerta');
-    var puntodescroll = document.getElementById('mensaje').offsetTop;
-     alert(puntodescroll);
-    var punto = document.getElementById('a').offsetTop;
-    alert(punto);
-   
-document.getElementById('contenido').scrollTop() = puntodescroll;
-   }
-</script>
 
-<script>
-    function showModal() {
-  document.getElementById('openModal').style.display = 'block';
-}
 
-function CloseModal() {
-  document.getElementById('openModal').style.display = 'none';
-}
-</script>
 <body >
+  
     <div id="myModal" class="modal fade" >
         <div class="modal-dialog">
           <div class="container-fluid">
                <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">¿Estás seguro?</h4>
                 </div>
                 <div class="modal-body" id="modal-body">
                     
@@ -623,24 +608,39 @@ function CloseModal() {
                 </div>
             
             
-                <div class="modal-footer">
-                    <div  id="contenido"></div> 
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-danger">Eliminar</button>
-                </div>
+                
              </div>
             
         </div>
     </div>
-   
-    <div id="openModal" class=" modalDialog">
-        <div >
-          <a href="#close" title="Close" class="close" onclick="javascript:CloseModal();">X</a>
-       <p class="text-center">Se ha eliminado con éxito</p>
-        </div>
+    <div id="myModal2" class="modal fade" >
+      <div class="modal-dialog">
+        <div class="container-fluid">
+             <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              </div>
+              <div class="modal-body" id="modal-body2">
+                  
+            
+                     
+                      
+                      
+                 
+                  </div>
+                 
+              </div>
+          
+          
+              
+           </div>
+          
       </div>
-    <%- include ("partes/navegacionB") %> 
+  </div>
+   <%- include ("partes/navegacionB") %> 
    <div class="content-page-container full-reset custom-scroll-containers" id="contenido">
+    
+    
        
         <%- include ("partes/navegacionSuperiorB") %> 
         <div class="container" id="p">
@@ -649,35 +649,8 @@ function CloseModal() {
             </div>
         </div>
         
-<div id="mensaje">se han guardado</div>
 
-  <a href="#victorModal" role="button" class="btn btn-large btn-primary" data-toggle="modal">Abrir ventana modal</a>
-  
-<!-- Modal / Ventana / Overlay en HTML -->
 
-<script>
-    $(document).ready(function(){
-    var $popContainer = $('#popup-container');
-    var $body = $('html,body');
-
-    $('#fire-popup').on('click', function() {
-        $popContainer.fadeIn();
-        $body.addClass('block-scroll'); // clase de manejo
-    });
-    $('#popup-overlay').on('click', function() {
-        $popContainer.fadeOut();
-        $body.removeClass('block-scroll'); // clase de manejo
-    });
-});
-</script>
-
-<button id="fire-popup">Popup Trigger</button>
-<div id="popup-container" class="full-layer">
-    <div id="popup-content">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mattis non massa vitae mollis. Suspendisse at pellentesque lacus. Nunc ante quam, congue sed egestas quis, porta sed metus.
-    </div>
-    <div id="popup-overlay" class="full-layer"></div>
-</div>
             
        
        <div class="container-fluid" style="margin: 20px 0;" >

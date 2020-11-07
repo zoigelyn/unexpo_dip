@@ -10,17 +10,6 @@ function formatoI(id1, id2) {
     `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
   );
 }
-
-function mostrarCampo(check) {
-  if (check.checked) {
-    $("tr#tr-pdf-1").hide();
-    $("tr#tr2-pdf-1").hide();
-  } else {
-    $("tr#tr-pdf-1").show();
-    $("tr#tr2-pdf-1").show();
-
-  }
-}
 function comprobarF(archivo) {
   var i = $(archivo).attr("id").split("-").pop();
   var ext = $(archivo).val().split(".").pop().toLowerCase();
@@ -35,6 +24,17 @@ function comprobarF(archivo) {
     }
   }
 }
+function mostrarCampo(check) {
+  if (check.checked) {
+    $("tr#tr-pdf-1").hide();
+    $("tr#tr2-pdf-1").hide();
+  } else {
+    $("tr#tr-pdf-1").show();
+    $("tr#tr2-pdf-1").show();
+
+  }
+}
+
 
 function tipoTrabajo(trabajo) {
   if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
