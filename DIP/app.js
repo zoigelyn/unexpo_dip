@@ -7,7 +7,6 @@ const  flash = require ('connect-flash');
 const passport = require ('passport');
 const session = require ('express-session');
 const multer = require('multer');
-require('dotenv').config();
 
 
 
@@ -157,7 +156,7 @@ app.use(function(req, res, next) {
     }
   })
 });
-/*
+
 app.use(function(err, req, res, next){
   let statusCode = err.status || 500;
 let statusText = '';
@@ -184,7 +183,7 @@ let statusText = '';
     console.log(err);
   }
 });
-*/
+
 
 
 module.exports = app;
