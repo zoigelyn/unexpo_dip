@@ -1,5 +1,13 @@
 const app = require ('./app');
-const port = process.env.PORT || 3000;
+require('dotenv').config({path: __dirname + '/.env'});
 
-app.listen(port, 'localhost');
-console.log('server on puerto 3000');
+console.log(process.env.PORT);
+app.set('port', process.env.PORT || 3000);
+
+/*sequelize.sync().then(function() {*/
+    app.listen(app.get('port'), function(){
+      console.log('Express server listening on port ' + app.get('port'));
+    });
+   /* 
+  });*/
+  

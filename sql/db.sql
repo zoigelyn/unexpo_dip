@@ -125,3 +125,11 @@ create table respuestas(
     foreign key(id_pr) references preguntas(id_p),
     foreign key(correo_r) references usuarios(correo_u)
 );
+
+create table conf_dias_libros(
+    id_c serial primary key,
+    dias_prestamo integer default 3,
+    cantidad_libros integer default 3,
+    created_at date,
+    updated_at date
+);

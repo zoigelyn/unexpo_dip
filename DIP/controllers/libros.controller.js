@@ -251,8 +251,6 @@ module.exports.todosLibros = async function (req, res, next) {
 module.exports.busquedaEspecifica = async function (req,res, next) {
   const datosLibro = req.body;
   
-  console.log(res.statusCode);
-  var busqueda = {};
   if (datosLibro.año){
     busqueda.año = datosLibro.año;
   }

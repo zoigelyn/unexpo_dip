@@ -2,8 +2,6 @@
 
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const up = multer();
 
 const { jsPDF } = require("jspdf");
 const  watermark  = require('image-watermark');

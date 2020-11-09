@@ -1,0 +1,640 @@
+<html>  
+<%- include ("partes/cabecera") %>
+
+<script src="/js/jspdf.min.js"></script>
+<script src="/js/jspdf.debug.js"></script>
+
+<script >
+
+        function addWaterMark(doc){
+              var totalPages = doc.internal.getNumberOfPages();
+              for ( var i=1; i<=totalPages; i++) {
+                  doc.setPage(i);
+                  doc.setTextColor(150);
+                  doc.text(50, doc.internal.pageSize.height - 30, 'Watermark');
+              
+              }
+              return doc;
+          }
+      
+          function genPDF(){
+  var doc = new jsPDF();
+            /*
+            let inputFile = $('input[type="file"]');
+           doc = inputFile.prop("files")[0];
+           if (doc != '') {
+            alert(doc);
+           }else {
+           alert('fine');
+           }
+           */
+            //doc = addWaterMark(doc);
+            let inputFile = $('input[type="file"]');
+            doc = inputFile.prop("files")[0];
+            var file = doc.output();
+            alert(doc);
+          
+      }
+          
+</script>
+
+<script >
+function añadirAtt(query){
+ $(query).attr("disabled", true);
+};
+function reservarLibro(ct){
+  alert($(ct).attr("id"));
+};
+
+function formatoC(id1, id2) {
+  $(id1).html("");
+  $(id2).html(
+    `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+  );
+}
+function formatoI(id1, id2) {
+  $(id1).html(`<p>Debe ser formato pdf</p>`);
+  $(id2).html(
+    `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+  );
+}
+function comprobarF(archivo) {
+  var i = $(archivo).attr("id").split("-").pop();
+  var ext = $(archivo).val().split(".").pop().toLowerCase();
+
+  var id1 = "p#formato-pdf-" + i;
+  var id2 = "td#img-pdf-" + i;
+  if ($(archivo).val() != "") {
+    if (ext === "pdf") {
+      formatoC(id1, id2);
+    } else {
+      formatoI(id1, id2);
+    }
+  }
+}
+function mostrarCampo(check) {
+  if (check.checked) {
+    $("table#table-pdf").html('');
+  } else {
+   
+    $("table#table-pdf").html(`<tr id="tr-pdf-1" style="border: none;">
+                    <td  style="width: 200px;  border: none;" >
+                        <input onchange="comprobarF(this)" id="pdf-1" name="pdf" type="file" required="" class="material-control tooltips-general" data-toggle="tooltip" data-placement="top" title="Archivo PDF">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label >Archivo PDF</label>
+
+                    </td>
+                    <td  style="width: 30px;  border: none;" id="img-pdf-1">
+
+                    </td>
+                </tr>
+                <tr id="tr2-pdf-1">
+                    <td style="width: 200px; border: none;"><p class="text-center" id="formato-pdf-1"></p></td>
+                    <td style="width: 30px;  border: none;">
+                    </td>
+                </tr>`);
+
+  }
+}
+function tipoTrabajo(trabajo) {
+  if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
+    $("div#tutor").html(`
+           <input id="tutor" name="tutor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+                       <span class="highlight"></span>
+                       <span class="bar"></span>
+                       <label>Autor</label>`);
+  } else {
+    $("div#tutor").html("");
+  }
+}
+
+
+   
+function ver(input){
+    
+let cota = $(input).attr("id").split('-').pop();
+        $.ajax({
+      beforeSend: function () {
+        $("div#cargando").html(
+          '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+        );
+        
+      },
+      url: `/bibliotecario/ver?cota=${cota}`,
+      timeout: 3000,
+      type: 'POST'
+      
+    })
+      .done(function (libro, url) {
+          
+        $("div#cargando").html('');
+        $("div#modal-body").html('');
+        $("div#tutor").html('');
+        $("div#modal-body").append(`
+        <form>
+          <div style="height="50px;">
+          <div class="form-group row">
+          <label for="id1" class="col-sm-2 col-form-label">Tipo de libro</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].tipo_l}" type="email" class="tooltips-general material-control" class="form-control " id="id1" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id2" class="col-sm-2 col-form-label">Cota</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].cota}" type="text" class="tooltips-general material-control" class="form-control" id="id2" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id3" class="col-sm-2 col-form-label">Título</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].titulo}" type="text" class="tooltips-general material-control" class="form-control" id="id3" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id4" class="col-sm-2 col-form-label">Autor</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].autor}" type="text" class="tooltips-general material-control" class="form-control" id="id4" readonly>
+          </div>
+          </div>
+
+          <div class="form-group row">
+          <label for="id9" class="col-sm-2 col-form-label">Tutor</label>
+          <div id="tutor" class="col-sm-10">
+          
+          </div>
+          </div>
+
+          <div class="form-group row">
+          <label for="id5" class="col-sm-2 col-form-label">Editorial</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].editorial}" type="text" class="tooltips-general material-control" class="form-control" id="id5" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id6" class="col-sm-2 col-form-label">Volumen</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].volumen}" type="number" class="tooltips-general material-control" class="form-control" id="id6" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id7" class="col-sm-2 col-form-label">Ejemplar</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].ejemplar}" type="number" class="tooltips-general material-control" class="form-control" id="id7" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id8" class="col-sm-2 col-form-label">Año</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].año}" type="number" class="tooltips-general material-control" class="form-control" id="id8" readonly>
+          </div>
+          </div>
+          <div class="form-group row">
+          <label for="id10" class="col-sm-2 col-form-label">Estado del libro</label>
+          <div class="col-sm-10">
+          <input value="${libro.libro[0].estado_l}" type="text" class="tooltips-general material-control" class="form-control" id="id10"  readonly>
+          </div>
+          </div>
+          <br>
+
+          <p class="text-center"> <a  href="${libro.libro[0].destino}" target="_blak" role="button" class="btn btn-large btn-primary" id="${libro.libro[0].cota}" >Ver Pdf de ${libro.libro[0].tipo_l} </a></p>
+        </div>
+      
+          
+          </form>
+
+        `);
+        if (libro.libro[0].destino === 'no aplica'){
+          let q ="a#"+libro.libro[0].cota;
+          añadirAtt(q);
+        }
+        
+        if(libro.libro[0].tipo_l === 'trabajo de grado'){
+            $("div#tutor").append(`
+            <input value="${libro.libro[0].tutor}" type="text" class="tooltips-general material-control" class="form-control" id="id9" readonly>`);
+        };
+        $("div#myModal").modal('show');
+      
+    })
+      .fail(function (error) {
+        $("div#cargando").html(
+          `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+        );
+      });
+    };
+
+
+function removerCampo(campo){
+        alert(campo);
+        $(campo).remove();
+    };
+function eliminarLibro(input){
+     let r = confirm('¿Estas seguro que deseas eliminar este libro?');
+     if (r){
+let cota = $(input).attr("id");
+let c = "div#"+cota+0;
+        $.ajax({
+      beforeSend: function () {
+        $("div#cargando").html(
+          '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+        );
+        
+      },
+      url: `/bibliotecario/eliminar?cota=${cota}`,
+      type: 'DELETE'
+    })
+      .done(function (librosEliminados) {
+        $("div#cargando").html('');
+       removerCampo(c);
+       $("div#cargando").html(`<h3 class="text-center">Se ha eliminado ${librosEliminados.librosEliminados} libro</h>`);
+        
+      
+   
+      })
+      .fail(function (error) {
+        $("div#cargando").html(
+          `<p class="text-center"><img src="/assets/icons/robot.ico"width= "20" height= "20">Ha ocurrido un error</p>`
+        );
+      });
+    };
+    };
+function añadirTutor(input){
+        if ($(input).val() === 'Trabajo de grado'){
+        
+        $('div#div-contenedor').show();
+        }else{
+            $('div#div-contenedor').hide();
+        }
+    };
+
+
+
+    function ocultarCampos(check){
+       let solicitud = '';
+    var isChecked = document.getElementById("ocultar").checked; 
+    if (isChecked){
+        $('form#formato-enlinea').hide();
+       solicitud =  $.ajax({
+      beforeSend: function () {
+        $("div#cargando").html(
+          '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+        );
+        
+      },
+      url: '/bibliotecario/todos-libros',
+      type: 'POST',
+      timeout: 3000
+    })
+      .done(function (libros) { 
+          let resultados = libros.libros.length;
+          if(resultados>0){
+        $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
+        $("div#container").html(` <div class="container-fluid" >
+            <h2 class="text-center all-tittles">Resultados</h2>
+            <div class="table-responsive">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 6%;">#</div>
+                        <div class="div-table-cell" style="width: 10%;">Titulo</div>
+                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        <div class="div-table-cell" style="width: 8%;">Autor</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver</div>
+                        <div class="div-table-cell" style="width: 6%;"> 
+                        Reservar</div>
+                    </div>
+            </div>
+        <div id="libros"> </div>
+        </div>`);
+        for (var i=0; i< libros.libros.length; i++){
+          
+        $("div#libros").append(`
+        <div class="table-responsive" id="${libros.libros[i].cota}0">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list">
+                        <div  class="div-table-cell" style="width: 6%;">${i+1}</div>
+                        <div  class="div-table-cell" style="width: 10%;">${libros.libros[i].titulo}</div>
+                        <div  class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        
+                        <div class="div-table-cell" style="width: 8%;">${libros.libros[i].autor}</div>
+                        
+                       
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                        
+                        </div>
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                          <button class="btn btn-success" id="${libros.libros[i].cota}" onclick="javascript:reservarLibro(this)"><i class="zmdi zmdi-timer"></i></button>
+
+                         
+                        </div>
+                    </div>
+                </div>
+            </div>`);
+            
+            if (libros.libros[i].estado_l === 'no disponible'){
+              let q = "button#"+libros.libros[i].cota;
+              añadirAtt(q);
+            };
+        }
+       
+   document.getElementsByTagName("button")[1].focus({preventScroll:true});
+    }else{
+        $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
+        }
+      })
+      .fail(function (error) {
+        $("div#cargando").html(
+          `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+        );
+      });
+
+
+    }else{
+        
+        $('form#formato-enlinea').show();
+        $("div#container").html('');
+    }
+   };
+function actualizarFormato(t, tp, libro){
+$(t).html(`${libro.titulo}`);
+$(tp).html(`${libro.tipo_l}`);
+}
+ $(function(){
+    $(document).on('click', '.modal', function(){
+   $("form#actualizar").on('submit', function(e){
+    e.preventDefault();
+    let data = new FormData(this);
+
+    var isChecked = document.getElementById("mostrar").checked;
+    if (isChecked) {
+      data.delete("pdf");
+    }
+    $.ajax({
+      beforeSend: function () {
+        
+        $("p#boton").html("Guardando...");
+      },
+      url: "/bibliotecario/actualizar",
+      type: "POST",
+      data: data,
+      processData: false,
+      contentType: false,
+    })
+      .done(function (res) {
+        $("div#estatus").html(
+          `<img src="/assets/icons/correcto.ico"width= "20" height= "20">`
+        );
+        $("div#mensaje").html(`<p class="text-center">${res.mensaje}</p>`);
+        $("p#boton").html("Se ha actualizado");
+        let titulo = `div#${res.libro.cota}_titulo`;
+        let tipo = `div#${res.libro.cota}_tipo`;
+        actualizarFormato(titulo, tipo, res.libro);
+        
+       
+        $("div#myModal")
+        .modal("hide")
+        .on('hidden.bs.modal', function (e) {
+          $("div#myModal2").modal("show");
+          $(this).off('hidden.bs.modal');
+        });
+
+      })
+      .fail(function (error) {
+        $("div#estatus").html(
+          `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+        );
+        $("p#boton").html("¡Ha fallado!");
+      });
+  
+   });
+});  
+  $('form#formato-enlinea').on("submit", function (e) {
+    e.preventDefault();
+
+    let data = $(this).serialize();
+
+    $.ajax({
+      beforeSend: function () {
+        $("div#cargando").html(
+          '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+        );
+        
+      },
+      url: '/bibliotecario/busqueda-especifica',
+      type: 'POST',
+      data: data
+    })
+      .done(function (libros) {
+          let resultados = libros.libros.length;
+          $("div#container").html("");
+          if(resultados>0){
+        $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
+        $("div#container").html(` <div class="container-fluid" >
+            <h2 class="text-center all-tittles">Resultados</h2>
+            <div class="table-responsive">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 6%;">#</div>
+                        <div class="div-table-cell" style="width: 10%;">Cota</div>
+                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        <div class="div-table-cell" style="width: 8%;">Titulo</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
+                        <div class="div-table-cell" style="width: 6%;"> 
+                        Eliminar</div>
+                    </div>
+            </div>
+        <div id="libros"> </div>
+        </div>`);
+        for (var i=0; i< libros.libros.length; i++){
+        $("div#libros").append(`
+        <div class="table-responsive" id="${libros.libros[i].cota}0">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list">
+                        <div  class="div-table-cell" style="width: 6%;">${i+1}</div>
+                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
+                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        
+                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        
+                        
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                        
+                    </div>
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
+                            
+                            </div>
+                    </div>
+                </div>
+            </div>`);
+        }
+   
+        document.getElementsByTagName("button")[1].focus({preventScroll:true});
+    }else{
+        $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
+    }
+      })
+      .fail(function (error) {
+        $("div#cargando").html(
+          `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+        );
+      });
+  });
+  
+
+
+  
+  });
+
+</script>
+
+
+
+
+
+
+<body >
+  
+    <div id="myModal" class="modal fade" >
+        <div class="modal-dialog">
+          <div class="container-fluid">
+               <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    
+              
+                       
+                        
+                        
+                   
+                    </div>
+                   
+                </div>
+            
+            
+                
+             </div>
+            
+        </div>
+    </div>
+    <div id="myModal2" class="modal fade" >
+      <div class="modal-dialog">
+        <div class="container-fluid">
+             <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              </div>
+              <div class="modal-body" id="modal-body2">
+                <p class="text-center">Se ha actualizado exitosamente</p>
+                     
+                      
+                      
+                 
+                  </div>
+                 
+              </div>
+          
+          
+              
+           </div>
+          
+      </div>
+  </div>
+   <%- include ("partes/navegacionUsuario") %> 
+   <div class="content-page-container full-reset custom-scroll-containers" id="contenido">
+    
+    
+       
+        <%- include ("partes/navegacionSuperiorUsuario") %> 
+        <div class="container" id="p">
+            <div class="page-header">
+                <h1  class="all-tittles">UNEXPO DIP <small>Reservar</small></h1>
+            </div>
+        </div>
+        
+        
+       
+        
+       
+       <div class="container-fluid" style="margin: 20px 0;" >
+            <div class="row">
+                 
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/flat-book.png" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
+                    Bienvenido en esta sección podrás reservar uno o varios libros. Solo estan habilitados los que se encuentran disponibles físicamente.
+                </div>
+            </div>
+        </div>
+       
+     <div class="container-fluid" style="margin: 0px;">
+             <div class="page-header" style="border: none; ">
+            <h2 class="text-center" style="background-color:rgb(217, 217, 226) ;" >¿Buscas un libro en particular?</h2>
+            <div  class="group-material" >
+                <p class="text-center"> <input onchange="ocultarCampos(this)" id="ocultar" name="ocultar" type="checkbox"  value="1" class="tooltips-general" title="no, quiero ver todos los libros">No, quiero ver todos los libros</p>
+             </div>
+    </div>
+
+        <form class="form-inline" style="text-align:center; " id="formato-enlinea">
+            <div class="form-group col-log-2 col-md-4 col-sm-6 col-xs-12">
+                <input id="cota_unica"   name="cota" type="text" class="tooltips-general material-control" placeholder="Cota" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+            </div>
+            <div class="form-group col-log-2 col-md-4 col-sm-6 col-xs-12">
+                    <select onchange="añadirTutor(this)" id="tipo_l_unico" name="tipo_l"  class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Elige la categoría del libro">
+                                    <option  disabled="" selected="">Tipo de libro</option>
+                                    <option>Libro</option>
+                                    <option>Revista</option>
+                                    <option>Trabajo de grado</option>
+                
+                    </select>
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input  id="ejemplar_unico"name="ejemplar" type="number" class="tooltips-general material-control" placeholder="Ejemplar" maxlength="4" data-toggle="tooltip" pattern="^[0-9]+" min="1"  data-placement="top" title="Numero de ejemplares">
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control" placeholder="Titulo" pattern="[Aá-z- 1-9-ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el título o nombre del libro">
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control" placeholder="Autor"  pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
+
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12" id="div-contenedor">
+                <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control" placeholder="Tutor" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+            </div>
+            
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control" placeholder="Volumen"  maxlength="50" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input id="año_unico" name="año" type="text" class="material-control tooltips-general" placeholder="Año"  pattern="[0-9]{1,4}" maxlength="4" data-toggle="tooltip" data-placement="top" title="Solamente números, sin espacios">
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <input id="editorial_unico" name="editorial" type="text" class="material-control tooltips-general" placeholder="Editorial" pattern="[A-z- ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+            </div>
+            <div class="form-group col-log-3 col-md-4 col-sm-6 col-xs-12">
+                <br>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            
+            <button type="reset" class="btn btn-primary">Limpiar</button>
+            </div>
+        </form>
+     </div>
+   
+        
+       <div id="cargando"></div>
+       <div id="container"></div>
+    <%- include ("partes/piePagina") %>
+</body>
+
+</html>

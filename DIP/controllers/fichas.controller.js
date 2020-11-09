@@ -2,11 +2,60 @@ const sequelize = require('../database/database');
 //const Sequelize = require ('sequelize');
 const Fichas = require('../models/fichas');
 const Libros = require('../models/libros');
+const ConfDiasLibros = require('../models/conf-dias-libros');
 const fichasEntregadas = require('../models/fichasEntregadas');
 const { QueryTypes } = require('sequelize');
 const { Op } = require("sequelize");
 
 const nodemailer = require('nodemailer');
+
+module.exports.existeConfigDias = async function(req, res, next){
+  const diasLibros = ConfDiasLibros.findAll();
+  if (diasLibros){
+    next();
+  }else{
+    res.redirect('/bibliotecario/conf-dias');
+  }
+};
+
+module.exports.prestamosVV = async function(req, res, next){
+  try {
+    const prestamosV = Fichas.findAll({
+      where:{
+      [Op.or]: [
+        { estado_f: 'vigente' },
+        { estado_f: 'vencido' }
+      ]
+    }
+  });
+  res.render('prestamos-vig-ven', {
+    titulo: 'Prestamos',
+    usuarioL: req.session.usuarioL,
+    fichas: prestamosV
+
+  });
+  } catch (err) {
+    console.log(err);
+  }
+  
+  
+};
+
+module.exports.prestamos = async function(req, res, next){
+  try {
+    const prestamos = fichasEntregadas.findAll();
+  res.render('prestamos', {
+    titulo: 'Prestamos',
+    usuarioL: req.session.usuarioL,
+    fichas: prestamos
+
+  });
+  } catch (err) {
+    console.log(err);
+  }
+  
+  
+};
 
 module.exports.vencimiento = async function vencimiento(req, res, next) {
    const fechaHoy = new Date();

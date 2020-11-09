@@ -7,6 +7,7 @@ const  flash = require ('connect-flash');
 const passport = require ('passport');
 const session = require ('express-session');
 const multer = require('multer');
+require('dotenv').config();
 
 
 
@@ -22,6 +23,7 @@ var sequelize = require ('./database/database');
 //importing routes
 //const typeBookRoutes = require ('./routes/typeBook.routes');
 const vencimiento = require('./controllers/fichas.controller');
+const error404 = require('./controllers/configuracion.controller');
 
 //database
 
@@ -32,16 +34,17 @@ require ('./passport/local-auth');
 
 //
 //view engine setup
-
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+
 //middlewares
+//app.use(express.favicon()); 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use( express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'public')));
 
 /*app.use('/conf', express.static(path.join(__dirname, 'public')));
 app.use('/libros', express.static(path.join(__dirname, 'public')));
@@ -127,7 +130,11 @@ app.use(async (req, res, next) => {
    }
 
   next();
-});*/
+});
+if ('development' === app.get('env')) {
+  app.use(express.errorHandler());
+}
+*/
 app.use(require ('./routes/fichas.routes') );
 app.use(require ('./routes/usuarios.routes'));
 app.use(require ('./routes/libros.routes'));
@@ -135,7 +142,7 @@ app.use(require('./routes/preguntas.routes'));
 app.use(require('./routes/configuracion.routes'));
 app.use(require('./routes/inicio.routes'));
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   res.status(404);
 
   res.format({
@@ -150,7 +157,7 @@ app.use(function(req, res, next){
     }
   })
 });
-
+/*
 app.use(function(err, req, res, next){
   let statusCode = err.status || 500;
 let statusText = '';
@@ -173,7 +180,11 @@ let statusText = '';
     code: statusCode,
     titulo: 'Error'
   });
+  if ('development' === app.get('env')) {
+    console.log(err);
+  }
 });
+*/
 
 
 module.exports = app;

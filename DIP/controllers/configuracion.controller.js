@@ -12,6 +12,8 @@ module.exports.prueba = function prueba(req, res, next){
 
 };
 
+
+
 module.exports.isAuthenticatedAdmin = function isAuthenticatedAdmin(req, res, next) {
     if (req.isAuthenticated()) {
       return next();

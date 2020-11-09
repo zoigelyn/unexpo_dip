@@ -26,6 +26,23 @@ module.exports.isAuthenticated = function isAuthenticated(req, res, next) {
   res.redirect('/index');
 };
 
+module.exports.isAuthenticatedB = async function(req, res, next) {
+  
+  if (req.isAuthenticated()) {
+    let bibliotecario = Usuarios.findOne({
+      where: {
+        correo_u: req.session.passport.user,
+        tipo_u: 'bibliotecario'
+      }
+    });
+    if (bibliotecario){
+      return next();
+    }
+    
+  }
+  res.redirect('/index');
+};
+
 module.exports.isAuthenticatedAjax = function (req, res, next) {
   
   if (req.isAuthenticated()) {

@@ -1,6 +1,7 @@
 {
   "name": "unexpo_dip",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "start": "node DIP/index.js",

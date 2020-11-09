@@ -260,7 +260,7 @@ formato.on("submit", function (e) {
         );
         $("div#mensaje").html(`<p class="text-center">${res}</p>`);
         $("p#boton").html("Se ha guardado");
-        setTimeout(resetear, 30);
+        setTimeout(resetear, 3000);
       })
       .fail(function (error) {
         $("div#estatus").html(
@@ -285,7 +285,7 @@ function mostrarCampo(check) {
   }
 }
 
-     function añadirCampoPdf(input){
+function añadirCampoPdf(input){
     var bandera = 1;
     var cota1, cota2, cota, i, m;
    

@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 
 
-const {  existeBibliotecario, existeP, ingresoPreguntas, mostrarPreguntas, isAuthenticatedAdmin,isNotAuthenticatedAdmin, eliminarPregunta, unaPregunta, unaPreguntaR, vistaRegistroB, vistaRegistroP, vistaIngresoB, vistaPreguntaUnica, vistaTareaCompleta, logoutConfig} = require('../controllers/configuracion.controller');
+const {  existeBibliotecario, existeP, ingresoPreguntas, mostrarPreguntas, isAuthenticatedAdmin,isNotAuthenticatedAdmin, eliminarPregunta, unaPregunta, unaPreguntaR, vistaRegistroB, vistaRegistroP, vistaIngresoB, vistaPreguntaUnica, vistaTareaCompleta, logoutConfig, error404, error} = require('../controllers/configuracion.controller');
 
 
 router.delete('/preguntas?', isAuthenticatedAdmin, eliminarPregunta);
