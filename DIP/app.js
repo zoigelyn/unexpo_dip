@@ -7,6 +7,7 @@ const  flash = require ('connect-flash');
 const passport = require ('passport');
 const session = require ('express-session');
 const multer = require('multer');
+const favicon = require('serve-favicon');
 
 
 
@@ -44,7 +45,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use( express.static(path.join(__dirname, 'public')));
-
+app.use(favicon(path.join(__dirname, 'public','assets','icons','favicon.ico')));
 /*app.use('/conf', express.static(path.join(__dirname, 'public')));
 app.use('/libros', express.static(path.join(__dirname, 'public')));
 app.use('/index', express.static(path.join(__dirname, 'public')));
