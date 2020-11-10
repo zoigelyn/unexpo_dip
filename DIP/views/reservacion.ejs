@@ -429,8 +429,7 @@ $(tp).html(`${libro.tipo_l}`);
       data: data
     })
       .done(function (libros) {
-          let resultados = libros.libros.length;
-          $("div#container").html("");
+        let resultados = libros.libros.length;
           if(resultados>0){
         $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
         $("div#container").html(` <div class="container-fluid" >
@@ -439,48 +438,55 @@ $(tp).html(`${libro.tipo_l}`);
                 <div class="div-table" style="margin:0 !important;">
                     <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
                         <div class="div-table-cell" style="width: 6%;">#</div>
-                        <div class="div-table-cell" style="width: 10%;">Cota</div>
+                        <div class="div-table-cell" style="width: 10%;">Titulo</div>
                         <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
-                        <div class="div-table-cell" style="width: 8%;">Titulo</div>
+                        <div class="div-table-cell" style="width: 8%;">Autor</div>
                         
-                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
+                        <div class="div-table-cell" style="width: 6%;">Ver</div>
                         <div class="div-table-cell" style="width: 6%;"> 
-                        Eliminar</div>
+                        Reservar</div>
                     </div>
             </div>
         <div id="libros"> </div>
         </div>`);
         for (var i=0; i< libros.libros.length; i++){
+          
         $("div#libros").append(`
         <div class="table-responsive" id="${libros.libros[i].cota}0">
                 <div class="div-table" style="margin:0 !important;">
                     <div class="div-table-row div-table-row-list">
                         <div  class="div-table-cell" style="width: 6%;">${i+1}</div>
-                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
-                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        <div  class="div-table-cell" style="width: 10%;">${libros.libros[i].titulo}</div>
+                        <div  class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
                         
-                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        <div class="div-table-cell" style="width: 8%;">${libros.libros[i].autor}</div>
                         
-                        
+                       
                         <div class="div-table-cell" style="width: 6%;">
                             
                             <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
                         
-                    </div>
+                        </div>
                         <div class="div-table-cell" style="width: 6%;">
                             
-                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
-                            
-                            </div>
+                          <button class="btn btn-success" id="${libros.libros[i].cota}" onclick="javascript:reservarLibro(this)"><i class="zmdi zmdi-timer"></i></button>
+
+                         
+                        </div>
                     </div>
                 </div>
             </div>`);
+            
+            if (libros.libros[i].estado_l === 'no disponible'){
+              let q = "button#"+libros.libros[i].cota;
+              añadirAtt(q);
+            };
         }
-   
-        document.getElementsByTagName("button")[1].focus({preventScroll:true});
+       
+   document.getElementsByTagName("button")[1].focus({preventScroll:true});
     }else{
         $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
-    }
+        }
       })
       .fail(function (error) {
         $("div#cargando").html(
