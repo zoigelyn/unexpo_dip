@@ -12,8 +12,8 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	  sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_CURLY_URL, {
 		dialect:  'postgres',
 		protocol: 'postgres',
-		port:     match[4],
-		host:     match[3],
+		port:     '5432',
+		host:     'ec2-54-90-13-87.compute-1.amazonaws.com',
 		logging:  true 
 	  })
 /*	} else {
