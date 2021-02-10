@@ -3,25 +3,22 @@ var sequelize = require ('../database/database');
 const Usuario = require('./usuarios');
 
 const Tipo_Usuario = sequelize.define('tipo_usuario', {
-    id_tu: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement:true
-     },  
+     
     tipo_tu: {
-        type: Sequelize.STRING,
-        Unique: true, 
-        allowNull: false   
-    
+        type: Sequelize.STRING(20),
+        allowNull: false, 
+        primaryKey: true
     },
     descripcion_tu: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        allowNull: true,
+        defaultValue: 'no aplica' 
     },
-    created_at:{
+    createdAt:{
         type: Sequelize.DATE,
         field: 'created_at'
     },
-    updated_at:{
+    updatedAt:{
         type: Sequelize.DATE,
         field: 'updated_at'
     }
