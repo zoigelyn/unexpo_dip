@@ -8,246 +8,107 @@ const { QueryTypes } = require('sequelize');
 const { Op } = require("sequelize");
 
 const nodemailer = require('nodemailer');
-
-module.exports.existeConfigDias = async function(req, res, next){
+function sumarDias(dia, fecha_emision) {
+  var dias = Number(dia);
+  var fecha = fecha_emision;
+  var nuevaFecha = new Date(fecha);
+  nuevaFecha.setDate(nuevaFecha.getDate() - dias);
+  var numeroD = new Date(nuevaFecha);
+  return numeroD
+};
+//Verifica si existe configuración de dias de prestamos
+module.exports.existeConfigDias = async function (req, res, next) {
   const diasLibros = ConfDiasLibros.findAll();
-  if (diasLibros){
+  if (diasLibros) {
     next();
-  }else{
+  } else {
     res.redirect('/bibliotecario/conf-dias');
   }
 };
-
-module.exports.prestamosVV = async function(req, res, next){
+//consulta los prestamos entregados
+module.exports.prestamosAjax = async function (req, res, next) {
   try {
-    const prestamosV = Fichas.findAll({
-      where:{
-      [Op.or]: [
-        { estado_f: 'vigente' },
-        { estado_f: 'vencido' }
-      ]
+    const prestamos = await fichasEntregadas.findAll();
+    if (prestamos){
+      res.status(200).send({fichas: prestamos});
     }
-  });
-  res.render('prestamos-vig-ven', {
-    titulo: 'Prestamos',
-    usuarioL: req.session.usuarioL,
-    fichas: prestamosV
-
-  });
-  } catch (err) {
-    console.log(err);
+  
+  } catch (error) {
+  res.status(500);
   }
-  
-  
-};
 
-module.exports.prestamos = async function(req, res, next){
-  try {
-    const prestamos = fichasEntregadas.findAll();
-  res.render('prestamos', {
-    titulo: 'Prestamos',
-    usuarioL: req.session.usuarioL,
-    fichas: prestamos
-
-  });
-  } catch (err) {
-    console.log(err);
-  }
-  
-  
-};
-
-module.exports.vencimiento = async function vencimiento(req, res, next) {
-   const fechaHoy = new Date();
-  console.log(fechaHoy);
-  function sumarDias(dia, fecha_emision) {
-    var dias = Number(dia);
-    var fecha = fecha_emision;
-    var nuevaFecha = new Date(fecha);
-    nuevaFecha.setDate(nuevaFecha.getDate() - dias);
-    var numeroD = new Date(nuevaFecha);
-    return numeroD
-  };
-  var diaCero = sumarDias(10, fechaHoy);
-  try {
-    
-   const fichasNot = await Fichas.findAll({
-        where:{
-          fecha_d: {
-            [Op.lte]: fechaHoy
-          },
-          estado_f: 'vigente'
-        }
-      });
-      const fichas = await Fichas.findAll({
-        where:{
-          fecha_d: {
-            [Op.lte]: fechaHoy
-          }
-        }
-      });
-      if (fichasNot.length > 0) {
-        fichas.forEach(async (fichas) => {
-           await Fichas.update({
-           
-            estado_f: 'vencido'
-            
-          },
-          { where:{
-            fecha_d: {
-              [Op.lte]: fechaHoy
-            }
-          }
-        });
-        });
-      };
-      if (fichas.length > 0) {
-        
-        var transporter = nodemailer.createTransport({
-          host:'smtp.gmail.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: 'jesusjosediaznadal@gmail.com',
-            pass: '19284138'
-          }
-            
-        });
-        var mailOptions = {
-          from: 'Biblioteca Unexpo <jesusjosediaznadal@gmail.com',
-          to: 'zoigelyn@gmail.com',
-          subject: 'Lista de prestamos vencidos',
-          html: '<p>se ha enviado un mensaje</p>'
-        };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log(error);
-            res.send('error');
-          }else {
-            console.log('mensaje enviado: '+info.response);
-            console.log(info);
-            res.send('enviado');
-          }
-        });
-       
-      };
-    
-  } catch(error){
-    console.log(error);
-  }
 
 };
 
-module.exports.insertarFicha = async function insertarFicha(req, res, next) {
-  const {cota_f, correo_f,fecha_e, fecha_d} = request.body;
-const dia = 5;
-  var mensaje = "";
-  var bandera = 0;
-  function sumarDias(dia, fecha_emision) {
-    var dias = Number(dia);
-    var fecha = fecha_emision;
-    var nuevaFecha = new Date(fecha);
-    nuevaFecha.setDate(nuevaFecha.getDate() + dias);
-    var numeroD = new Date(nuevaFecha);
-    var diaSemana = numeroD.getDay();
-
-    if (diaSemana == 0 || diaSemana == 6) {
-      mensaje = "Debes seleccionar un dia entre lunes y viernes";
-      bandera = 1;
-   }
-    console.log(diaSemana);
-
-    return numeroD;
-  }
-
-  if (fecha_e) {
-    var fecha_emision = fecha_e;
-  } else {
-    var fecha_emision = new Date();
-  }
-
-  var nd = sumarDias(dia, fecha_emision);
-  if (!fecha_d){
-    var fecha_devolucion = nd;
-  }
-  else {
-   var fecha_devolucion = fecha_d;
-  }
-
-
+//consulta los prestamos pendientes
+module.exports.prestamosPAjax = async function (req, res, next) {
   try {
-    let nFicha = {};
-   let nuevaFicha = {};
- if (bandera === 0){
-       nFicha = await Fichas.create({
-        cota_f: cota_f.toLowerCase(),
-        correo_f: correo_f.toLowerCase(),
-        fecha_e: fecha_emision,
-        fecha_d: fecha_devolucion,
-        estado_f: 'pendiente',
-      });
-
-      nuevaFicha = await Fichas.findAll({
-        attributes: [
-          ['n_solicitud', 'numero de solicitud'],
-          ['cota_f', 'cota'],
-          ['correo_f', 'correo'],
-          ['fecha_e', 'fecha de emision'],
-          ['fecha_d', 'fecha de devolucion'],
-          ['created_at','fecha de registro'],
-          ],
-        where: {
-          cota_f: cota_f.toLowerCase(),
-        },
-      });
+    const prestamos = await Fichas.findAll({
+      where: {
+        estado_f: 'pendiente'
+      }
+    });
+    if (prestamos){
+      res.status(200).send({fichas: prestamos});
     }
+  } catch (error) {
+    res.status(500);
+  }
 
-    if (nFicha && bandera !== 1) {
-      return response.json({
-        message: 'creado safisfactoriamente',
-        data: nuevaFicha,
-      });
-    }
-   if (bandera === 1) {
-      return response.json({
-        message: mensaje,
-        data: nuevaFicha
-      });
+
+};
+//pendientes por entregar
+
+module.exports.prestamosVVAjax = async function (req, res, next) {
+  try {
+    const prestamos = await Fichas.findAll({
+      where: {
+        [Op.or]: [
+          { estado_f: 'vigente' },
+          { estado_f: 'vencido' }
+        ]
+      }
+    });
+    if (prestamos){
+      res.status(200).send({fichas: prestamos});
     }
 
   } catch (error) {
-    console.log(error);
-      response.status(500).json({
-        message: 'ha ocurrido un error' ,
-        data: {},
-      });
+   res.status(500);
   }
+
+
 };
 
+// funcion para reservar un libro
 module.exports.reservarLibro = async function (req, res, next) {
-  const {cota, fecha_e, fecha_d, dia_p} = req.query;
-  var dia = 0;
-  if (dia_p) {
-    dia = dia_p;
-  }else {
-    dia = 3;
-  }
-
  
+  const { cota, fecha_e } = req.body;
+  let reservas = {};
+
+   reservas = await Fichas.findAll({
+    where: {
+      correo_f: req.session.usuarioL.correo_u
+    }
+  });
+  const configurado = await ConfDiasLibros.findOne();
+  const cantidadL = configurado.cantidad_libros;
+  const cantidadD = configurado.dias_prestamo;
+
   function sumarDias(dia, fecha_emision) {
- var diaSemana = 0;
-    while (diaSemana == 0 || diaSemana == 6) {
-    var dias = Number(dia);
-    var fecha = fecha_emision;
-    var nuevaFecha = new Date(fecha);
-    nuevaFecha.setDate(nuevaFecha.getDate() + dias);
-    var numeroD = new Date(nuevaFecha);
-    var diaSemana = numeroD.getDay();
-
-   }
-    console.log(diaSemana);
-
+    var diaSemana = 5;
+    var i = 0;
+    while (diaSemana == 5 || diaSemana == 6) {
+     
+      var dias = Number(dia + i);
+      var fecha = fecha_emision;
+      var nuevaFecha = new Date(fecha);
+      nuevaFecha.setDate(nuevaFecha.getDate() + dias);
+      var numeroD = new Date(nuevaFecha);
+       diaSemana = numeroD.getDay();
+     i++;
+    }
+i = 0;
     return numeroD;
   }
 
@@ -257,719 +118,534 @@ module.exports.reservarLibro = async function (req, res, next) {
     var fecha_emision = new Date();
   }
 
-  var nd = sumarDias(dia, fecha_emision);
 
-  if (!fecha_d){
-    var fecha_devolucion = nd;
-  }
-  else {
-   var fecha_devolucion = fecha_d;
-  }
 
 
   try {
-    let nFicha = {};
-   
-   let  actualizadoL = {};
-   
+    if (reservas.length < cantidadL) {
+      const dia = cantidadD;
+      var nd = sumarDias(dia, fecha_emision);
+      let fecha_d = new Date(nd);
+      if (!fecha_d) {
+        var fecha_devolucion = nd;
+      }
+      else {
+        var fecha_devolucion = fecha_d;
+      };
 
-       nFicha = await Fichas.create({
+   let  nFicha = await Fichas.create({
         cota_f: cota.toLowerCase(),
         correo_f: req.session.usuarioL.correo_u,
         fecha_e: fecha_emision,
         fecha_d: fecha_devolucion,
         estado_f: 'pendiente',
       });
-    if (nFicha) {
-      actualizadoL = await Libros.update({
-        estado_l: 'no disponible'
-      },{
+      if (nFicha) {
+      var actualizadoL = await Libros.update({
+          estado_l: 'no disponible'
+        }, {
+          where: {
+            cota: cota
+          }
+        });
+      }
+
+
+
+      if (nFicha && actualizadoL){
+        res.status(200).send('Se ha reservado con exito');
+      }else{
+        res.status(500).send({
+          message: 'Libro no reservado'
+        });
+      };
+    } else if (reservas.length >= cantidadL) {
+      res.status(200).send('has llegado al limite');
+    };
+
+  } catch (error) {
+    console.log(error);
+   res.status(500);
+  }
+};
+//Mis reservas, listo. Consulta las reservas activas del usuario logeado
+module.exports.misReservas = async function (req, res, next) {
+
+  try {
+    let titulo = {};
+    let autor = {};
+    let fichas = await Fichas.findAll({
+      where: {
+        correo_f: req.session.usuarioL.correo_u,
+        estado_f: 'pendiente'
+      },
+    });
+
+    let libros = await Libros.findAll();
+
+for (var j = 0; j < libros.length; j++) {
+ 
+    for (var i = 0; i < fichas.length; i++) {
+     
+       if ( fichas[i].cota_f === libros[j].cota){
+         titulo[i] = libros[j].titulo;
+         autor[i] = libros[j].autor;
+       }
+     }
+    
+    }  
+res.status(200).send({
+      fichas: fichas,
+      autor: autor,
+      titulo: titulo,
+    });
+  } catch {
+    
+   res.status(500);
+  }
+};
+module.exports.misPrestamos = async function (req, res, next) {
+
+  try {
+    let titulo = {};
+    let autor = {};
+    let fichas = await Fichas.findAll({
+      where: {
+        [Op.or]: [
+          { estado_f: 'vigente',
+          correo_f: req.session.usuarioL.correo_u },
+          { estado_f: 'vencido',
+          correo_f: req.session.usuarioL.correo_u }
+        ]
+      },
+    });
+
+    let libros = await Libros.findAll(/*{
+      where: {
+        [Op.or]: fichas.cota_f,
+      }
+    }*/);
+for (var j = 0; j < libros.length; j++) {
+ 
+    for (var i = 0; i < fichas.length; i++) {
+     
+       if ( fichas[i].cota_f === libros[j].cota){
+         titulo[i] = libros[j].titulo;
+         autor[i] = libros[j].autor;
+       }
+     }
+    
+    }  
+res.send({
+      fichas: fichas,
+      autor: autor,
+      titulo: titulo,
+    });
+  } catch {
+    console.log(error);
+    res.status(500).json({
+      message: 'ha ocurrido un error',
+      data: {},
+    });
+  }
+};
+//función que consulta la ficha de reserva o préstamo
+module.exports.miFicha = async function (req, res, next) {
+  const cota = req.query.cota
+  console.log(cota);
+  try {
+    const ficha = await Fichas.findOne({
+      where: {
+        cota_f: cota
+      }
+    });
+    console.log('-------------------------');
+    console.log(ficha)
+    const libro = await Libros.findOne({
       where: {
         cota: cota
       }
+    });
+
+    if (ficha && libro) {
+      res.status(200).send({
+        ficha: ficha,
+        libro: libro
       });
-    }
-     
-    
-
-    if (nFicha && actualizadoL) {
-     res.redirect('/usuario/mis-reservas');
-    };
-
+    } 
   } catch (error) {
     console.log(error);
-      res.status(500).json({
-        message: 'ha ocurrido un error' ,
-        data: {},
-      });
+   res.status(500);
   }
 };
-
-module.exports.misReservas = async function misReservas(req, res, next) {
-
-  try{
-    let  fichas = await Fichas.findAll({
-      attributes: [
-        'n_solicitud',
-        'cota_f',
-        'correo_f',
-        'fecha_e',
-        'fecha_d', 
-        'created_at'
-        ],
+//función que consulta la ficha de reserva o préstamo
+module.exports.miFichaE = async function (req, res, next) {
+  const cota = req.query.cota;
+  try {
+    const ficha = await fichasEntregadas.findOne({
       where: {
-        correo_f: req.session.usuarioL.correo_u,
-      },
+        cota_f: cota
+      }
     });
- let libros = await Libros.findAll(/*{
-   where: {
-     [Op.or]: [
-       {cota: fichas.cota_f}
-      ]
-   }
- }*/);
- res.render('misReservas', {
-  titulo: 'Mis reservas',
-  usuarioL: req.session.usuarioL,
-  fichas: fichas,
-  libros: libros
- });
-  }catch{
-    console.log(error);
-      res.status(500).json({
-        message: 'ha ocurrido un error' ,
-        data: {},
+    const libro = await Libros.findOne({
+      where: {
+        cota: cota
+      }
+    });
+
+    if (ficha && libro) {
+      res.status(200).send({
+        ficha: ficha,
+        libro: libro
       });
+    } 
+  } catch (error) {
+    console.log(error);
+   res.status(500);
   }
 };
 
-module.exports.aprobarFicha = async function aprobarFicha(request, response) {
- 
- var {cota_f, correo_f,fecha_e, fecha_d} = request.query;
+module.exports.aprobarFicha = async function (req, res, next) {
 
+  let  cota  = req.body.cota;
 
-  if (cota_f){
-    cota_f = cota_f.toLowerCase();
+  if (cota) {
+    cota = cota.toLowerCase();
   }
-  if (correo_f){
-   correo_f = correo_f.toLowerCase();
-  }
-
-  if (fecha_e) {
-    var fecha_emision = fecha_e;
-  } else {
-    var fecha_emision = new Date();
-  }
-
-  
-   var fecha_devolucion = fecha_d;
-  
-
 
   try {
-   var nFicha = {};
-   var nuevaFicha = {};
-
-  nFicha = await Fichas.update({
-    fecha_e: fecha_emision,
-    fecha_d: fecha_devolucion,
-    estado_f: 'vigente',
-  },{
-    where: {
-      cota_f: cota_f,
-      correo_f: correo_f,
-    }
-  });
-     
-    if (nFicha) {            
-      response.render('card',{
-        titulo: 'ficha aprobada',
-        texto: 'se ha marcado como aprobada',
-        bandera: 3
-       });
-    }
-
-
-  } catch (error) {
-    console.log(error);
-      response.status(500).json({
-        message: 'ha ocurrido un error' ,
-        data: {},
-      });
-  }
-}
-
-
-
-module.exports.FichasEntregadas = async function FichasEntregadas(req, res) {
-  try {
-    fichas = await fichasEntregadas.findAll({
-      attributes: [
-        'n_solicitud',
-        'cota_f',
-        'correo_f',
-        'estado_f',
-        'fecha_e',
-        'fecha_c',
-        'created_at',
-        'updated_at',
-        ]
-    });
-    if (fichas){
-      res.render('loan',{
-        titulo: 'fichas entregadas' ,
-        fichas: fichas,
-        usuarioL: req.session.usuarioL
-       }); 
-    }
    
+   let nFicha = await Fichas.update({
+      estado_f: 'vigente'
+    }, {
+      where: {
+        cota_f: cota
+      }
+    });
+
+    if (nFicha) {
+      res.status(200).send('Préstamo aprobado exitosamente');
+     
+    } 
+
   } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: "ha ocurrido un error",
-    });
+   res.status(500);
   }
 };
 
 
-module.exports.busquedaEspecifica = async function busquedaEspecifica(request, response) {
-  const ficha = request.query;
-  const busqueda = {};
-if (ficha.cota_f){
-  busqueda.cota_f = ficha.cota_f.toLowerCase();
-}
-if (ficha.correo_f){
-  busqueda.correo_f = ficha.correo_f.toLowerCase();
-}
-if (ficha.estado_f){
-  busqueda.estado_f = ficha.estado_f.toLowerCase();
-}
-if (ficha.fecha_e){
-  busqueda.fecha_e = ficha.fecha_e;
-}
-if (ficha.fecha_d){
-  busqueda.fecha_d = ficha.fecha_d;
-}
-if (ficha.fecha_c){
-  busqueda.fecha_c = ficha.fecha_c;
-}
-  try {
-    const fichas = await Fichas.findAll({
-      attributes: [
-        ['cota_f', 'cota'],
-        ['correo_f', 'correo'],
-        ['estado_f', 'estado del prestamo'],
-        ['fecha_e', 'fecha de emision'],
-        ['fecha_d', 'fecha de devolucion'],
-        ['fecha_c', 'fecha de culminacion'],
-        ['created_at', 'fecha de registro'],
-        ['updated_at', 'fecha de ultima actualizacion'],
-      ],
-      where: busqueda,
-    });
 
-    response.json({
-      data: fichas,
-      message: 'Busqueda exitosa ',
-      resultados: fichas.length + ' resultados',
-    });
-  } catch (error) {
-    response.json({
-      data: {},
-      message: "Ha ocurrido un error",
-    });
-  }
-};
+//elimina una ficha reservada
+module.exports.eliminarReserva = async function (req, res, next) {
+  const cota = req.query.cota
+  let actualizarE;
 
-module.exports.busquedaGeneral = async function busquedaGeneral(request, response) {
-  const busqueda = request.query;
-  try {
-    var libros;
-    if (busqueda.cota_f){
-    const cota_f = '%' + busqueda.cota_f + '%';
-    libros =  await sequelize.query(
-      'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: cota_f},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    if (busqueda.correo_f){
-      const correo_f = '%' + busqueda.correo_f + '%';
-   libros = await sequelize.query(
-    'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: correo_f},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    if (busqueda.fecha_e){
-      const fecha_e =  busqueda.fecha_e + '%';
-   libros = await sequelize.query(
-    'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: fecha_e},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    if (busqueda.fecha_d){
-      const fecha_d =  busqueda.fecha_d + '%';
-   libros = await sequelize.query(
-    'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: fecha_d},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    if (busqueda.fecha_c){
-      const fecha_c = busqueda.fecha_c + '%';
-   libros = await sequelize.query(
-    'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: fecha_c},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    if (busqueda.estado_f){
-      const estado_f = '%' + busqueda.estado_f + '%';
-   libros = await sequelize.query(
-    'SELECT cota_f AS "cota", correo_f AS "correo", fecha_e AS "fecha de emision", fecha_d AS "fecha de devolucion", fecha_c AS "fecha de culminacion", estado_f AS "estado del prestamo, created_at AS "fecha de creacion", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: estado_f},
-        type: QueryTypes.SELECT
-      }
-    );
-    }
-    response.json({
-      data: libros,
-      message: 'Busqueda exitosa',
-      resultados: libros.length,
-    });
-  } catch (error) {
-    console.log(error);
-    response.json({
-      data: {},
-      message: 'Ha ocurrido un error',
-    });
-  }
-};
-
-module.exports.eliminacionFicha = async function eliminacionFicha(request, response) {
-  const { cota_f, estado_f, correo_f } = request.query;
-  const busqueda = {};
-  if(cota_f){
-    busqueda.cota_f = cota_f.toLowerCase();
-  }
-  if (correo_f){
-    busqueda.correo_f = correo_f.toLowerCase();
-  }
-  if (estado_f.toLowerCase() == 'entregado'){
-  try {
-    const fichaliminada = await Fichas.destroy({
-      where: busqueda
-    });
-    response.json({
-      message: "se han afectado " + fichaliminada + " filas",
-    });
-  } catch (error) {
-    console.log(error);
-    response.json({
-      message: "ha fallado la eliminacion",
-    });
-  }
-};
-};
-
-module.exports.eliminarReserva = async function eliminarReversa(request, response) {
-  const { cota_f, correo_f } = request.query;
-  const busqueda = {};
-  if(cota_f){
-    busqueda.cota_f = cota_f.toLowerCase();
-  }
-  if (correo_f){
-    busqueda.correo_f = correo_f.toLowerCase();
-  }
-  
   try {
     const fichaEliminada = await Fichas.destroy({
-      where: busqueda
+      where: {
+        cota_f: cota
+      }
     });
-    if (fichaEliminada) {            
-      response.render('card',{
-        titulo: 'ficha eliminada',
-        texto: 'reservada se ha eliminado',
-        bandera: 3
+    if (fichaEliminada) {
+       actualizarE =  await Libros.update({
+        estado_l: 'disponible',
+      } , {
+        where: {cota: cota}
        });
-    }
+ }
+       if (actualizarE != '') {
+          res.status(200).send('Se ha eliminado con éxito');  
+       }
+   
+   
   } catch (error) {
-    console.log(error);
-    response.json({
-      message: "ha fallado la eliminacion",
-    });
+    res.status(500);
+  
   }
 };
 
 
+//Se recibe el libro que se tenia prestado
+module.exports.recibirLibro = async function (req, res, next) {
 
-module.exports.actualizarFicha = async function actualizarFicha(request, response) {
-  const { correo_f , cota_f, estado_f, fecha_e, fecha_c, fecha_d} = request.query;
-  const { correo_fb, estado_fb, fecha_eb, fecha_cb, fecha_db} = request.body;
-  const nuevaFicha ={};
-  const ficha = {};
-
-if (correo_f){
-  ficha.correo_f = correo_f.toLowerCase();
-}
-if (cota_f){
-  ficha.cota_f = cota_f.toLowerCase();
-}
-if (estado_f){
-  ficha.estado_f = estado_f.toLowerCase();
-}
-if (fecha_e){
-  ficha.fecha_e = fecha_e;
-}
-if (fecha_d){
-  ficha.fecha_d = fecha_d;
-}
-if (fecha_c){
-  ficha.fecha_c = fecha_c;
-}
-
-    
-if (correo_fb) {
-  nuevaFicha.correo_f = correo_fb.toLowerCase();
-}
-if (fecha_eb) {
-  nuevaFicha.fecha_e = fecha_eb;
-}
-if (fecha_db) {
-  nuevaFicha.fecha_d = fecha_db;
-}
-if (fecha_cb){
-  nuevaFicha.fecha_c =  fecha_cb;
-}
-if (estado_fb) {
-  nuevaFicha.estado_f = estado_fb.toLowerCase();
-}
-
-      
-  
+  const cota = req.body.cota;
+let fichaEliminada, actualizarEstado;
   try {
-    const fichas = await Fichas.findAll({
-      attributes: [
-        ['cota_f', 'cota'],
-        ['correo_f', 'correo'],
-        ['estado_f', 'estado del prestamo'],
-        ['fecha_e', 'fecha de emision'],
-        ['fecha_d', 'fecha de devolucion'],
-        ['fecha_c', 'fecha de culminacion'],
-        ['created_at', 'fecha de registro'],
-        ['updated_at', 'fecha de ultima actualizacion']
-      ],
-      where: ficha,
+    let ficha = await Fichas.findOne({
+      where: {
+        cota_f: cota
+      }
     });
-    if (fichas.length > 0) {
-      fichas.forEach(async (fichas) => {
-         await Fichas.update({
-          correo_f: nuevaFicha.correo_f,
-          estado_f: nuevaFicha.estado_f,
-          fecha_e: nuevaFicha.fecha_e,
-          fecha_d: nuevaFicha.fecha_d,
-          fecha_c: nuevaFicha.fecha_c,
-        },{
-          where: ficha
-        });
-      });
-    };
-      const nuevasFichas = await Fichas.findAll({
-        attributes: [
-          ['cota_f', 'cota'],
-          ['correo_f', 'correo'],
-          ['estado_f', 'estado del prestamo'],
-          ['fecha_e', 'fecha de emision'],
-          ['fecha_d', 'fecha de devolucion'],
-          ['fecha_c', 'fecha de culminacion'],
-          ['created_at', 'fecha de registro'],
-          ['updated_at', 'fecha de ultima actualizacion']
-        ],
-        where: ficha,
-      });
-      return response.json({
-        message: "fichas actualizados",
-        data: nuevasFichas,
-      });
-    
-  } catch (error) {
-    console.log(error);
-    response.json({
-      message: "ha ocurrido un error",
-      data: {},
+
+    let creada = await fichasEntregadas.create({
+      cota_f: ficha.cota_f,
+      correo_f: ficha.correo_f,
+      fecha_e: ficha.fecha_e,
+      fecha_c: new Date(),
+      estado_f: 'entregado',
     });
-  }
-};
+    if (creada) {
 
-
-module.exports.actualizarUnaFicha = async function actualizarUnaFicha(request, response) {
- 
-  const { correo_f , cota_f, estado_f, fecha_e, fecha_c, fecha_d} = request.query;
-  const {correo_fb, estado_fb,fecha_eb, fecha_cb, fecha_db} = request.body;
-  const nuevaFicha ={};
-  const ficha = {};
-
-if (correo_f){
-  ficha.correo_f = correo_f.toLowerCase();
-}
-if (cota_f){
-  ficha.cota_f = cota_f.toLowerCase();
-}
-if (estado_f){
-  ficha.estado_f = estado_f.toLowerCase();
-}
-if (fecha_e){
-  ficha.fecha_e = fecha_e;
-}
-if (fecha_d){
-  ficha.fecha_d = fecha_d;
-}
-if (fecha_c){
-  ficha.fecha_c = fecha_c;
-}
-
-    
-      if (correo_fb) {
-        nuevaFicha.correo_f = correo_fb.toLowerCase();
-      }
-      if (fecha_eb) {
-        nuevaFicha.fecha_e = fecha_eb;
-      }
-      if (fecha_db) {
-        nuevaFicha.fecha_d = fecha_db;
-      }
-      if (fecha_cb){
-        nuevaFicha.fecha_c =  fecha_cb;
-      }
-      if (estado_fb) {
-        nuevaFicha.estado_f = estado_fb.toLowerCase();
-      }
-      
-  
-  try {
-    
-         await Fichas.update({
-          correo_f: nuevaFicha.correo_f,
-          estado_f: nuevaFicha.estado_f,
-          fecha_e: nuevaFicha.fecha_e,
-          fecha_d: nuevaFicha.fecha_d,
-          fecha_c: nuevaFicha.fecha_c,
-        },{
-          where: ficha
-        });
-    
-      const nuevasFichas = await Fichas.findAll({
-        attributes: [
-          ['cota_f', 'cota'],
-          ['correo_f', 'correo'],
-          ['estado_f', 'estado del prestamo'],
-          ['fecha_e', 'fecha de emision'],
-          ['fecha_d', 'fecha de devolucion'],
-          ['fecha_c', 'fecha de culminacion'],
-          ['created_at', 'fecha de registro'],
-          ['updated_at', 'fecha de ultima actualizacion']
-        ],
-        where: ficha,
-      });
-      return response.json({
-        message: "fichas actualizados",
-        data: nuevasFichas,
-      });
-    
-  } catch (error) {
-    console.log(error);
-    response.json({
-      message: "ha ocurrido un error",
-      data: {},
-    });
-  }
-};
-module.exports.entregarFicha = async function entregarFicha(req, res) {
- 
-  const { correo, cota, fecha_e} = req.query;
-  
-  try {
-    let fichaeliminada = {};
-       let creada = await fichasEntregadas.create({
+   fichaEliminada = await Fichas.destroy({
+        where: {
           cota_f: cota,
-          correo_f: correo,
-          fecha_e: fecha_e,
-          fecha_c: new Date(),
-          estado_f: 'entregado',
-        });
-       if (creada ){
+        }
+                  });
+     actualizarEstado =  await Libros.update({
+       estado_l: 'disponible',
+     } , {
+       where: {cota: cota}
+      });
+    }
+    if (fichaEliminada != '' && actualizarEstado != '' ) {
+res.status(200).send('Libro entregado exitosamente');
+    }
+
+  } catch (error) {
+   res.status(500);
+  }
+};
+
+
+
+//Elimina una ficha entregada listo
+module.exports.eliminarFichaE = async function (req, res, next) {
+
+  const  cota  = req.query.cota;
+
+  try {
   
-         fichaeliminada = await Fichas.destroy({
-            where: {
-              cota_f: cota,
+   const fichaEliminada = await fichasEntregadas.destroy({
+      where: {
+        cota_f: cota,
+      }
+    });
+
+
+    if (fichaEliminada) {
+
+      res.status(200).send('Ficha eliminada exitosamente');
+    }
+
+  } catch (error) {
+    res.status(500);
+  }
+}; 
+//función que actualice el estado de fichas y envia a los usuarios un recordatorio sobre la vigencia del préstamo que tengan activo
+module.exports.actualizarEstadoF = async function (req, res, next) {
+try {
+  const fichas = await Fichas.findAll({
+    where: {
+      fecha_d : {
+        [Op.lt] : new Date()
+      },
+      estado_f: 'vigente'
+    }
+  });
+  if (fichas.length > 0) {
+    for (var i = 0; i < fichas.length; i++) {
+      await Fichas.update({
+        estado_f: "vencido",
+      }, {
+        where: {
+          correo_f: fichas[i].correo_f
+        }
+      });
+    }
+      }
+      const fichasV = await Fichas.findAll({
+        where: {
+          estado_f: "vencido"
+        }
+      });
+      const fichasVigentes = await Fichas.findAll({
+        where: {
+          estado_f: "vigente"
+        }
+      });
+    if (fichasV.length > 0) {
+      var transporter = nodemailer.createTransport({
+              host: 'smtp.gmail.com',
+              port: 465,
+              secure: true,
+              auth: {
+                user: 'unexpo.sbdip@gmail.com',
+                pass: 'unexpo.2021'
+              }
+      
+            });
+            for (var j = 0; j < fichasV.length; j++) {
+              var mailOptions = {
+                from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+                to: fichasV[j].correo_f,
+                subject: 'Préstamo vencido',
+                html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
+        
+                <div style="height:50px;">
+                    <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+                </div>
+                    <div class="row">
+                        <div class="col-6 col-md-3">Querido usuario: </div>
+                        <div class="col-6 col-md-3">${fichasV[j].correo_f} </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-8">Te recordamos que el préstamo del libro ya se encuentra vencido. Te agradecemos que lo regreses para que alguien más lo pueda utilizar. </div>
+                        
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-8">Recuerda que el libro que debes consignar es: </div>
+                            
+                            </div>
+                        <div class="row">
+                        <div class="col-6 col-sm-4">Cota: ${fichasV[j].cota_f}</div>
+                        </div>
+     </div>`
+              };
+        
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('mensaje enviado: ' + info.response);
+                  console.log(info);
+                }
+              });
+    }
+          
+} 
+if (fichasVigentes.length > 0) {
+  var transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: 'unexpo.sbdip@gmail.com',
+            pass: 'unexpo.2021'
+          }
+  
+        });
+        for (var k = 0; k < fichasVigentes.length; k++) {
+          var mailOptions = {
+            from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+            to: fichasVigentes[k].correo_f,
+            subject: 'Préstamo por vencer',
+            html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
+    
+            <div style="height:50px;">
+                <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+            </div>
+                <div class="row">
+                    <div class="col-6 col-md-3">Querido usuario: </div>
+                    <div class="col-6 col-md-3">${fichasVigentes[k].correo_f} </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12 col-md-8">Te recordamos que debes entregar tu libro el día ${fichasVigentes[k].fecha_d}, sino debes atenerte a la suspención respectiva. </div>
+                    
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-8">Recuerda que el libro que debes consignar es: </div>
+                        
+                        </div>
+                    <div class="row">
+                    <div class="col-6 col-sm-4">Cota: ${fichasVigentes.cota_f}</div>
+                    </div>
+ </div>`
+          };
+    
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('mensaje enviado: ' + info.response);
+              console.log(info);
             }
           });
-       }
-          if (fichaeliminada) {
-            
-            res.render('card',{
-              titulo: 'ficha entregada',
-              texto: 'se ha marcado como entregada',
-              bandera: 1
-             });
-        }
-    
-  } catch (error) {
-    console.log(error);
-    res.json({
-      message: "ha ocurrido un error",
-      data: {},
-    });
-  }
-}; 
-
-
-
-module.exports.fichasPendientes = async function fichasPendientes(req, res) {
-  try {
-    fichas = await Fichas.findAll({
-      attributes: [
-        'n_solicitud',
-        'cota_f',
-        'correo_f',
-        'estado_f',
-        'fecha_e',
-        'fecha_d',
-        'fecha_c',
-        'created_at',
-        'updated_at',
-        ],
-        where:{
-          [Op.or]: [
-            { estado_f: 'vigente' },
-            { estado_f: 'vencido' }
-          ]
-        }
-      });
+}
       
-     
-        
-
-    if (fichas) {
-      
-        res.render('loanpending',{
-           titulo: 'pendientes' ,
-           fichas: fichas
-          }); 
-    }
-    
-    
-
-   
-   
-
-  } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: "ha ocurrido un error",
-    });
-  }
- 
+}
+} catch (error) {
+  next(error);
+}
 };
-
-module.exports.fichasReservadas = async function fichasReservadas(req, res) {
- var fichas = [];
- var libros = [];
-  try {
-    fichas = await Fichas.findAll({
-      attributes: [
-        'n_solicitud',
-        'cota_f',
-        'correo_f',
-        'estado_f',
-        'fecha_e',
-        'fecha_d',
-        'fecha_c',
-        'created_at',
-        'updated_at',
-        ],
-        where:{
-           estado_f: 'reservado', 
-        }
-      });
-      
-      for (var i=0; i<fichas.length; i++)
-      {
-       libros[i] = await Libros.findOne({
-        attributes: [
-          'tipo_l',
-        ],
-        where: {
-          cota: fichas[i].cota_f
-        }
-      });
+//listo elimina reservaciones y notifica que las ha reservado
+module.exports.actualizarR = async function(req, res, next) {
+try {
+  const reservaciones = await Fichas.findAll({
+    where: {
+      estado_f: "pendiente",
+      fecha_e: {
+        [Op.lt]: new Date()
       }
-
-    if (fichas) {
-      
-console.log(libros);
-console.log(fichas);
-        res.render('loanreservation',{
-           titulo: 'reservaciones' ,
-           fichas: fichas,
-           libros: libros
-          }); 
     }
+  });
+  if (reservaciones) {
+   const eliminadas = await Fichas.destroy({where: reservaciones});
+   if (eliminadas) {
+     await Libros.update({
+      estado_l: 'disponible',
+    } , {
+      where: reservaciones
+     })
+    var transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+              user: 'unexpo.sbdip@gmail.com',
+              pass: 'unexpo.2021'
+            }
     
-    
-
-  } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: "ha ocurrido un error",
-    });
+          });
+          for (var j = 0; j < reservaciones.length; j++) {
+            var mailOptions = {
+              from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+              to: reservaciones[j].correo_f,
+              subject: 'Reservación eliminada',
+              html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
+      
+              <div style="height:50px;">
+                  <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+              </div>
+                  <div class="row">
+                      <div class="col-6 col-md-3">Querido usuario: </div>
+                      <div class="col-6 col-md-3">${reservaciones[j].correo_f} </div>
+                  </div>
+                  
+                  <div class="row">
+                      <div class="col-12 col-md-8">La fecha que habías selecionado para el retiro ya se venció. </div>
+                      
+                      </div>
+                      <div class="row">
+                          <div class="col-12 col-md-8">El libro que tenías reservado era: </div>
+                          
+                          </div>
+                      <div class="row">
+                      <div class="col-6 col-sm-4">Cota: ${reservaciones[j].cota_f}</div>
+                      </div>
+   </div>`
+            };
+      
+            transporter.sendMail(mailOptions, function (error, info) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('mensaje enviado: ' + info.response);
+                
+              }
+            });
   }
- 
-};
-module.exports.eliminarFicha = async function eliminarFicha(req, res) {
- 
-  const {cota} = req.query;
+  next();       
+} 
+   
   
-  try {
-    let creada = {};
-    let fichaeliminada = {};
-        fichaEliminada = await fichasEntregadas.destroy({
-         where: {
-           cota_f: cota,
-         }
-        });
-      
-        
-          if (fichaeliminada) {
-      
-              res.render('card',{
-                titulo: 'ficha entregada',
-                texto: 'se ha eliminado',
-                bandera: 2
-               });
-        }
-    
-  } catch (error) {
-    console.log(error);
-    res.json({
-      message: "ha ocurrido un error",
-      data: {},
-    });
+  }else{
+    next();
   }
-}; 
+    
+ 
+} catch (error) {
+  next(error)
+}
+};

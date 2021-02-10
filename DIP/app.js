@@ -1,57 +1,38 @@
 
-const express = require ('express');
-const morgan = require ('morgan');
-const path = require('path');
-const methodOverride = require('method-override');
-const  flash = require ('connect-flash');
-const passport = require ('passport');
-const session = require ('express-session');
-const multer = require('multer');
-const favicon = require('serve-favicon');
-
-
-
-
-const {existeBibliotecario} = require('./controllers/usuarios.controllers');
-
-
+const express = require ('express');//Middleware para hacer funcionar el servidor con node.js de manera
+const morgan = require ('morgan');//Se utiliza para ver el tipo de solicitud que se ejecuta
+const path = require('path');//middleware que se utliza para hallar el directorio raiz de algunos casos
+const methodOverride = require('method-override');//Middleware que se usa para que solicitudes tipo "post" se traten como otro tipo de solicitud, esto en caso de que se envie la información desde formularios los cuales solo son usados con solicitudes tipo "post", referente a las platillas ejs
+const  flash = require ('connect-flash');//middleware que se utiliza para almacenar mensajes que luego son enviados al cliente
+const passport = require ('passport'); //middleware usado para la autentificación de usuario
+const session = require ('express-session'); //middleware para el manejo de la sesión del usuario
+const favicon = require('serve-favicon');//Se utiliza como identificación de un sitio web, este no es necesario para ser ejecutado localmente pero si para ser ejecutado en la web
 
 
 //
-var sequelize = require ('./database/database');
-
-//importing routes
-//const typeBookRoutes = require ('./routes/typeBook.routes');
-const vencimiento = require('./controllers/fichas.controller');
-const error404 = require('./controllers/configuracion.controller');
-
-//database
+var sequelize = require ('./database/database');// middleware usado para la configuración de la base de datos y modelado, este no es obligatorio pero si muy util porque a través de el se logra modelar la base de datos con javascript y de este modo en caso de emigrar a otro sistema diferente a postgresql no se deben hacer cambios en los modelos de cada tabla sino cambios en la configuración general, eso si siempre y cuando sean relacional
 
 
 //inicialization
-const app = express();
-require ('./passport/local-auth');
+const app = express();// ejecuto el middleware express y el me devuelve un objeto, el servidor
+require ('./passport/local-auth');//Se requiere las estrategias creadas en el directorio referido
 
 //
-//view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+//Configuración del motor de plantillas
+app.set('views', path.join(__dirname, 'views'));//ubicación
+app.set('view engine', 'ejs');//nombre del motor de plantillas a usar
 
 
 
-//middlewares
-//app.use(express.favicon()); 
+//middlewares=>> funciones que procesan los datos antes de llegar a las rutas
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use( express.static(path.join(__dirname, 'public')));
-app.use(favicon(path.join(__dirname, 'public','assets','icons','favicon.ico')));
-/*app.use('/conf', express.static(path.join(__dirname, 'public')));
-app.use('/libros', express.static(path.join(__dirname, 'public')));
-app.use('/index', express.static(path.join(__dirname, 'public')));
-*/
+app.use(express.json());//Configuramos nuestro servidor para que reciba datos en formato json
+app.use(express.urlencoded({ extended: false }));//Configuramos para que nuestro servidor reciba datos en forma de objeto como los que se envian desde un formulario, extended: false para que solo sean datos sin archivos. Debido a que este ultimo se realiza con multer.js
+app.use( express.static(path.join(__dirname, 'public')));//De esta manera se hace saber al servidor que la carpeta public es de acceso publico
+app.use(favicon(path.join(__dirname, 'public','assets','icons','favicon.ico')));//configuracion de favicon, ubicación
+
 app.use(methodOverride('_method'));
-//app.use(cookieParser);
+//Configuración de la sesión, estas son proporcionadas por la documentación oficial
 app.use(session({
   secret: 'miSecreto',
   resave: false,
@@ -67,80 +48,48 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-/*app.use((req, res,next) => {
-  existeBibliotecario(req, res, next);
-  next();
-});*/
 
+//En caso de que existan los mensajes de flash se almacenan en variables locales que pueden ser accedida desde cualquier ubicación en el tiempo de vigencia, este es de una petición
 app.use((req, res, next) => {
-  app.locals.mensajeRegistro = req.flash('mensajeRegistro');
+  try {
+    app.locals.mensajeRegistro = req.flash('mensajeRegistro');
   app.locals.mensajeIngreso = req.flash('mensajeIngreso');
   app.locals.mensajeRecuperacion = req.flash('mensajeRecuperacion');
  
  
   next();
-});
-
-app.get('/444', function(req, res, next){
-  console.log('aqui estoy');
-  // trigger a 404 since no other middleware
-  // will match /404 after this one, and we're not
-  // responding here
-  next();
-});
-
-app.get('/403', function(req, res, next){
-  // trigger a 403 error
-  var err = new Error('not allowed!');
-  err.status = 400;
-  next(err);
-});
-
-app.get('/500', function(req, res, next){
-  // trigger a generic (500) error
-  next(new Error('keyboard cat!'));
+  } catch (error) {
+    next(error);
+  }
 });
 
 
 
-//routes
-//app.use('/typeBook', typeBookRoutes);
-//const Sequelize = require ('sequelize');
-/*const Fichas = require('./models/fichas');
-const { QueryTypes } = require('sequelize');
-const { Op } = require("sequelize");
-const Libros = require('./models/libros');
 
+var CronJob = require("cron").CronJob;
+const {actualizarEstadoF, actualizarR} = require("./controllers/fichas.controller");
 
-app.use(async (req, res, next) => {
-  
-    const fechaHoy = new Date();
-   console.log(fechaHoy);
-   try {
-    const fichas = await Fichas.findAll({
-         where:{
-           [Op.gte]: [
-             { fecha_d: fechaHoy }
-           ]
-         }
-       });
-       console.log(fichas);
-   } catch(error){
-     console.log(error);
-   }
-
-  next();
+var cronJob1 = new CronJob({
+  cronTime: '01 00 00 * * *',
+  onTick: function () {
+    console.log('Actualzando fichas del  '+ new Date()); 
+    actualizarR();
+    actualizarEstadoF();
+  },
+  start: true,
+  timeZone: "America/Caracas"
 });
-if ('development' === app.get('env')) {
-  app.use(express.errorHandler());
-}
-*/
+
+
+//Se requieren las rutas de cada archivo
 app.use(require ('./routes/fichas.routes') );
 app.use(require ('./routes/usuarios.routes'));
 app.use(require ('./routes/libros.routes'));
-app.use(require('./routes/preguntas.routes'));
 app.use(require('./routes/configuracion.routes'));
 app.use(require('./routes/inicio.routes'));
+app.use(require('./routes/noticias.routes'));
+app.use(require('./routes/excel.routes'));
+app.use(require('./routes/preguntasFrecuentes.routes'));
 
 app.use(function(req, res, next) {
   res.status(404);
@@ -158,9 +107,15 @@ app.use(function(req, res, next) {
   })
 });
 
-app.use(function(err, req, res, next){
-  let statusCode = err.status || 500;
+app.use(function(error, req, res, next){
+  let statusCode = error.status || 500;
 let statusText = '';
+let mensaje;
+if (error.mensaje) {
+  mensaje = error.mensaje;
+} else {
+  mensaje = '';
+}
   switch (statusCode) {
     case 400:
       statusText = 'Bad Request';
@@ -175,13 +130,15 @@ let statusText = '';
       statusText = 'Internal Server Error';
       break;
     };
+
   res.render('error', {
     tipoError: statusText,
     code: statusCode,
-    titulo: 'Error'
+    titulo: 'Error',
+    message: mensaje 
   });
   if ('development' === app.get('env')) {
-    console.log(err);
+    console.log(error);
   }
 });
 

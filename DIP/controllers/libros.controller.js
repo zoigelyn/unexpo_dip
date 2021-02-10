@@ -2,11 +2,11 @@
 const  Libros  = require('../models/libros');
 const multer = require('multer');
 const path = require('path');
-const jsPDF = require('jspdf');
 const fs = require('fs');
 var sequelize = require ('../database/database');
 const { listenerCount } = require('cluster');
-
+const {QueryTypes} = require('sequelize');
+const { Op } = require("sequelize");
 
 
 function generateUUID() {
@@ -25,7 +25,7 @@ function generateUUID() {
 
 
 const storage = multer.diskStorage({
-      destination: path.join(__dirname, '../public/uploads'),
+      destination: path.join(__dirname, '../public/uploads/pdfs'),
       filename: (req, file, cb) => {
         cb(null, generateUUID() + path.extname(file.originalname).toLowerCase()); 
       }
@@ -33,7 +33,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
       storage: storage,
-       dest: path.join(__dirname, '../public/uploads'),
+       dest: path.join(__dirname, '../public/uploads/pdfs'),
        fileFilter: (req, file, cb) => {
          const fileType = /pdf/;
          const mimetype = fileType.test(file.mimetype.toLowerCase());
@@ -47,7 +47,7 @@ const upload = multer({
     });
 module.exports.upload = upload;
     
-
+//función con la que insertan uno o varios libros
 module.exports.insertarLibro = async function insertar(req, res, next) {
 const datosLibro = req.body;
 
@@ -63,7 +63,7 @@ if (datosLibro.editorial && datosLibro.editorial != ''){
 }
 if (req.file){
  let nombre = req.file.filename;
-  let ruta = "/uploads"+"/"+nombre;
+  let ruta = "/uploads/pdfs/"+nombre;
   datosLibro.destino = ruta;
 }
 function cotas(i){
@@ -101,13 +101,11 @@ let coma = '';
        
        
       }
-      console.log("entre aca");
-      console.log(crear);
+    
 
       nLibro = await Libros.bulkCreate(crear);
 
     }else{
-console.log("no entre alla");
        nLibro = await Libros.create({
       cota: datosLibro.cota_1.toLowerCase(),
       tipo_l: datosLibro.tipo_l.toLowerCase(),
@@ -128,21 +126,18 @@ console.log("no entre alla");
 
 
     if (nLibro) {
-    //res.redirect('/bibliotecario/libros');
-    res.send('Carga satisfactoria');
-    console.log(nLibro);
+    res.status(200).send('Carga satisfactoria');
      
     }
     
   } catch (error) {
-    console.log(error),
       res.status(500).json({
         message: 'ha ocurrido un error',
         data: {},
       });
   }
 };
-
+//Consulta si la cota que se pretende registar exite
 module.exports.existeCota = async function (req, res, next) {
 
  const cota = req.body.cota;
@@ -166,39 +161,63 @@ if (libro){
   console.log(error);
 }
 };
+//consulta de libros
 module.exports.libros = async function (req, res, next) {
   try {
     const libros = await Libros.findAll({
-      attributes: [
-        'cota',
-        ['tipo_l', 'tipo de material bibliografico'],
-        'autor',
-        'tutor',
-        'editorial',
-        'titulo',
-        'año',
-        'volumen',
-        'estado_l',
-        ['created_at', 'fecha de registro'],
-        ['updated_at', 'fecha de ultima actualizacion']
-      ]
+      where: {
+        tipo_l: 'libro'
+      }
     });
     if (libros) {
-
-    res.json({
-      libros: libros
+    res.status(200).json({libros: libros
     });
   }
   } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: 'ha ocurrido un error',
+    res.status(500).send({
+      message: 'Ha ocurrido un error',
     });
   }
 };
 
-module.exports.totalLibros = async function totalLibros(req, res, next) {
+//consulta de trabajos de grado
+module.exports.trabajo = async function (req, res, next) {
+  try {
+    const libros = await Libros.findAll({
+      where: {
+        tipo_l: 'trabajo de grado'
+      }
+    });
+    if (libros) {
+    res.status(200).json({libros: libros
+    });
+  }
+  } catch (error) {
+    res.status(500).send({
+      message: 'Ha ocurrido un error',
+    });
+  }
+};
+//revista
+module.exports.revista = async function (req, res, next) {
+  try {
+    const libros = await Libros.findAll({
+      where: {
+        tipo_l: 'revista'
+      }
+    });
+    if (libros) {
+    res.status(200).json({libros: libros
+    });
+  }
+  } catch (error) {
+    res.status(500).send({
+      message: 'Ha ocurrido un error',
+    });
+  }
+};
+
+/*module.exports.totalLibros = async function (req, res, next) {
   try {
     const libros = await Libros.findAll({
       attributes: [
@@ -230,75 +249,26 @@ module.exports.totalLibros = async function totalLibros(req, res, next) {
       message: 'ha ocurrido un error',
     });
   }
-};
+};*/
+//Función que consulta todos los libros
 module.exports.todosLibros = async function (req, res, next) {
   try {
     const libros = await Libros.findAll();
     if (libros) {
 
-      res.json({
+      res.status(200).json({
         libros
       });
   }
   } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: 'ha ocurrido un error',
-    });
-  }
-};
-module.exports.busquedaEspecifica = async function (req,res, next) {
-  const datosLibro = req.body;
-  const busqueda = {};
-  if (datosLibro.año){
-    busqueda.año = datosLibro.año;
-  }
-  if (datosLibro.volumen){
-    busqueda.volumen = datosLibro.volumen; 
-  }
- 
-if (datosLibro.cota){
-busqueda.cota = datosLibro.cota.toLowerCase();
-}
-if (datosLibro.tipo_l){
-    busqueda.tipo_l =  datosLibro.tipo_l.toLowerCase();
-}
-if (datosLibro.titulo){
-  busqueda.titulo = datosLibro.titulo.toLowerCase();
-}
-if (datosLibro.autor){
-  busqueda.autor = datosLibro.autor.toLowerCase();
-}
-if (datosLibro.tutor){
-  busqueda.tutor = datosLibro.tutor.toLowerCase();
-}
-if (datosLibro.editorial){
-  busqueda.editorial = datosLibro.editorial.toLowerCase();
-}
-if (datosLibro.ejemplar){
-  busqueda.ejemplar = datosLibro.ejemplar;
-}
-
-   
-  try {
-    
-    libros =   await Libros.findAll({
-     
-      where: busqueda,
-      
-    });
-    res.json({
-      libros
-    });
-  } catch (error) {
-    console.log(error);
+   res.status(500);
   }
 };
 
+
+//Funcion que consulta detalles de un libro en particular
 module.exports.verLibro = async function (req,res, next) {
   const cota = req.query.cota;
-  
   try {
     
   const  libro =   await Libros.findAll({
@@ -308,105 +278,109 @@ module.exports.verLibro = async function (req,res, next) {
       },
       
     });
-    res.json({
+    res.status(200).json({
       libro
     });
   } catch (error) {
-    console.log(error);
+    res.status(500);
   }
 };
 
 
-module.exports.busquedaGeneral = async function busquedaGeneral(request, response) {
-  const busqueda = request.query;
+
+//Función que utiliza expresiones de posgresql
+module.exports.bs = async function (req, res, next) {
   try {
-    var libros;
-    if (busqueda.cota){
-    const cota = '%' + busqueda.cota + '%';
-    libros =  await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE cota ILIKE :busq',
-      {
-        replacements: {busq: cota},
-        type: QueryTypes.SELECT
-      }
-    );
+    const b = req.body;
+ let q1 = 'SELECT cota, titulo, tipo_l, autor, año, volumen, estado_l, destino FROM libros WHERE ';
+ let q = '';
+  if (b.cota) {
+   let cota = '%' + b.cota + '%';
+   if ( q === '') {
+     q = q1 + `cota ILIKE '${cota}'`;
+   } else {
+    q = q + `AND cota ILIKE '${cota}'`;
+   }
+  }
+  if (b.titulo) {
+    let titulo = '%' + b.titulo + '%';
+    if ( q === '') {
+      q = q1 + `titulo ILIKE '${titulo}'`;
+    } else {
+     q = q + `AND titulo ILIKE '${titulo}'`;
     }
-    if (busqueda.titulo){
-      const titulo = '%' + busqueda.titulo + '%';
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE titulo ILIKE :busq',
-      {
-        replacements: {busq: titulo},
-        type: QueryTypes.SELECT
-      }
-    );
+   }
+   if (b.autor) {
+    let autor = '%' + b.autor + '%';
+    if ( q === '') {
+      q = q1 + `autor ILIKE '${autor}'`;
+    } else {
+     q = q + `AND autor ILIKE '${autor}'`;
     }
-    if (busqueda.año){
-      const año =  busqueda.año + '%';
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE año ILIKE :busq',
-      {
-        replacements: {busq: año},
-        type: QueryTypes.SELECT
-      }
-    );
+   }
+   if (b.tipo_l) {
+    let tipo_l = '%' + b.tipo_l + '%';
+    if ( q === '') {
+      q = q1 + `tipo_l ILIKE '${tipo_l}'`;
+    } else {
+     q = q + `AND tipo_l ILIKE '${tipo_l}'`;
     }
-    if (busqueda.volumen){
-      const volumen =  busqueda.volumen;
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE volumen ILIKE :busq',
-      {
-        replacements: {busq: volumen},
-        type: QueryTypes.SELECT
-      }
-    );
+   }
+   if (b.tutor) {
+    let tutor = '%' + b.tutor + '%';
+    if ( q === '') {
+      q = q1 + `tutor ILIKE '${tutor}'`;
+    } else {
+     q = q + `AND tutor ILIKE '${tutor}'`;
     }
-    if (busqueda.tipo_l){
-      const tipo_l = '%' + busqueda.tipo_l + '%';
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE tipo_l ILIKE :busq',
-      {
-        replacements: {busq: tipo_l},
-        type: QueryTypes.SELECT
-      }
-    );
+   }
+   if (b.año) {
+    let año = '%' + b.año + '%';
+    if ( q === '') {
+      q = q1 + `TO_CHAR(año,'9999999999') ILIKE '${año}'`;
+    } else {
+     q = q + `AND TO_CHAR(año,'9999999999') ILIKE '${año}'`;
     }
-    if (busqueda.tutor){
-      const tutor = '%' + busqueda.tutor + '%';
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE tutor ILIKE :busq',
-      {
-        replacements: {busq: tutor},
-        type: QueryTypes.SELECT
-      }
-    );
+   }
+   if (b.volumen) {
+    let volumen = '%' + b.volumen + '%';
+    if ( q === '') {
+      q = q1 + `TO_CHAR(volumen, '9999999999') ILIKE '${volumen}'`;
+    } else {
+     q = q + `AND TO_CHAR(volumen, '9999999999') ILIKE '${volumen}'`;
     }
-    if (busqueda.autor){
-      const autor = '%' + busqueda.autor + '%';
-   libros = await sequelize.query(
-      'SELECT cota, tipo_l AS "tipo de material bibliografico",titulo, autor, año, volumen, created_at AS "fecha de registro", updated_at AS "fecha de ultima actualizacion" FROM libros WHERE autor ILIKE :busq',
-      {
-        replacements: {busq: autor},
-        type: QueryTypes.SELECT
-      }
-    );
-    };
-    response.json({
-      data: libros,
-      message: 'Busqueda exitosa',
-      resultados: libros.length,
-    });
+   }
+   if (b.editorial) {
+    let editorial = '%' + b.editorial + '%';
+    if ( q === '') {
+      q = q1 + `editorial ILIKE '${editorial}'`;
+    } else {
+     q = q + `AND editorial ILIKE '${editorial}'`;
+    }
+   }
+   
+   if (b.ejemplar) {
+    let ejemplar = '%' + b.ejemplar + '%';
+    if ( q === '') {
+      q = q1 + `TO_CHAR(ejemplar, '9999999999') ILIKE '${ejemplar}'`;
+    } else {
+     q = q + `AND TO_CHAR(ejemplar, '9999999999') ILIKE '${ejemplar}'`;
+    }
+   }
+  
+ 
+
+  let libros =  await sequelize.query(q);
+  
+res.status(200).json({
+ libros
+});
   } catch (error) {
-    console.log(error);
-    response.json({
-      data: {},
-      message: 'Ha ocurrido un error',
-    });
+    res.status(500);
   }
 };
 
-
-
+//Se elimina un libro, solo el bibliotecario
 module.exports.eliminarLibro = async function (req, res, next) {
   let cota = req.query.cota;
   try {
@@ -428,159 +402,30 @@ module.exports.eliminarLibro = async function (req, res, next) {
           destino: libro.destino
         },
       });
-      console.log(otrosLibros.length);
       if(otrosLibros.length >= 1){
         res.json({librosEliminados});
-        console.log('existen otros');
       }else if(otrosLibros.length == 0){
-        console.log('entre a la eliminacion');
-        
-        let filePath = libro.destino;
+        let nombre = libro.destino.split("/").pop();
+        let filePath =  path.join(__dirname, "..\\public\\uploads\\pdfs\\", nombre);
+       
         fs.unlinkSync(filePath);
-        res.json({librosEliminados});
+        res.status(200).json({librosEliminados});
       }
     }else{
       
-      res.json({librosEliminados});
+      res.status(200).json({librosEliminados});
     }
      
   } catch (error) {
-    res.json({
+    res.status(500).json({
       message: 'ha fallado la eliminacion',
     });
-    console.log(error);
   }
 };
 
 
 
-module.exports.actualizarLibro = async function(req, res, next) {
-  const { cota, editorial, titulo, autor, tutor, año, volumen, tipo_l} = req.body;
-  const {cotab, editorialb, titulob, autorb, tutorb, añob, volumenb, tipo_lb} = request.body;
-  const nuevoLibro ={};
-  const libro = {};
-
-
-  if (cota){
-    libro.cota = cota.toLowerCase();
-  }
-  if (editorial){
-    libro.editorial = editorial.toLowerCase();
-  }
-  if (titulo){
-    libro.titulo = titulo.toLowerCase();
-  }
-  if (autor){
-    libro.autor = autor.toLowerCase();
-  }
-  if (tutor){
-    libro.tutor = tutor.toLowerCase();
-  }
-  if (año){
-    libro.año = año;
-  }
-  
-  if (volumen){
-    libro.volumen = volumen;
-  }
-  
-  if (tipo_l){
-    libro.tipo_l = tipo_l.toLowerCase();
-  }
-////////------------------------------------------------------
-    
-if (cotab) {
-  nuevoLibro.cota = cotab.toLowerCase();
-}
-if (editorialb) {
-  nuevoLibro.editorial = editorialb.toLowerCase();
-}
-if (titulob){
-  nuevoLibro.titulo = titulob.toLowerCase();
-}
-if (autorb){
-  nuevoLibro.autor = autorb.toLowerCase();
-}
-if (tutorb){
-  nuevoLibro.tutor = tutorb.toLowerCase();
-}
-if (añob){
-  nuevoLibro.año = añob;
-}
-
-if (volumenb){
-  nuevoLibro.volumen = volumenb;
-}
-
-if (tipo_lb){
-  nuevoLibro.tipo_l = tipo_lb.toLowerCase();
-}
-
-      
-  
-  try {
-    const libros = await Libros.findAll({
-      attributes: [
-        'cota',
-        'editorial',
-        'titulo',
-        'tutor',
-        'autor',
-        'volumen',
-        'año',
-        'tipo_l'
-      ],
-      where: libro,
-    });
-    if (libros.length > 0) {
-      libros.forEach(async (libros) => {
-        await Libros.update({
-
-          editorial: nuevoLibro.editorial,
-          titulo: nuevoLibro.titulo,
-          tutor: nuevoLibro.tutor,
-          autor: nuevoLibro.autor,
-          año: nuevoLibro.año,
-          volumen: nuevoLibro.volumen,
-          tipo_l: nuevoLibro.tipo_l,
-
-          
-        },{
-          where: libro
-        });
-      });
-    };
-    
-      const nuevosLibros = await Libros.findAll({
-        attributes: [
-          'cota',
-          ['tipo_l', 'tipo de material bibliografico'],
-          'autor',
-          'tutor',
-          'editorial',
-          'titulo',
-          'año',
-          'volumen',
-          ['created_at', 'fecha de registro'],
-          ['updated_at', 'fecha de ultima actualizacion']
-        ],
-        where: libro,
-      });
-      return response.json({
-        message: "fichas actualizados",
-        data: nuevosLibros,
-      });
-    
-  } catch (error) {
-    console.log(error);
-    response.json({
-      message: "ha ocurrido un error",
-      data: {},
-    });
-  }
-};
-
-
+//Actualiza una libro, solo bibliotecario
 module.exports.actualizarUnLibro = async function(req, res, next) {
 
   const { editorial, titulo, autor, tutor, año, volumen, tipo_l, cota, estado_l} = req.body;
@@ -617,7 +462,7 @@ if (tipo_l){
 }
 if (req.file){
   let nombre = req.file.filename;
-   let ruta = "/uploads"+"/"+nombre;
+   let ruta = "/uploads/pdfs/"+nombre;
    libro.destino = ruta;
 }
       
@@ -656,22 +501,20 @@ if(libro.destino !== viejoLibro.destino){
 if(otrosLibros.length === 0){
   let direccion = `../public${viejoLibro.destino}`
   let filePath =  path.join(__dirname, direccion);
-  console.log(filePath);
   fs.unlinkSync(filePath);
 }
 }
      if(nuevoLibro){
-      res.json({
+      res.status(200).json({
         libro: libro,
         mensaje: "Actualizado con éxito"
       });
       }else{
-        res.send('');
+        res.status(200).send('');
       }
     
   } catch (error) {
-    console.log(error);
-    res.json({
+    res.status(500).json({
       message: "ha ocurrido un error",
       data: {},
     });
