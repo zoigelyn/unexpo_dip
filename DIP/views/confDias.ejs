@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+  <html lang="es">
+<%- include ("partes/cabecera2") %>
+
+<body class="full-cover-background" >
+    
+    <div class="form-container ">
+       
+
+        <form action="/conf-dias" method="POST" autocomplete="off">
+           <p class="text-center" style="margin-top: 20px;">
+                <i class="zmdi zmdi-book  zmdi-hc-4x"></i>
+            </p>
+           
+             <h4 class="text-center all-tittles" style="margin-bottom: 40px;">Configuración</h4>
+             
+
+            <div class="group-material">
+                <input name="dias" type="text" class="material-control material-control-login" placeholder="Días de préstamo" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Días de préstamo</label>
+            </div>
+            <div class="group-material">
+                <input name="cantidad" type="text" class="material-control material-control-login" placeholder="Cantidad de libros" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Cantidad de libros</label>
+            </div>
+            <br>
+            <button class="btn-login" type="submit"> Guardar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+            
+        </form>
+        
+
+    </div>
+</body>
+
+</html>
