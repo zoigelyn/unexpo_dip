@@ -7,16 +7,16 @@ require('dotenv').config({path: destino});
 var Sequelize = require('sequelize')//Se requiere sequelize
 	  , sequelize = null
   
-	if (process.env.HEROKU_POSTGRESQL_URL) {// si existe las variables que me brinda heroku
-	 
-	  sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
+/*	if (process.env.HEROKU_POSTGRESQL_URL) {// si existe las variables que me brinda heroku
+*/	 
+	  sequelize = new Sequelize("dac0j20jseaopf", "ekjhvybjsxvjht", "f0bfdb609022a67de2a619aa09660e6b1b487d8769b0acae3ce66b631ca38e8b", {
 		dialect:  'postgres',
 		protocol: 'postgres',
 		port:     match[4],
 		host:     match[3],
 		logging:  true 
 	  })
-	} else {
+/*	} else {
 	//Sino se ejecuta localmente
 	  sequelize = new Sequelize(process.env.NAME_DATABASE, process.env.USUARIO_DATABASE, process.env.CLAVE_DATABASE,{
 		dialect:"postgres", 
@@ -28,7 +28,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	});
 	
 	}
-
+*/
     (async () => {
 			
 		});
