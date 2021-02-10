@@ -29,9 +29,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	
 	}
 */
-    (async () => {
-			
-		});
+    
 	sequelize.authenticate()//autentifica la conexion
 	.then(async function(){
 		
