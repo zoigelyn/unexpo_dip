@@ -1,6 +1,6 @@
 var Sequelize = require ('sequelize');
 var sequelize = require ('../database/database');
-const ConfDiasLibros = sequelize.define('conf-dias-libros', {
+const ConfDiasLibros = sequelize.define('conf_dias_libros', {
     id_c: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -8,11 +8,19 @@ const ConfDiasLibros = sequelize.define('conf-dias-libros', {
      },  
     dias_prestamo: {
         type: Sequelize.INTEGER,
-        allowNull: false   
-    
+        allowNull: false,
+        defaultValue: 3,
+        validate: {
+            isInt: true 
+        }
     },
     cantidad_libros: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 3,
+        validate: {
+           isInt: true   
+        }
     },
     createdAt:{
         type: Sequelize.DATE,

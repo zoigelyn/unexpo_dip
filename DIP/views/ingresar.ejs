@@ -2,9 +2,8 @@
   <html lang="es">
 
     <%- include ("partes/cabecera2") %>
-    <script src="/js/alertaTiempo.js"></script>
     <script>
-       
+       //funcion para validar que el correo ingresado para logearse exista en la base de datos, esta se envia antes de que se realice la autentificación
         function existeCorreo(){
             let correo = $('input#correo').val();
             
@@ -28,9 +27,8 @@
 
        })
        .fail(function(error){
-           
-           $('div#existeCorreo').html('¡Ha fallado!');
-           console.log(error);
+           $('div#existeCorreo').html('<p class="text-center">!Ha fallado la solicitud¡</p>');
+          
        });
         }
     </script>
@@ -50,10 +48,10 @@
         <p class="text-center">
             <a  href="/recuperacion" style="color: seashell;">&nbsp; ¿Has olvidado la contraseña? &nbsp;</a>
         </p><br>
-        <form action="/login" method="POST">
+        <form action="/login" method="POST" autocomplete="off">
         
             <div class="group-material-login">
-                <input onchange="existeCorreo()" id="correo" name="correo" type="email"class="material-login-control material-control" required="" maxlength="70">
+                <input onchange="existeCorreo()" id="correo" name="correo" type="email"class="material-login-control material-control" required="" maxlength="50" >
                 <span class="highlight-login"></span>
                 <span class="bar-login"></span>
                 <label><i class="zmdi zmdi-email"> &nbsp; Correo electrónico</i> </label>
@@ -64,7 +62,7 @@
             
          
             <div class="group-material-login">
-                <input id="clave" name="clave" type="password" class="material-login-control material-control" required="" maxlength="15">
+                <input id="clave" name="clave" type="password" class="material-login-control material-control" required="" maxlength="10" >
                 <span class="highlight-login"></span>
                 <span class="bar-login"></span>
                 <label><i class="zmdi zmdi-lock"></i> &nbsp; Contraseña</label>

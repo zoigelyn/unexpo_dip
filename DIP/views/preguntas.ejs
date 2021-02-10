@@ -8,9 +8,10 @@
         <p class="text-center" style="margin-top: 600px;">
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
         </p>
-        <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa las preguntas de seguridad</h4>
+        <h4 class="text-center all-tittles" style="margin-bottom: 20px;">Ingresa las preguntas de seguridad<br>
+        <small>Estás preguntas serviran en caso de olvido de contraseña, añadelas sin símbolos</small></h4>
         
-        <form action="/preguntas" method="POST">
+        <form action="/preguntas" method="POST" autocomplete="off">
 
             <div class="group-material">
                 <input name="pregunta_1" type="text" class="material-control material-control-login" placeholder="Pregunta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Pregunta 1">

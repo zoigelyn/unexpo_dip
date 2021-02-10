@@ -6,7 +6,7 @@
 <body class="full-cover-background" >
 
 
-<% if (conf == 1) { %>
+<% if (conf == 1) { %><!--Primera parte del restablecimiento de contraseña-->
     <div class="form-container">
         <p class="text-center" style="margin-top: 50px;">
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
@@ -23,7 +23,7 @@
     <form action= '/recuperacion' method="POST" autocomplete="off">
 
         <div class="group-material-login">
-            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="70">
+            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="50">
             <span class="highlight-login"></span>
             <span class="bar-login"></span>
             <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
@@ -35,7 +35,7 @@
     </form>
 <% } %>
  
-<% if (conf == 2) { %>
+<% if (conf == 2) { %><!--Segunda parte donde se muestran las preguntas de seguridad y se solicitan las respuestas-->
     <div class="form-container">
         <p class="text-center" style="margin-top: 200px;">
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
@@ -46,31 +46,31 @@
         
 
         <div class="group-material">
-            <input name="r_1" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 1">
+            <input name="r_1" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,100}" data-toggle="tooltip" data-placement="top" title="Respuesta 1">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label><%= preguntas[matriz[0]].pregunta %></label>
         </div>
         <div class="group-material">
-            <input name="r_2" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 2">
+            <input name="r_2" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,100}" data-toggle="tooltip" data-placement="top" title="Respuesta 2">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label><%= preguntas[matriz[1]].pregunta %></label>
         </div>
         <div class="group-material">
-            <input name="r_3" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 3">
+            <input name="r_3" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,100}" data-toggle="tooltip" data-placement="top" title="Respuesta 3">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label><%= preguntas[matriz[2]].pregunta %></label>
         </div>
         <div class="group-material">
-            <input name="r_4" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 4">
+            <input name="r_4" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,100}" data-toggle="tooltip" data-placement="top" title="Respuesta 4">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label><%= preguntas[matriz[3]].pregunta %></label>
         </div>
         <div class="group-material">
-            <input name="r_5" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="200" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Respuesta 5">
+            <input name="r_5" type="text" class="material-control material-control-login" placeholder="Respuesta" required="" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,100}" data-toggle="tooltip" data-placement="top" title="Respuesta 5">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label><%= preguntas[matriz[4]].pregunta %></label>
@@ -83,7 +83,7 @@
     </form>
 <% } %>
 
-    <% if (conf == 3) { %>
+    <% if (conf == 3) { %><!--Cuando ya se han comprobado las respuestas a las preguntas de seguridad-->
     <div class="form-container">
         <p class="text-center" style="margin-top: 100px;">
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
@@ -98,7 +98,7 @@
     <form action= '/recuperar/cambio_clave?correo=<%=correo%>' method="POST" autocomplete="off">
 
         <div class="group-material-login">
-            <input name="correodsds" type="email" class="material-login-control material-control" required="" maxlength="70">
+            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="50">
             <span class="highlight-login"></span>
             <span class="bar-login"></span>
             <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
@@ -106,13 +106,13 @@
 
 
         <div class="group-material">
-            <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+            <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Contraseña</label>
         </div>
         <div class="group-material">
-            <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+            <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Repetir contraseña</label>

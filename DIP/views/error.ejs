@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
     <%- include ("partes/cabecera2") %>
-<body style="background-color: seashell;">
-    <div class="form-container" style="background-color: seashell;  "  >       
+<body style="background-color: rgb(48, 34, 241);">
+    <div class="form-container" style="background-color: rgb(48, 34, 241);  "  >       
    <div style="position: relative; display: flex;
    align-items: center;">
-       <div style="position: absolute;">
-        <img src="/assets/icons/alerta.ico"width= "180" height= "180">
-       </div> 
+ <%  if ( code == 500 || code == 400) {%>
+    <div style="position: absolute;"> <p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/robot-error.ico"width= "180" height= "180" > ¡Error!</p><p class="text-center" style="font-size:20px; ">
+            
+                      <%= tipoError %>   (Error: <%= code %>)
+                      <br><p class="text-center" style="font-size:25px;"> <%= message %></p> </p>
+<br></div>
+   
+          
+             
+ <% } else if ( code == 403 || code == 401) { %>
+    <div style="position: absolute;"> <p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/peligro.ico"width= "180" height= "180" ></p>
+<br>
+              
+              <p class="text-center" style="font-size:20px; ">
+                      <%= tipoError %>   (Error: <%= code %>)
+                      <br><p class="text-center" style="font-size:25px;"> <%= message %><a  class="button" style="color: coral;" href="/login">¡Logeate!</a> </p></p></div>
+   
+  
+   
+  <% } %>
        
-    
-      <div style="position: absolute; margin-left: 190px;">
-          <p style=" font-weight:bold; font-size:30px; color: rgb(190, 29, 29);"> ¡Error!</p>
-       
-      </div>
       
 </div>
-<br>
-<br>
-<br><br><br>
-<p class="text-center" style="font-size:20px; color: rgb(190, 29, 29);">
-        <%= tipoError %> (Error: <%= code %>) </p>
+
   
  </div>   
 </body>

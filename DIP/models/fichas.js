@@ -12,11 +12,11 @@ const Fichas = sequelize.define('fichas', {
         autoIncrement:true
         },
     cota_f: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(25),
         allowNull: false
     },
     correo_f: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false,
         Validate: {
             isEmail: true
@@ -33,7 +33,7 @@ const Fichas = sequelize.define('fichas', {
         },
      fecha_c :Sequelize.DATE,
     estado_f: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(20),
         allowNull: false
         },
     createdAt:{

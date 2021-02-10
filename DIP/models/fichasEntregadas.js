@@ -11,11 +11,11 @@ const fichasEntregadas = sequelize.define('fichas_entregadas', {
         autoIncrement:true
         },
     cota_f: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(25),
         allowNull: false
     },
     correo_f: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false,
         Validate: {
             isEmail: true

@@ -11,11 +11,11 @@ const Respuestas = sequelize.define('respuestas', {
         primaryKey: true
     },
     respuesta: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: false
     },
     correo_r: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: false,
         primaryKey: true
     },

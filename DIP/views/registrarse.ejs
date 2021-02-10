@@ -1,5 +1,48 @@
 
    <%- include ("partes/cabecera2") %>
+   <script>
+    //funcion para validar que el correo ingresado para registrarse no exista en la base de datos, esta se envia antes de que se realice el registro
+     function existeCorreo(){
+         let correo = $('input#correo').val();
+         
+    $.ajax({
+         beforeSend: function(){
+             $('div#existeCorreo').html('');
+             $('div#existeCorreo').html('<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>');
+         },
+        url: '/ingresar/existe-c',
+        type: 'POST',
+        data: {correo: correo}        
+    })
+    .done(function(res){
+        $('div#existeCorreo').html('');
+        if(res===false){
+          $('div#existeCorreo').html('');  
+        }else{
+         $('div#existeCorreo').html(`<p class="text-center"><img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">Ya se encuentra registrado</p>`);
+        }
+        
+
+    })
+    .fail(function(error){
+        $('div#existeCorreo').html('<p class="text-center">!Ha fallado la solicitud¡</p>');
+       
+    });
+     }
+function comprobarContraseña(input) {
+    let clave1 = $("input#clave").val();
+    let clave2 = $(input).val();
+   
+    if (clave1 !== clave2) {
+        $("div#mensajeC").html('<p class="text-center" style="color: rgb(0,0,0);">Su clave no coincide</p>');
+    }else{
+        $("div#mensajeC").html('');
+    }
+ }
+ function limpiarMsj() {
+     $("div#mensaje").html('');
+ }
+</script>
 
 <body class="full-cover-background">
     
@@ -9,14 +52,15 @@
         </p>
         <h4 class="text-center all-tittles" style="margin-bottom: 20px;">Ingresa tus datos</h4>
         <% if (mensajeRegistro) { %>
-            <div>
-                <%= mensajeRegistro %>
+            <div id="mensaje">
+               <p class="text-center"><%= mensajeRegistro %></p> 
             </div>
-        <% } %> 
-        <form  action="/signup" method="POST" autocomplete="off">
+        <% } %>
+        <br>
+        <form  action="/signup" method="POST" autocomplete="off" onclick="limpiarMsj()" onchange="limpiarMsj()" >
             <div class=" col-xs-16 col-sm-14 col-sm-offset-1 ">
                 <div class="group-material">
-                    <input name="nombres" type="text" class="material-control material-control-login" placeholder="Nombres" required="" maxlength="70" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
+                    <input name="nombres"  type="text" class="material-control material-control-login"5 placeholder="Nombres" required="" maxlength="30" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,35}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label>Nombres</label>
@@ -38,33 +82,40 @@
                 <div class="group-material">
                     <div class="div-table-row-list" >
                         <div class="div-table-cell" style="width: 6%;">
-                            <select name="nacionalidad" class="material-control-login">
+                            <select name="nacionalidad" class="material-control-login" required="">
                             <option value="" disabled="" selected="">Nacionalidad </option>
                             <option >V</option>
                             <option >E</option>
                         </select></div>
                         <div class="div-table-cell" style="width: 11%;">
-                            <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="8" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]{1,20}" data-toggle="tooltip" data-placement="top" >
+                            <input name="cedula" class="material-control material-control-login " placeholder="Cédula" required=""  maxlength="8" pattern="^([0-9]{1,8})$" data-toggle="tooltip"  data-placement="top" type="text">
                     <span class="highlight"></span>
                     <span class="bar"></span>
+                    <label > </label>
                     </div>
                     
                 </div>
                 </div>
+               
+                    <div id="existeCorreo" style="position: absolute; margin-left: 100px;">
+                       
+                    </div>
+               <br>
                 <div class="group-material">
-                    <input name="correo" type="email" class="material-control material-control-login" placeholder="E-mail" maxlength="50" data-toggle="tooltip" data-placement="top" title="Escribe el Email del administrador">
+                    <input id="correo" name="correo" onkeyup="existeCorreo(this)" type="email" class="material-control material-control-login" placeholder="E-mail" maxlength="50" data-toggle="tooltip"   data-placement="top" title="Escribe el Email del administrador">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label>Email</label>
                 </div>
                 <div class="group-material">
-                    <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+                    <input name="clave" id="clave" type="password" class="material-control material-control-login" placeholder="Contraseña ej. Mjhds_12dl" required="" maxlength="10" minlength="10" data-toggle="tooltip" data-placement="top" pattern="^([a-zA-Z0-9_]{2,})(_)?([a-zA-Z0-9_]{2,})$" title="Sólo formatos como, ej. Mjhds_12dl, con 10 digitos y solo se permite el caracter especial '_' y entre letras y números">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label>Contraseña</label>
                 </div>
+                <div style="position: absolute; margin-left:100px;" id="mensajeC"></div>
                 <div class="group-material">
-                    <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+                    <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" onkeyup="javascript: comprobarContraseña(this)" required="" maxlength="10" minlength="10" data-toggle="tooltip" pattern="^([a-zA-Z0-9_]{2,})(_)?([a-zA-Z0-9_]{2,})$" data-placement="top" title="Repite la contraseña">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label>Repetir contraseña</label>

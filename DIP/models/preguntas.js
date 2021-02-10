@@ -9,7 +9,7 @@ const Preguntas = sequelize.define('preguntas', {
         autoIncrement:true
         },
     pregunta: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(200),
         allowNull: false,
         unique: true
     },

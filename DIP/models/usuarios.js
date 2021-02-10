@@ -1,47 +1,28 @@
 const Sequelize = require ('sequelize');
 const sequelize = require ('../database/database');
 const Tipo_Usuario = require ('./tipoUsuario');
-//const { validator } = require('sequelize/types/lib/utils/validator-extras');
+
 
 const Usuarios = sequelize.define('usuarios', {
     correo_u: {
-        type: Sequelize.STRING,
-        primaryKey: true,
-        /*validate:{
-            isEmail: true,
-            mensaje: 'debes introducir un correo electronico'
-        }*/
+        type: Sequelize.STRING(50),
+        primaryKey: true
     },
     tipo_u: {
-        type:Sequelize.STRING,
-        allowNull: false
+        type:Sequelize.STRING(20),
+        allowNull: false,
+        unique: true
     },
     cedula_u: {
-        type: Sequelize.STRING,
-        allowNull: false,
-       /* validate: {
-           len: { args:[8,30],
-            mensaje: "la cedula debe contener minimo 8 caracteres"
-        }/*,
-        validarCedula: function(cedula_u){
-            
-            if (cedula_u.indexOf("V") != 0 || cedula_u.indexOf("E") != 0)
-            {
-
-              console.log("verifique su documento de identidad")
-                throw new Error("la cedula debe iniciar con V o E dependiendo de su nacionalidad");
-            }
-            }
-
-        }
-        */
-    },
+        type: Sequelize.STRING(10),
+        allowNull: false
+       },
     nombres_u: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(35),
         allowNull:false
     },
     apellidos_u:{
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(35),
         allowNull:false
     },
     clave_u:{
@@ -65,6 +46,5 @@ Tipo_Usuario.hasMany(Usuarios,{
     sourceKey: 'tipo_tu', 
     foreignKey: 'tipo_u'});
 Usuarios.belongsTo(Tipo_Usuario,{targetKey: 'tipo_tu', foreignKey: 'tipo_u'});
-
 
 module.exports = Usuarios;

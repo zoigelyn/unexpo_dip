@@ -7,19 +7,31 @@ const Estado_Libro = require('./estadoLibro');
 
 const Libros = sequelize.define('libros', {
     cota: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(25),
         primaryKey: true,
         allowNull: false
     },
     tipo_l: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(20),
         allowNull: false
     },
-    autor: Sequelize.STRING,
-    tutor: Sequelize.STRING,
-    editorial: Sequelize.STRING,
+    autor: {
+        type: Sequelize.STRING(30),
+    allowNull: false,
+    defaultValue: 'no aplica'
+},
+    tutor: {
+        type: Sequelize.STRING(30),
+    allowNull: false,
+    defaultValue: 'no aplica'
+},
+    editorial: {
+        type: Sequelize.STRING(30),
+    allowNull: false,
+    defaultValue: 'no aplica'
+},
     titulo:{
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(30),
         allowNull:false
     },
     año:{
@@ -35,7 +47,9 @@ const Libros = sequelize.define('libros', {
         allowNull:false
     },
     destino: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false,
+        defaultValue: 'no aplica'
     },
     createdAt:{
         type: Sequelize.DATE,

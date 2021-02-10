@@ -1,84 +1,1054 @@
 <!DOCTYPE html>
 <html lang="es">
     <%- include ("partes/cabecera") %>
-    
+    <script>
+     
+             //animacion para la seccion de noticias
+  $(document).ready(function () {
+    var first = 0;
+    var speed = 700;
+    var pause = 7500;
+    function removeFirst() {
+      let elementos = $('div#cuadronot').find('li').length;
+      if (elementos <= 1) {
+        clearInterval(intervalId);
+      }
+      first = $('div#cuadronot li:first').html();
+      $('div#cuadronot li:first')
+        .animate({ opacity: 0 }, speed)
+        .fadeOut('slow', function () {
+          $(this).remove();
+        });
 
-    <body  >
+      addLast(first);
+
+    }
+    function addLast(first) {
+
+      last = '<li style="display:none;">' + first + '</li>';
+      $('div#cuadronot').append(last);
+      $('div#cuadronot li:last')
+        .animate({ opacity: 1 }, speed)
+        .fadeIn('slow')
+    }
+
+    intervalId = setInterval(removeFirst, pause);
+
+  });
+//manejo de errores para todas las solicitudes ajax
+function manejoErrores(error) {
+    let message;
+    if (error.responseJSON) {
+      if (error.responseJSON.message) {
+        message = error.responseJSON.message
+
+      }
+    } else {
+      message = 'Sin información'
+    }
+
+    let statusCode = error.status || 500;
+    let statusText = '';
+    switch (statusCode) {
+      case 400:
+        statusText = 'Bad Request';
+        break;
+      case 401:
+        statusText = 'Unauthorized';
+        break;
+      case 403:
+        statusText = 'Forbidden';
+        break;
+      case 500:
+        statusText = 'Internal Server Error';
+        break;
+      case 200:
+        statusText = 'OK';
+        break;
+    };
+    if (statusCode == 500 || statusCode == 400) {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/robot-error.ico"width= "180" height= "180" > ¡Error!</p>
+ <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                        ${statusText}   (Error: ${statusCode})
+                        <br><p class="text-center" style="font-size:25px;"> ${message}</p> </p>`);
+    } else if ( statusCode == 403 || statusCode == 401) {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/peligro.ico"width= "180" height= "180" ></p>
+ <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                        ${statusText}   (Error: ${statusCode})
+                        <br><p class="text-center" style="font-size:25px;"> ${message}<button id="login" class="bnt btn-link" href="#">Logeate</button> </p></p>`);
+    } else {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; ">!UPS¡ <img src="/assets/icons/robot-roto.ico"width= "180" height= "180" ></p>
+      <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                       Recurso no encontrado  (Error: 404) </p>`);
+    }
+    $("div#myModal").modal("hide");
+    $("div#myModalError").modal("show");
+
+  };
+  function ver(input) {
+
+let cota = input;
+$.ajax({
+    beforeSend: function () {
+        $("p#modal-p-center").html(
+            ' <img src="/assets/gif/loading-22.gif" width="100" height="100" />'
+        );
+        $("div#myModal").modal("show");
+
+    },
+    url: `/ver_libro?cota=${cota}`,
+    timeout: 3000,
+    type: 'POST'
+
+})
+    .done(function (libro) {
+        let url = libro.libro[0].destino;
+        let titulo = libro.libro[0].titulo;
+        $("div#myModal").modal("hide");
+        $("div#tutor").html('');
+        $("#myLabel").html('Informacion del libro');
+        $("div#modal-body-4").html(`
+   <form>
+     <div style="height:50px;">
+     <div class="form-group row">
+     <label for="id1" class="col-sm-2 col-form-label">Tipo de libro</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].tipo_l}"  type="email" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id2" class="col-sm-2 col-form-label">Cota</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].cota}" type="text" class="tooltips-general material-control" class="form-control" id="id2" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id3" class="col-sm-2 col-form-label">Título</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].titulo}" type="text" class="tooltips-general material-control" class="form-control" id="id3" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id4" class="col-sm-2 col-form-label">Autor</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].autor}" type="text" class="tooltips-general material-control" class="form-control" id="id4" readonly>
+     </div>
+     </div>
+
+     <div class="form-group row">
+     <label for="id9" id="label-tutor" class="col-sm-2 col-form-label"></label>
+     <div id="tutor" class="col-sm-10">
+     
+     </div>
+     </div>
+
+     <div class="form-group row">
+     <label for="id5" class="col-sm-2 col-form-label">Editorial</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].editorial}" type="text" class="tooltips-general material-control" class="form-control" id="id5" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id6" class="col-sm-2 col-form-label">Volumen</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].volumen}" type="number" class="tooltips-general material-control" class="form-control" id="id6" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id7" class="col-sm-2 col-form-label">Ejemplar</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].ejemplar}" type="number" class="tooltips-general material-control" class="form-control" id="id7" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id8" class="col-sm-2 col-form-label">Año</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].año}" type="number" class="tooltips-general material-control" class="form-control" id="id8" readonly>
+     </div>
+     </div>
+     <div class="form-group row">
+     <label for="id10" class="col-sm-2 col-form-label">Estado del libro</label>
+     <div class="col-sm-10">
+     <input value="${libro.libro[0].estado_l}" type="text" class="tooltips-general material-control" class="form-control" id="id10"  readonly>
+     </div>
+     </div>
+     <br>
+
+     <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="${libro.libro[0].cota}" data_url="${url}" data_titulo=${titulo}">Ver Pdf del libro </a></p>
+   </div>
+   <br>
+ 
+     
+     </form>
+
+   `);
+      
+
+        if (libro.libro[0].tipo_l === 'trabajo de grado') {
+            $("div#tutor").append(`
+       <input value="${libro.libro[0].tutor}" type="text" class="tooltips-general material-control" class="form-control" id="id9" readonly>`);
+            $("label#label-tutor").html(`Tutor`);
+        }
+        $("div#myModal4").modal('show');
+
+    })
+    .fail(function (error) {
+       manejoErrores(error);
+    });
+};
+
+function verPDF(input) {
+        let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
+        let titulo = $(input).attr("data_titulo");
+        $('#myModalLabel').text(titulo);
+        $('#pdfdoc').attr('src', url);
+        $('#myModal7').modal("show");
+    };
+  
+
+         //solicitas y muestras las noticias
+ function mostrarNoticias() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/noticias",
+      type: "GET",
+    })
+      .done(function (noticias) {
+
+        $("div#cuadronot").html('');
+
+        if (noticias.length > 0) {
+          var j = 0;
+          for (var i = 0; i < noticias.length; i++) {
+
+            $('div#cuadronot').append(`
+<li>
+ <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
+ 
+   <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
+         
+         <img src="${noticias[i].url_imagen}" alt="">
+         <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
+         <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
+        </div>
+     </li>
+     `);
+
+
+          }
+
+
+        } else {
+          $("div#cuadronot").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay noticias recientes </h3>
+                </div>
+          
+                            `);
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  };
+  
+ //solicitas y muestras las noticias
+ function mostrarPreguntas() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/preguntas-frecuentes",
+      type: "GET",
+    })
+      .done(function (preguntas) {
+        $("div#accordion").html('');
+
+        if (preguntas.length > 0) {
+          var j = 0;
+          for (var i = 0; i < preguntas.length; i++) {
+
+            $('div#accordion').append(`
+        <div class="panel panel-default">
         
-        <%- include ("partes/navegacionHome") %>
-        <div class="content-page-container full-reset custom-scroll-containers">
-           <%- include ("partes/navegacionSuperiorHome") %>
-            <div class="container">
-                <div class="page-header">
-                    <h1 class="all-tittles">Sistema bibliotecario <small>Inicio</small></h1>
+          <div class="panel-heading p-3 mb-3"  role="tab" id="heading${i}">
+            <h3 class="panel-title">
+              <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                ${preguntas[i].titulo_pregunta} 
+              </a>
+            </h3> 
+          </div> 
+          <div id="collapse${i}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading0">
+            <div class="panel-body px-3 mb-4">
+              ${preguntas[i].text_respuesta}
+             </div> 
+          </div> 
+        </div>
+        
+     `);
+
+
+          }
+
+
+        } else {
+          $("div#accordion").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay preguntas frecuentes guardadas </h3>
+                </div>
+          
+                            `);
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  };
+  //ver la noticia en una ventana modal estatica
+  function verUnaNoticia(id) {
+    let id_n = id;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/noticia?id_n=${id_n}`,
+      type: "POST",
+    })
+      .done(function (noticia) {
+        $("div#modal-body-2").html(`
+         <div id="cuadro">
+  <div class="container-fluid" >
+  
+          <img src="${noticia.url_imagen}" alt="">
+          <a class="news-title" href="#">${noticia.titulo_noticia}</a>
+          <span class="news-text text-center">${noticia.text_noticia}</span> </div>
+        </div>
+        `);
+        $("div#myModal").modal("hide");
+        $("div#myModal2").modal("show");
+
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+ 
+         function seccionInicio() {
+    var seccion = document.getElementById("seccion");
+    var explicacion = document.getElementById("explicacion");
+    var enlaces = document.getElementById("enlaces");
+    var container = document.getElementById("container");
+    var cargando = document.getElementById("cargando");
+    var accordion = document.getElementById("accordion");
+    var inicio = document.getElementById("inicio");
+    var formatoEnLineaDos = document.getElementById("formato-enlinea-dos");
+    var cuadronot = document.getElementById("cuadronot");
+    cuadronot.style.display = 'block';
+    formatoEnLineaDos.style.display = 'none';
+    inicio.style.display = 'block'
+ 
+    accordion.style.display = 'none';
+    enlaces.style.display = 'none';
+    seccion.innerHTML = ` <div class="page-header">
+                <h1 class="all-tittles">
+                    UNEXPO SBDIP <small>Inicio</small>
+                </h1>
+            </div>`;
+    explicacion.style.display = 'none';
+   
+    cargando.innerHTML = '';
+    container.innerHTML = '';
+    mostrarNoticias();
+
+  };
+
+
+         function seccionLibros() {
+        $.ajax({
+            beforeSend: function () {
+                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
+                $("#myModal").modal("show");
+            },
+            url: '/libros',
+            type: 'GET'
+        })
+            .done(function (res) {
+                $("div#cargando").html('');
+                $("div#myModal").modal('hide');
+                
+                $("div#container").show();
+                $("#accordion").hide();
+                $("div#enlaces").hide();
+                     $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Libros</small></small></h1>
+      </div>`);
+                $("div#explicacion").html(`<div class="row">
+
+<div class="col-xs-12 col-sm-4 col-md-3">
+    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+</div>
+<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
+</div>
+</div>`);
+               $("form#formato-enlinea").hide();
+               $("form#formato-enlinea-dos").show();
+               $("#limpiarButton2").click();
+               $("div#explicacion").show();
+                $("div#busquedaC").hide();
+                $("input#tipo_libro").attr("value", "Libro");
+                $("div#inicio").hide();
+                if (res.libros.length > 0) {
+                    $("div#container").html(`
+         
+        <h2 class="text-center all-tittles">Mis libros</h2>
+        <div class="table-responsive">
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                    <div class="div-table-cell" style="width: 3%;">#</div>
+                    <div class="div-table-cell" style="width: 15%;">Cota</div>
+                    <div class="div-table-cell" style="width: 8%;">Título</div>
+                    <div class="div-table-cell" style="width: 8%;">Autor</div>
+                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
+                    <div class="div-table-cell" style="width: 10%;">Año</div>
                     
+                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
                 </div>
             </div>
-            <section class="full-reset text-center" style="padding: 40px 0;">
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-face"></i></div>
-                    <div class="tile-name all-tittles">administradores</div>
-                    <div class="tile-num full-reset">7</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-accounts"></i></div>
-                    <div class="tile-name all-tittles">estudiantes</div>
-                    <div class="tile-num full-reset">70</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-male-alt"></i></div>
-                    <div class="tile-name all-tittles">docentes</div>
-                    <div class="tile-num full-reset">11</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-male-female"></i></div>
-                    <div class="tile-name all-tittles" style="width: 90%;">personal administrativo</div>
-                    <div class="tile-num full-reset">17</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-truck"></i></div>
-                    <div class="tile-name all-tittles">proveedores</div>
-                    <div class="tile-num full-reset">21</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-book"></i></div>
-                    <div class="tile-name all-tittles">libros</div>
-                    <div class="tile-num full-reset">77</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-bookmark-outline"></i></div>
-                    <div class="tile-name all-tittles">categorías</div>
-                    <div class="tile-num full-reset">11</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-assignment-account"></i></div>
-                    <div class="tile-name all-tittles">secciones</div>
-                    <div class="tile-num full-reset">17</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-timer"></i></div>
-                    <div class="tile-name all-tittles">reservaciones</div>
-                    <div class="tile-num full-reset">10</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-time-restore"></i></div>
-                    <div class="tile-name all-tittles" style="width: 90%;">devoluciones pendientes</div>
-                    <div class="tile-num full-reset">9</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-calendar"></i></div>
-                    <div class="tile-name all-tittles">préstamos</div>
-                    <div class="tile-num full-reset">7</div>
-                </article>
-                <article class="tile">
-                    <div class="tile-icon full-reset"><i class="zmdi zmdi-trending-up"></i></div>
-                    <div class="tile-name all-tittles" style="width: 90%;">reportes y estadísticas</div>
-                    <div class="tile-num full-reset">&nbsp;</div>
-                </article>
-            </section>
-            
+        </div>
+        `);
+
+                    for (var i = 0; i < res.libros.length; i++) {
+                        var cota = res.libros[i].cota;
+                        $("div#container").append(`
+                <div class="table-responsive" >
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list">
+                    <div class="div-table-cell" style="width: 3%;">${1 + i
+                            }</div>
+                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
+                            }</div> 
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
+                            }</div>
+                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
+                            } </div>
+                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">
+                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
+                            }')"><i class="zmdi zmdi-file-text"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div> `);
+
+                    }
+                } else {
+                    $("div#container").html(`
+                    <div class="container-fluid">
+            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
+        </div>
+  
+                    `);
+                }
+            })
+            .fail(function (error) {
+                manejoErrores(error);
+
+            });
+
+
+    }
+    function seccionTrabajoG() {
+        $.ajax({
+            beforeSend: function () {
+                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
+                $("#myModal").modal("show");
+            },
+            url: '/trabajo',
+            type: 'GET'
+        })
+            .done(function (res) {
+                $("div#cargando").html('');
+                $("div#myModal").modal('hide');
+                $("#limpiarButton2").click();
+                
+                $("div#container").show();
+                  $("#accordion").hide();
+                $("div#enlaces").hide();
+                     $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Trabajos de grado</small></small></h1>
+      </div>`);
+                $("div#explicacion").html(`<div class="row">
+
+<div class="col-xs-12 col-sm-4 col-md-3">
+    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+</div>
+<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
+</div>
+</div>`);
+               $("form#formato-enlinea").hide();
+               $("form#formato-enlinea-dos").show();
+               $("div#explicacion").show();
+                $("div#busquedaC").hide();
+                $("input#tipo_libro").attr("value", "Trabajo de grado");
+                $("div#inicio").hide();
+                if (res.libros.length > 0) {
+                    $("div#container").html(`
+         
+        <h2 class="text-center all-tittles">Mis trabajos de grado</h2>
+        <div class="table-responsive">
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                    <div class="div-table-cell" style="width: 3%;">#</div>
+                    <div class="div-table-cell" style="width: 15%;">Cota</div>
+                    <div class="div-table-cell" style="width: 8%;">Título</div>
+                    <div class="div-table-cell" style="width: 8%;">Autor</div>
+                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
+                    <div class="div-table-cell" style="width: 10%;">Año</div>
+                    
+                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
+                </div>
+            </div>
+        </div>
+        `);
+
+                    for (var i = 0; i < res.libros.length; i++) {
+                        var cota = res.libros[i].cota;
+                        $("div#container").append(`
+                <div class="table-responsive" >
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list">
+                    <div class="div-table-cell" style="width: 3%;">${1 + i
+                            }</div>
+                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
+                            }</div> 
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
+                            }</div>
+                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
+                            } </div>
+                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">
+                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
+                            }')"><i class="zmdi zmdi-file-text"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div> `);
+
+                    }
+                } else {
+                    $("div#container").html(`
+                    <div class="container-fluid">
+            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
+        </div>
+  
+                    `);
+                }
+            })
+            .fail(function (error) {
+                manejoErrores(error);
+
+            });
+
+
+    }
+    function seccionRevista() {
+        $.ajax({
+            beforeSend: function () {
+                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
+                $("#myModal").modal("show");
+            },
+            url: '/revista',
+            type: 'GET'
+        })
+            .done(function (res) {
+                $("div#cargando").html('');
+                $("div#myModal").modal('hide'); 
+                $("#limpiarButton2").click();
+                 $("#accordion").hide();
+                $("div#enlaces").hide();
+                     $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Revistas</small></small></h1>
+      </div>`);
+                $("div#explicacion").html(`<div class="row">
+
+<div class="col-xs-12 col-sm-4 col-md-3">
+    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+</div>
+<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
+</div>
+</div>`);
+               $("form#formato-enlinea").hide();
+               $("form#formato-enlinea-dos").show();
+               $("div#explicacion").show();
+                $("div#busquedaC").hide();
+                $("input#tipo_libro").attr("value", "Revista");
+                $("div#inicio").hide();
+                $("div#container").show();
+                if (res.libros.length > 0) {
+                    $("div#container").html(`
+         
+        <h2 class="text-center all-tittles">Mis revistas</h2>
+        <div class="table-responsive">
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                    <div class="div-table-cell" style="width: 3%;">#</div>
+                    <div class="div-table-cell" style="width: 15%;">Cota</div>
+                    <div class="div-table-cell" style="width: 8%;">Título</div>
+                    <div class="div-table-cell" style="width: 8%;">Autor</div>
+                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
+                    <div class="div-table-cell" style="width: 10%;">Año</div>
+                    
+                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
+                </div>
+            </div>
+        </div>
+        `);
+
+                    for (var i = 0; i < res.libros.length; i++) {
+                        var cota = res.libros[i].cota;
+                        $("div#container").append(`
+                <div class="table-responsive" >
+            <div class="div-table" style="margin:0 !important;">
+                <div class="div-table-row div-table-row-list">
+                    <div class="div-table-cell" style="width: 3%;">${1 + i
+                            }</div>
+                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
+                            }</div> 
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
+                            }</div>
+                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
+                            } </div>
+                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
+                            }</div>
+                    <div class="div-table-cell" style="width: 8%;">
+                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
+                            }')"><i class="zmdi zmdi-file-text"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div> `);
+
+                    }
+                } else {
+                    $("div#container").html(`
+                    <div class="container-fluid">
+            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
+        </div>
+  
+                    `);
+                }
+            })
+            .fail(function (error) {
+                manejoErrores(error);
+
+            });
+
+
+    }
+   
+    function seccionPreguntas() {
+        $("div#cargando").html('');
+        $("form#formato-enlinea-dos").hide();
+        $("div#enlaces").hide();
+        $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Preguntas frecuentes</small></h1>
+      </div>`);
+        $("div#explicacion").hide();
+        $("form#formato-enlinea").hide();
+        $("div#busquedaC").hide();
+        $("div#inicio").hide();
+        $("div#accordion").show();
+        $("div#container").hide();
+        mostrarPreguntas();
+    }
+    $(function () {
+        seccionInicio();
+        $('form#formato-enlinea-dos').on("keyup", function (e) {
+            e.preventDefault();
+            let data = $(this).serialize();
+          
+            $.ajax({
+                beforeSend: function () {
+                    $("div#cargando").html(
+                        '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+                    );
+
+                },
+                url: '/busqueda-especifica',
+                type: 'POST',
+                data: data
+            })
+                .done(function (libros) {
+                    let resultados = libros.libros[0].length;
+                    cargando.innerHTML = `<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`;
+                    if (resultados > 0) {
+                        $("div#container").html(`
+         
+         <h2 class="text-center all-tittles">Mis libros</h2>
+         <div class="table-responsive">
+             <div class="div-table" style="margin:0 !important;">
+                 <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                     <div class="div-table-cell" style="width: 3%;">#</div>
+                     <div class="div-table-cell" style="width: 15%;">Cota</div>
+                     <div class="div-table-cell" style="width: 8%;">Título</div>
+                     <div class="div-table-cell" style="width: 8%;">Autor</div>
+                     <div class="div-table-cell" style="width: 10%;">Volumen</div>
+                     <div class="div-table-cell" style="width: 10%;">Año</div>
+                     
+                     <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
+                 </div>
+             </div>
+         </div>
+         `);
+ 
+                     for (var i = 0; i < libros.libros[0].length; i++) {
+                         var cota = libros.libros[0][i].cota;
+                         $("div#container").append(`
+                 <div class="table-responsive" >
+             <div class="div-table" style="margin:0 !important;">
+                 <div class="div-table-row div-table-row-list">
+                     <div class="div-table-cell" style="width: 3%;">${1 + i
+                             }</div>
+                     <div class="div-table-cell" style="width: 15%;">${libros.libros[0][i].cota
+                             }</div> 
+                     <div class="div-table-cell" style="width: 8%;">${libros.libros[0][i].titulo
+                             }</div>
+                     <div class="div-table-cell" style="width: 8%;">${libros.libros[0][i].autor
+                             }</div>
+                              <div class="div-table-cell"  style="width: 10%;">${libros.libros[0][i].volumen
+                             } </div>
+                     <div class="div-table-cell" style="width: 10%;">${libros.libros[0][i].año
+                             }</div>
+                     <div class="div-table-cell" style="width: 8%;">
+                         <button class="btn btn-info" onclick="ver('${libros.libros[0][i].cota
+                             }')"><i class="zmdi zmdi-file-text"></i></button>
+                     </div>
+                 </div>
+             </div>
+         </div> `);
+ 
+                     }
+                    } else {
+                        cargando.innerHTML = '<h3 class="text-center">No se obtuvieron resultados</h3>';
+                        container.innerHTML = '';
+
+
+                    }
+                })
+                .fail(function (error) {
+                    limpiarButton.click();
+                    manejoErrores(error);
+                });
+        });
+
+
+ 
+    });
+    </script>
+
+    <body>
+        <div id="myModal" class="modal fade">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content" style="background-color: transparent">
+                <div id="modal-contenido">
+                  <br />
+                  <p class="text-center" id="modal-p-center">
+                    <img src="/assets/gif/loading-22.gif" width="100" height="100" />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="myModal2" class="modal fade">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div id="modal-body-2" class="modal-body">
+        
+                </div>
+              </div>
+            </div>
+          </div>
+        <div id="myModal4" class="modal fade">
+            <div class="modal-dialog">
+                <div class="container-fluid">
+                    <div class="modal-content">
+                        <div class="modal-header-sm" style="background:rgb(45, 101, 206);">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myLabel"
+                                style="font-size: 25px; font-weight:900; text-align: center; color: white;">Modal title</h4>
+                        </div>
+                        <div class="modal-body" id="modal-body-4">
+    
+    
+    
+    
+    
+    
+                        </div>
+    
+                    </div>
+    
+    
+    
+                </div>
+    
+            </div>
+        </div>
+        <div id="myModal6" class="modal fade">
+            <div class="modal-dialog">
+                <div class="container-fluid">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div>
+                            <p class="text-center" id="modal-p-center6">Se ha reservado exitosamente</p>
+    
+                            
+    
+    
+                        </div>
+    
+                    </div>
+    
+    
+    
+                </div>
+    
+            </div>
+        </div>
+        <div id="myModal3" class="modal fade">
+            <div class="modal-dialog">
+                <div class="container-fluid">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div>
+                            <p class="text-center">Has llegado al límite de libros permitidos para reservar</p>
+    
+    
+    
+    
+                        </div>
+    
+                    </div>
+    
+    
+    
+                </div>
+    
+            </div>
+        </div>
+        <div id="myModal7" class="modal fade">
+            <div class="modal-dialog">
+                <div class="container-fluid">
+                    <div class="modal-content">
+                        <div>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <!--  <h4 class="modal-title" id="myModalLabel">Modal title</h4>-->
+                        </div>
+                        <div >
+                            <iframe id="pdfdoc" height="400" width="100%" src='' ></iframe>
+    
+    
+                        </div>
+    
+                    </div>
+    
+    
+    
+                </div>
+    
+            </div>
+        </div>
+        <div id="myModal5" class="modal fade">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content" style="background-color: transparent">
+                    <div>
+                        <br />
+                        <p class="text-center" id="modal-p-center">
+                            <img src="/assets/gif/loading-22.gif" width="100" height="100" />
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="myModalError" class="modal fade">
+            <div class="modal-dialog">
+              <div class="container-fluid">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                      &times;
+                    </button>
+                  </div>
+                  <div id="modal-cuerpo">
+        
+        
+        
+        
+                  </div>
+                </div>
+        
+              </div>
+            </div>
+          </div>
+        <%- include ("partes/navegacionInicio") %>
+        <div class="content-page-container full-reset custom-scroll-containers">
+            <%- include ("partes/navegacionSuperiorInicio") %>
+    
+            <div class="container" id="seccion" style="margin: 0%;">
+                <div class="page-header">
+                    <h1 class="all-tittles">
+                        UNEXPO SBDIP <small>Inicio</small>
+                    </h1>
+                </div>
+            </div>
+            <div class="container-fluid" id="enlaces">
+            </div>
+            <div class="container-fluid" id="explicacion" style="margin: 0%;">
+            </div>
+        
+    
+         <div class="container-fluid" id="tabla">    
+            <div class="container-fluid" id="inicio">
+              
+                
+        
+                <div id="cuadronot">
+        
+        
+        
+                </div>
+        
+              </div>
+    
+    
+              
+                <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea-dos" autocomplete="off">
+                    <div class="row justify-content-md-center" >
+                        <div class="col-sm-4 col-md-2" >
+                            <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"   maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" 
+                            placeholder="Cota"  data-toggle="tooltip" data-placement="top"
+                            title="Ej. cota_1, cota 2">
+                            <label>Cota</label>
+                        </div>
+                        <div class="col-sm-4 col-md-2">
+                            
+                        <input id="tipo_libro" name="tipo_l" type="text" class="tooltips-general material-control"
+                            placeholder="Tipo de libro" maxlength="25" data-toggle="tooltip" data-placement="top"
+                            title="EL tipo de libro" readonly>
+                            <label > </label>
+                        </div>
+                        <div class="col-sm-4 col-md-2"> 
+                            <input id="ejemplar_unico" name="ejemplar" type="number"
+                            class="tooltips-general material-control" placeholder="Ejemplar" maxlength="4"
+                            data-toggle="tooltip" pattern="^[0-9]+" min="1" data-placement="top"
+                            title="Numero de ejemplares">
+                            <label>Ejemplar</label>
+                        </div>
+                        <div class="col-sm-4 col-md-2">
+                            <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
+                            placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                            data-placement="top" title="Escribe el título o nombre del libro">
+                            <label >Título</label>
+                        </div>
+                        <div class="col-sm-4 col-md-2">
+                            <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
+                            placeholder="Autor"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                            data-placement="top" title="Escribe el nombre del autor del libro">
+                            <label>Autor</label>
+                        </div>
+                         
+                        <div class="col-sm-4 col-md-2" id="div-contenedor">
+    
+                             <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
+                            placeholder="Tutor"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                            data-placement="top" title="Escribe el nombre del tutor del libro">
+                            <label>Tutor</label>
+                        </div>
+                    
+                    <div class="col-sm-4 col-md-2"> 
+                        <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
+                        placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
+                        data-placement="top" title="Escribe el volumen del libro">
+                        <label>Volumen</label>
+                    </div>
+                        <div class="col-sm-4 col-md-2">  
+                            <input id="año_unico" name="año" type="text" class="material-control tooltips-general"
+                            placeholder="Año" pattern="[0-9]{4}" maxlength="4" minlength="4" data-toggle="tooltip"
+                            data-placement="top" title="Solamente números, sin espacios">
+                            <label>Año</label>
+                        </div>
+                            <div class="col-sm-4 col-md-2">
+                                <input id="editorial_unico" name="editorial" type="text"
+                                class="material-control tooltips-general" placeholder="Editorial"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                                <label>Editorial</label>
+                            </div>
+                            <div class="col-sm-4 col-md-2">
+                              
+                                <button id="limpiarButton2"  type="reset" class="btn btn-light">Limpiar</button>
+                            </div>
+                           
+                        
+                        </div>
+                </form></div>
+              
+                <div class="container-fluid">
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    
+                    </div>
+                </div>
+               <div id="cargando"></div>
+                <div class="container-fluid" id="container"> </div> 
+        </div>
             <%- include ("partes/piePagina") %>
         </div>
-    </body>
     
+    
+    </body>
+</html>
    

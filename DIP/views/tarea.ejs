@@ -15,13 +15,16 @@
             <h4 class="text-center all-tittles" style="margin-bottom: 30px; color: rgb(0,0,0);"><%= mensaje %></h4>
 
         <% if (mensaje == 'Su respuestas fueron guardadas satisfactoriamente') { %>
-            <a href="/role"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a>
+          <p class="text-center"><a href="/role"> <button class="btn btn-sucess" type="submit">Aceptar&nbsp;</button></a></p>  
         <% } %>
         <% if (mensaje == 'Has respondido de manera errónea') { %>
-            <a href="/login"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a>
+           <p class="text-center"><a href="/login"> <button class="btn-login-center" type="submit">Aceptar&nbsp;</button></a></p> 
+        <% } %>
+        <% if (mensaje == 'Configuración completada satisfactoriamente') { %>
+           <p class="text-center"><a href="/role"> <button class="btn btn-primary" type="submit">Iniciar&nbsp;</button></a></p> 
         <% } %>
         <% if (mensaje == 'Usted no esta registrado') { %>
-            <a href="/signup"> <button class="btn-login" style="color: rgb(0,0,0);" type="submit">Aceptar&nbsp;</button></a>
+            <p class="text-center"> <a href="/signup"> <button class="btn-login" style="color: rgb(0,0,0);" type="submit">Aceptar&nbsp;</button></a> </p>
         <% } %>
         </p>
     </div>

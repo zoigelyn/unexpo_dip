@@ -3,25 +3,28 @@ var Sequelize = require ('sequelize');
 var sequelize = require ('../database/database');
 
 const Estado_Prestamo  = sequelize.define('estado_prestamo', {
-    id_ep: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement:true
-     },  
+    
 
      estado_ep: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(20),
         Unique: true, 
-        allowNull: false   
+        allowNull: false,
+        primaryKey: true 
     },
     descripcion_ep: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(100),
+    allowNull: true,
+    validate: {
+    isAlpha: true,
+    max: 100
+    }
+    
     },
-    created_at:{
+    createdAt:{
         type: Sequelize.DATE,
         field: 'created_at'
     },
-    updated_at:{
+    updatedAt:{
         type: Sequelize.DATE,
         field: 'updated_at'
     }

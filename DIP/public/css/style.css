@@ -102,7 +102,109 @@ transition: opacity 400ms ease-in;
     right: 0;
     bottom: 0;
 }
+#cuadronot{
+    height: 100%;
+    width:100%;
+    overflow:hidden;
+    background-color: #fff;
+   
+}
+#cuadronot li{
+    border: 0;
+    margin-right:20px;
+    padding:0;
+    list-style:none;
+}
+#cuadronot li{
+    height: 25%;
+    padding:1%;
+    list-style:none;
+}
+#cuadronot .news-title{
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0px;
+    font-size: 18px;
+    text-align: left;
+}
+#cuadronot .news-text{
+    display:block;
+    font-size:14px;
+    color:#666666;
+    line-height:1.1;
+    text-align: justify;
+}
+#cuadronot img{
+    float:left;
+    width:120px;
+    height: 120px;
+    margin-right:10px;
+    padding: 1px;
+    border: solid 1px #DEDEDE;
+}
+#cuadronot p{
+    font-size: 14px;
+    line-height: 1.1;
+}
 
+#cuadro{
+    height: 100%;
+    width:100%;
+    overflow:hidden;
+    background-color: #fff;
+   
+}
+#cuadro li{
+    border: 0;
+    margin-right:20px;
+    padding:0;
+    list-style:none;
+}
+#cuadro li{
+    height: 25%;
+    padding:1%;
+    list-style:none;
+}
+#cuadro .news-title{
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0px;
+    font-size: 18px;
+    text-align: left;
+}
+#cuadro .news-text{
+    display:block;
+    font-size:14px;
+    color:#666666;
+    line-height:1.1;
+    text-align: justify;
+}
+#cuadro img{
+    float:left;
+    width:120px;
+    height: 120px;
+    margin-right:10px;
+    padding: 1px;
+    border: solid 1px #DEDEDE;
+}
+#cuadro p{
+    font-size: 14px;
+    line-height: 1.1;
+}
+.context{
+    background-color: #ccc;
+    width:100%;
+    height: 100%;
+}
+#confDias{
+        width: 98%;
+        margin: 25px auto;
+        box-shadow: 0 0 3px rgb(0, 0, 255);
+        border-radius: 5px;
+        position: relative;
+        padding-bottom: 25px;
+   
+}
 .media-hover:hover {
     background-color: #F5F5F5;
 }
@@ -128,7 +230,14 @@ transition: opacity 400ms ease-in;
 ul.nav-tabs li a:focus {
     outline: none;
 }
-
+.btn-circle.btn-sm {
+    width: 30px;
+    height: 30px;
+    padding: 6px 0px;
+    border-radius: 15px;
+    font-size: 12px;
+    text-align: center;
+}
 .btn:focus,
 .btn:active {
     outline: none #fff;
@@ -204,6 +313,27 @@ span.label-mhover {
               }
         }
 
+.fullscreen-modal .modal-dialog {
+    margin: 0;
+    margin-right: auto;
+    margin-left: auto;
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .fullscreen-modal .modal-dialog {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    .fullscreen-modal .modal-dialog {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    .fullscreen-modal .modal-dialog {
+        width: 1170px;
+    }
+}
 
 .div-table {
     display: table !important;
@@ -306,7 +436,7 @@ span.label-mhover {
 }
 
 .navbar-user-top>ul>li:hover {
-    color: rgb(138, 255, 42);
+    color: rgb(0, 0, 0);
 }
 
 .navbar-user-top>ul>li:hover span.badge {
@@ -435,7 +565,7 @@ span.label-mhover {
 
 .nav-lateral-list-menu ul li a:hover span,
 .mobile-menu-container ul li a:hover span {
-    background-color: rgb(114, 255, 58);
+    background-color: rgb(44, 83, 168);
     /*no lo se*/
     color: rgb;
 }
@@ -499,7 +629,7 @@ span.label-mhover {
 
 .title-flat-form {
     background-color: rgb(0, 0, 0);
-    /*nose de donde es*/
+    
     height: 50px;
     color: #fff;
     text-align: center;
@@ -532,7 +662,6 @@ span.label-mhover {
 input.material-control,
 select.material-control {
     font-size: 16px;
-    padding: 10px 10px 10px 5px;
     display: block;
     width: 100%;
     border: none;
@@ -614,7 +743,7 @@ input.material-control:invalid~label {
 }
 
 input.material-control:focus:invalid~label:after {
-    content: "Formato no válido o campo vacío";
+    content: "Formato no válido";
     margin: 0 5px;
     padding: 0 5px;
     font-size: 14px;

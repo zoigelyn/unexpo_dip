@@ -51,10 +51,10 @@ create table libros(
 );
 create table usuarios(
     correo_u varchar(50) primary key,
-    cedula_u varchar(30),
+    cedula_u varchar(10),
     nombres_u varchar(35) not null check (nombres_u <>''),
     apellidos_u varchar(35) not null check (apellidos_u <>''),
-    clave_u varchar not null check (clave_u <>''),
+    clave_u varchar(10) not null check (clave_u <>''),
     tipo_u varchar(20) not null default 'lector',
     created_at date,
     updated_at date,
@@ -90,7 +90,7 @@ create table fichas_entregadas(
 );
 
 create table estudiantes (
-    cedula_e varchar(30) primary key,
+    cedula_e varchar(10) primary key,
     nombres_e varchar(35) not null check (nombres_e <>''),
     apellidos_e varchar(35) not null check (apellidos_e <>''),
     especializacion varchar(50),
@@ -99,7 +99,7 @@ create table estudiantes (
 );
 
 create table docentes (
-    cedula_d varchar(30) primary key,
+    cedula_d varchar(10) primary key,
     nombres_d varchar(35) not null check (nombres_d <>''),
     apellidos_d varchar(35) not null check (apellidos_d <>''),
     materia varchar(50),
@@ -117,7 +117,7 @@ create table preguntas(
 create table respuestas(
     id_r integer,
     id_pr integer,
-    respuesta varchar(50),
+    respuesta varchar(100),
     correo_r varchar(50),
     created_at date,
     updated_at date,
@@ -130,6 +130,22 @@ create table conf_dias_libros(
     id_c serial primary key,
     dias_prestamo integer default 3,
     cantidad_libros integer default 3,
+    created_at date,
+    updated_at date
+);
+create table noticias(
+    id_n serial primary key,
+    url_imagen text not null,
+    text_noticia text not null,
+    titulo_noticia varchar(35),
+    created_at date,
+    updated_at date
+);
+
+create table preguntas_f(
+    id_pf serial primary key,
+    titulo_pregunta text not null,
+    text_respuesta text not null,
     created_at date,
     updated_at date
 );

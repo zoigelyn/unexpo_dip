@@ -1,26 +1,28 @@
+
+
 <div class="navbar-lateral full-reset">
     <div class="visible-xs font-movile-menu mobile-menu-button"></div>
     <div class="full-reset container-menu-movile custom-scroll-containers">
         <div class="logo full-reset all-tittles">
-            <i class="visible-xs zmdi zmdi-close pull-left mobile-menu-button" style="line-height: 55px; cursor: pointer; padding: 0 10px; margin-left: 7px;"></i> Biblioteca UNEXPO DIP
+            <i class="visible-xs zmdi zmdi-close pull-left mobile-menu-button" style="line-height: 55px; cursor: pointer; padding: 0 10px; margin-left: 7px;"></i> UNEXPO SBDIP
         </div>
-        <div class="full-reset" style="background-color:#2B3D51; padding: 10px 0; color:#fff;">
+        <div class="full-reset" style="background-color:#100f3d; padding: 10px 0; color:#fff;">
             <figure>
-                <img src="/../assets/img/logo.png" alt="Biblioteca" class="img-responsive center-box" style="width:55%;">
+                <img src="/../assets/icons/libro.ico" alt="Biblioteca" class="img-responsive center-box" style="width:55%;">
             </figure>
             <p class="text-center" style="padding-top: 15px;">Biblioteca Digital</p>
         </div>
         
         <div class="full-reset nav-lateral-list-menu">
             <ul class="list-unstyled">
-                <li><a href="/unexpo.dip"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Inicio</a></li>
+                <li><a href="javascript:seccionInicio()"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Inicio</a></li>
                 
                 </li>
                 <li>
                     <div class="dropdown-menu-button"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp; Libros <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="/bibliotecario/insert"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp;Añadir material</a></li>
-                        <li><a href="/bibliotecario/editar-y-eliminar"><i class="zmdi zmdi-pencil zmdi-hc-fw"></i>&nbsp;&nbsp; Ver, editar y eliminar</a></li>
+                        <li><a href="javascript:añadirMaterial()"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp;Añadir material</a></li>
+                        <li><a href="javascript: editarLibro()"><i class="zmdi zmdi-edit zmdi-hc-fw"></i>&nbsp;&nbsp; Ver, editar y eliminar</a></li>
                         
                         
                     </ul>
@@ -28,33 +30,37 @@
                 <li>
                     <div class="dropdown-menu-button"><i class="zmdi zmdi-alarm zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos y reservaciones <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="/bibliotecario/prestamos"><i class="zmdi zmdi-calendar zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos pendientes</a></li>
-                        <li><a href="/bibliotecario/prestamos-vencidos"><i class="zmdi zmdi-calendar zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos entregados</a></li>
-                       
+                        <li><a href="javascript:prestamosE()"><i class="zmdi zmdi-calendar zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos entregados</a></li>
+                        <li><a href="javascript:prestamosVV()"><i class="zmdi zmdi-time-restore zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos pendientes</a></li>
                         <li>
-                            <a href="/bibliotecario/reservaciones"><i class="zmdi zmdi-time-restore zmdi-hc-fw"></i>&nbsp;&nbsp; Reservaciones<span class="label label-danger pull-right label-mhover">7</span></a>
+                            <a href="javascript:prestamosP()"><i class="zmdi zmdi-timer zmdi-hc-fw"></i>&nbsp;&nbsp; Reservaciones<span class="label label-danger pull-right label-mhover"></span></a>
                         </li>
                         <li>
-                            <a href="/bibliotecario/conf-dias"><i class="zmdi zmdi-timer zmdi-hc-fw"></i>&nbsp;&nbsp; Configuración<span class="label label-danger pull-right label-mhover">7</span></a>
+                            <a href="javascript:seccionConfDias()"><i class="zmdi zmdi-wrench zmdi-hc-fw"></i>&nbsp;&nbsp; Configuración<span class="label label-danger pull-right label-mhover"></span></a>
                         </li>
                     </ul>
                 </li>
                
                 
                 
+               
                 <li>
-                    <div class="dropdown-menu-button"><i class="zmdi zmdi-assignment-o zmdi-hc-fw"></i>&nbsp;&nbsp; Recursos y Contenido de Interes <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
+                    <div class="dropdown-menu-button"><i class="zmdi zmdi-male-female zmdi-hc-fw"></i>&nbsp;&nbsp; Actualizar la base de datos <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="https://unexpo-web.herokuapp.com"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp;Repositorio</a></li>
+                        <li><a href="javascript: actualizarBaseE()"><i class="zmdi zmdi-accounts zmdi-hc-fw"></i>&nbsp;&nbsp; Estudiantes</a></li>
+                        
+                       
+                        <li>
+                            <a href="javascript: actualizarBaseD()"><i class="zmdi zmdi-male-alt zmdi-hc-fw"></i>&nbsp;&nbsp; Docentes<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
                     </ul>
+                    
                 </li>
                 <li>
-                   <li><a href="/galeria-virtual"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Galeria Virtual</a></li>  
-                </li>
-                <li>
-                    <li><a href="/preguntas"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Preguntale al Bibliotecario</a></li>  
+                    <li><a href="javascript: seccionPreguntas()"><i class="zmdi zmdi-help-outline zmdi-hc-fw"></i>&nbsp;&nbsp; Preguntale al Bibliotecario</a></li>  
                  </li>
             </ul>
         </div>
     </div>
 </div>
+

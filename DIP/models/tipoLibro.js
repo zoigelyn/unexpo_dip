@@ -1,19 +1,17 @@
 var Sequelize = require ('sequelize');
 var sequelize = require ('../database/database');
 const Tipo_Libro = sequelize.define('tipo_libro', {
-    id_tl: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement:true
-     },  
+    
     tipo_tl: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(20),
         Unique: true, 
-        allowNull: false   
+        allowNull: false,
+        primaryKey: true  
     
     },
     descripcion_tl: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        dafaultValue: 'no aplica'
     },
     createdAt:{
         type: Sequelize.DATE,

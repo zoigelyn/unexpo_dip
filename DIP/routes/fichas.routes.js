@@ -2,42 +2,62 @@
 const express = require('express');
 const router = express.Router();
 
-const { insertarFicha, busquedaGeneral, busquedaEspecifica, eliminacionFicha, actualizarFicha, actualizarUnaFicha, fichasPendientes, satisfactorio, entregarFicha, FichasEntregadas, eliminarReserva, eliminarFicha, fichasReservadas, aprobarFicha, vencimiento, reservarLibro, misReservas, prestamosVV, existeConfigDias, prestamos} = require('../controllers/fichas.controller');
+const { insertarFicha, busquedaGeneral, busquedaEspecifica, eliminacionFicha, actualizarFicha, actualizarUnaFicha, fichasPendientes, satisfactorio, entregarFicha, FichasEntregadas, eliminarReserva, eliminarFichaE, fichasReservadas, aprobarFicha, vencimiento, reservarLibro, misReservas, prestamosVV, existeConfigDias, prestamos, prestamosP, recibirLibro, prestamosVVAjax, prestamosAjax, prestamosPAjax, misPrestamos, miFicha, miFichaE } = require('../controllers/fichas.controller');
 
-const { isAuthenticated, isAuthenticatedAjax, isAuthenticatedB} = require('../controllers/usuarios.controllers');
+const { isAuthenticated, isAuthenticatedAjax, isAuthenticatedB, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
-//const consultaBooks = require('../controllers/digitalLibrary.controller');
-//const consultaBooksOne = require('../controllers/digitalLibrary.controller');
-router.get('/bibliotecario/prestamos-vig-ven', isAuthenticated, existeConfigDias, prestamosVV);
-router.get('/bibliotecario/prestamos', isAuthenticatedB, existeConfigDias, prestamos);
+const {vistaDiasPrestamo, guardarConfDias} = require('../controllers/configuracion.controller');
 
 
-router.get('/usuario/reservar', isAuthenticated, (req,res,next) => {
-  
-    res.render('reservacion',{
-       titulo: 'Inicio',
-      usuarioL: req.session.usuarioL 
-      });
-  });
+//ruta que consulta los prestamos entregados
+router.get('/bibliotecario/prestamosAjax', isAuthenticatedBAjax, existeConfigDias, prestamosAjax);
 
-router.post('/insert', insertarFicha);
-router.post('/aprobar', aprobarFicha);//lista
-router.get('/fichas', FichasEntregadas);
-router.get('/pruebaPiloto', vencimiento);
+//ruta que consulta los préstamos pendientes
+router.get('/bibliotecario/prestamosPAjax', isAuthenticatedBAjax, existeConfigDias, prestamosPAjax);
 
-router.delete('/eliminarReserva', eliminarReserva);//lista
-router.delete('/eliminar', eliminarFicha);//lista
-router.get('/pending', fichasPendientes); //lista
-router.get('/reservas', fichasReservadas);
-router.get('/cardOne?', busquedaEspecifica);
-router.delete('/entregar', entregarFicha);//lista
-router.get('/cards', busquedaGeneral);
-router.delete('/deleteCard?', eliminacionFicha);
-router.put('/updatedCard?', actualizarFicha);
-router.put('/updatedCardOne?', actualizarUnaFicha);
+//ruta que consulta los prestamos vigente
+router.get('/bibliotecario/prestamosVVAjax', isAuthenticatedBAjax, existeConfigDias, prestamosVVAjax);
 
-router.post('/usuario/libros/reservar?', reservarLibro);
-router.get('/usuario/mis-reservas', misReservas);
+//Consulta los días de préstamos y limite de libros
+router.get('/bibliotecario/conf-dias', isAuthenticatedB, vistaDiasPrestamo);
+
+//Guarda configuración de días de préstamos y limite de libros
+router.post('/bibliotecario/conf-dias', isAuthenticatedBAjax, guardarConfDias);
+
+//eliminación de una ficha reservada
+router.delete('/usuario/eliminarFicha?', isAuthenticatedAjax, eliminarReserva);
+
+//Reservar un libro y actualizar estado del libro
+router.post('/usuario/reservar', reservarLibro);
+
+//ruta post que aprueba una reservación
+router.post('/bibliotecario/aprobar', isAuthenticatedBAjax, aprobarFicha);
+
+//ruta post para recibir un libro
+router.post('/bibliotecario/recibir', isAuthenticatedBAjax, recibirLibro);
+
+//Ruta que envia al usuario, docente o estudiante las reservaciones que tiene activas
+router.get('/usuario/mis-reservas',isAuthenticatedAjax, misReservas);
+
+//ruta que envia al usuario los préstamos que tiene activos
+router.get('/usuario/mis-prestamos',isAuthenticatedAjax, misPrestamos);
+
+//Envia al cliente la información sobre una ficha entregada
+router.post('/ver_ficha_e?', isAuthenticatedAjax, miFichaE);
+
+//Envia al cliente la información sobre una ficha vigente, pendiente o vencida
+router.post('/ver_ficha?', isAuthenticatedAjax, miFicha);
+
+
+
+//Elimina una reserva y actualiza el estado del libro
+//router.delete('/eliminarReserva',isAuthenticatedBAjax, eliminarReserva);
+
+//ruta tipo delete que elimina una ficha almacenada en fichas entregadas
+router.delete('/bibliotecario/eliminarFichaEntregada?',isAuthenticatedBAjax, eliminarFichaE);
+
+
+
 
 
 module.exports = router;

@@ -16,13 +16,13 @@
            <form  action="/signupConfig" method="POST" autocomplete="off">
                <div class=" col-xs-16 col-sm-14 col-sm-offset-1 ">
                    <div class="group-material">
-                       <input name="nombres" type="text" class="material-control material-control-login" placeholder="Nombres" required="" maxlength="70" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
+                       <input name="nombres" type="text" class="material-control material-control-login" placeholder="Nombres" required="" maxlength="35" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,35}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label>Nombres</label>
                    </div>
                    <div class="group-material">
-                       <input name="apellidos" type="text" class="material-control material-control-login" placeholder="Apellidos" required="" maxlength="70" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
+                       <input name="apellidos" type="text" class="material-control material-control-login" placeholder="Apellidos" required="" maxlength="35" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,35}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label>Apellidos</label>
@@ -41,11 +41,14 @@
                                <option value="" disabled="" selected="">Nacionalidad </option>
                                <option >V</option>
                                <option >E</option>
-                           </select></div>
+                               <label > </label>
+                           </select>
+                        </div>
                            <div class="div-table-cell" style="width: 11%;">
-                               <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="8" pattern="[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]{1,20}" data-toggle="tooltip" data-placement="top" >
+                               <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="8" pattern="^[0-9]{1,8}$" data-toggle="tooltip" data-placement="top" >
                        <span class="highlight"></span>
                        <span class="bar"></span>
+                       <label > </label>
                        </div>
                        
                    </div>
@@ -57,13 +60,13 @@
                        <label>Correo</label>
                    </div>
                    <div class="group-material">
-                       <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+                       <input name="clave" type="password" class="material-control material-control-login" placeholder="ej. mkj_mk5412, sólo 10 dígitos"  pattern="^([a-zA-Z0-9_]{2,})(_)?([a-zA-Z0-9_]{2,})$" title="Sólo formatos como, ej. Mjhds_12dl, con 10 digitos y solo se permite el caracter especial '_' y entre letras y números" required="" maxlength="10" minlength="10" data-toggle="tooltip" data-placement="top" >
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label>Contraseña</label>
                    </div>
                    <div class="group-material">
-                       <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="200" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+                       <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="10" data-toggle="tooltip" pattern="^([a-zA-Z0-9_]{2,})(_)?([a-zA-Z0-9_]{2,})$"data-placement="top" title="Repite la contraseña" minlength="10">
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label>Repetir contraseña</label>

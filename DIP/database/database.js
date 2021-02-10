@@ -1,55 +1,26 @@
-/*var Sequelize = require('sequelize');
 
-var sequelize = new Sequelize("unexpo-DIP","postgres","unexpo20112",{
-	dialect:"postgres", //OTROS VALORES: postgres, mysql, mariadb
-	//la propiedad storage SOLO ES PARA sqlite
-	define:{
-		//timestamps:true,
-		timezone: 'utc',
-		//deshabilita la convencion por default para el nombre de las tablas
-		freezeTableName:true
-	}
-});
+const path = require('path');
+let destino = path.join(__dirname, '..\\..\\.env')
+require('dotenv').config({path: destino});
+//Se requiere para el uso de variables de entorno
 
-sequelize.authenticate()
-//sequelize.sync()
-//Estudiantes.sync()
-//Docentes.sync()
-.then(() =>{
-	
-	console.log('conectado')
-	
-})
-.catch(err => {
-	console.log(err);
-    console.log('no se conecto')
-});
-
-
-module.exports = sequelize;
-*/
-
-
-require('dotenv').config()
-	var Sequelize = require('sequelize')
+var Sequelize = require('sequelize')//Se requiere sequelize
 	  , sequelize = null
   
-	if (process.env.HEROKU_POSTGRESQL_URL) {
-	  // the application is executed on Heroku ... use the postgres database
+	if (process.env.HEROKU_POSTGRESQL_URL) {// si existe las variables que me brinda heroku
+	 
 	  sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
 		dialect:  'postgres',
 		protocol: 'postgres',
 		port:     match[4],
 		host:     match[3],
-		logging:  true //false
+		logging:  true 
 	  })
 	} else {
-	  // the application is executed on the local machine ... use mysql
-	  sequelize = new Sequelize("unexpo-DIP","postgres","unexpo20112",{
-		dialect:"postgres", //OTROS VALORES: postgres, mysql, mariadb
-		//la propiedad storage SOLO ES PARA sqlite
+	//Sino se ejecuta localmente
+	  sequelize = new Sequelize(process.env.NAME_DATABASE, process.env.USUARIO_DATABASE, process.env.CLAVE_DATABASE,{
+		dialect:"postgres", 
 		define:{
-			//timestamps:true,
 			timezone: 'utc',
 			//deshabilita la convencion por default para el nombre de las tablas
 			freezeTableName:true
@@ -57,29 +28,22 @@ require('dotenv').config()
 	});
 	
 	}
-  /*
-	global.db = {
-	  Sequelize: Sequelize,
-	  sequelize: sequelize,
-	  Usuario: sequelize.import(__dirname + '\models\usuario'),
-	  tipoUsuario: sequelize.import(__dirname + '\models\tipoUsuario') 
-	  // add your other models here
-	}
-  
-	/*
-	  Associations can be defined here. E.g. like this:
-	  global.db.User.hasMany(global.db.SomethingElse)
-	*/
-  
-	sequelize.authenticate()
-	
-	.then(() =>{
+
+    (async () => {
+			
+		});
+	sequelize.authenticate()//autentifica la conexion
+	.then(async function(){
 		
-		console.log('conectado')
+		
+	await sequelize.sync({force: true})	//Elimina las tablas existentes en la base de datos y crea las nuevas en base a los modelos
+		console.log('conectado');
 		
 	})
-	.catch(err => {
-		console.log(err);
-		console.log('no se conecto')
+	.catch(error => {
+		console.log('no se conecto');
+		console.log(error);
+		
 	});
+	
   module.exports = sequelize;

@@ -1,82 +1,3393 @@
 <!DOCTYPE html>
-  <html lang="es">
+<html lang="es">
+<%- include ("partes/cabecera") %>
+<script>
+  //manejo de errores para todas las solicitudes ajax
+  function manejoErrores(error) {
+    let message;
+    if (error.responseJSON) {
+      if (error.responseJSON.message) {
+        message = error.responseJSON.message
 
-    <%- include ("partes/cabecera") %>
+      }
+    } else {
+      message = 'Sin información'
+    }
 
-<body id="prueba" >
-   <%- include ("partes/navegacionB") %>
-    <div class="content-page-container full-reset custom-scroll-containers">
-       <%- include ("partes/navegacionSuperiorB") %>
-        <div class="container">
-            <div class="page-header">
-                <h1 class="all-tittles">Sistema bibliotecario <small>Inicio</small></h1>
+    let statusCode = error.status || 500;
+    let statusText = '';
+    switch (statusCode) {
+      case 400:
+        statusText = 'Bad Request';
+        break;
+      case 401:
+        statusText = 'Unauthorized';
+        break;
+      case 403:
+        statusText = 'Forbidden';
+        break;
+      case 500:
+        statusText = 'Internal Server Error';
+        break;
+      case 200:
+        statusText = 'OK';
+        break;
+    };
+    if (statusCode == 500 || statusCode == 400) {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/robot-error.ico"width= "180" height= "180" > ¡Error!</p>
+ <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                        ${statusText}   (Error: ${statusCode})
+                        <br><p class="text-center" style="font-size:25px;"> ${message}</p> </p>`);
+    } else if ( statusCode == 403 || statusCode == 401) {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/peligro.ico"width= "180" height= "180" ></p>
+ <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                        ${statusText}   (Error: ${statusCode})
+                        <br><p class="text-center" style="font-size:25px;"> ${message}<button id="login" class="bnt btn-link" href="#">Logeate</button> </p></p>`);
+    } else {
+      $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; ">!UPS¡ <img src="/assets/icons/robot-roto.ico"width= "180" height= "180" ></p>
+      <br>
+                
+                <p class="text-center" style="font-size:20px; ">
+                       Recurso no encontrado  (Error: 404) </p>`);
+    }
+    $("div#myModal").modal("hide");
+    $("div#myModalError").modal("show");
+
+  };
+
+  //animacion para la seccion de noticias
+  $(document).ready(function () {
+    var first = 0;
+    var speed = 700;
+    var pause = 7500;
+    function removeFirst() {
+      let elementos = $('div#cuadronot').find('li').length;
+      if (elementos <= 1) {
+        clearInterval(intervalId);
+      }
+      first = $('div#cuadronot li:first').html();
+      $('div#cuadronot li:first')
+        .animate({ opacity: 0 }, speed)
+        .fadeOut('slow', function () {
+          $(this).remove();
+        });
+
+      addLast(first);
+
+    }
+    function addLast(first) {
+
+      last = '<li style="display:none;">' + first + '</li>';
+      $('div#cuadronot').append(last);
+      $('div#cuadronot li:last')
+        .animate({ opacity: 1 }, speed)
+        .fadeIn('slow')
+    }
+
+    intervalId = setInterval(removeFirst, pause);
+
+  });
+
+
+</script>
+<script>
+function formatoC(id1, id2) {
+  $(id1).html("");
+  $(id2).html(
+    `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+  );
+}
+function formatoI(id1, id2) {
+  $(id1).html(`<p>Debe ser formato pdf</p>`);
+  $(id2).html(
+    `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+  );
+}
+function comprobarF(archivo) {
+  var i = $(archivo).attr("id").split("-").pop();
+  var ext = $(archivo).val().split(".").pop().toLowerCase();
+
+  var id1 = "p#formato-pdf-" + i;
+  var id2 = "td#img-pdf-" + i;
+  if ($(archivo).val() != "") {
+    if (ext === "pdf") {
+      formatoC(id1, id2);
+    } else {
+      formatoI(id1, id2);
+    }
+  }
+}
+/*function mostrarCampo(check) {
+  if (check.checked) {
+    $("table#table-pdf").html('');
+  } else {
+
+    $("table#table-pdf").html(`<tr id="tr-pdf-1" style="border: none;">
+                  <td  style="width: 200px;  border: none;" >
+                      <input onchange="comprobarF(this)" id="pdf-1" name="pdf" type="file" required="" class="material-control tooltips-general" data-toggle="tooltip" data-placement="top" title="Archivo PDF">
+                              <span class="highlight"></span>
+                              <span class="bar"></span>
+                              <label >Archivo PDF</label>
+
+                  </td>
+                  <td  style="width: 30px;  border: none;" id="img-pdf-1">
+
+                  </td>
+              </tr>
+              <tr id="tr2-pdf-1">
+                  <td style="width: 200px; border: none;"><p class="text-center" id="formato-pdf-1"></p></td>
+                  <td style="width: 30px;  border: none;">
+                  </td>
+              </tr>`);
+
+  }
+}*/
+function tipoTrabajo(trabajo) {
+  if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
+    $("div#tutor").html(`
+         <input id="tutor" name="tutor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+                     <span class="highlight"></span>
+                     <span class="bar"></span>
+                     <label>Autor</label>`);
+  } else {
+    $("div#tutor").html("");
+  }
+}
+function sobresaltarFecha(res, i) {
+let fechaActual = new Date();
+let fecha_d = res.fichas[i].fecha_d;
+let dia = fecha_d.split('-')[2];
+let mes = fecha_d.split('-')[1] - 1;
+let año = fecha_d.split('-')[0];
+let fecha_devolucion = new Date(año, mes, dia);
+let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
+
+        if (resultado) {
+            let q = "#fecha-d" + res.fichas[i].cota_f;
+            $(q).css({ 'color': 'red' });
+        }
+};
+
+
+
+  
+  function mostrarCampo(check) {
+    if (check.checked) {
+      $("tr#tr-pdf-1").hide();
+      $("tr#tr2-pdf-1").hide();
+      $("#pdf-1").removeAttr("required");
+    } else {
+      $("tr#tr-pdf-1").show();
+      $("tr#tr2-pdf-1").show();
+      $("#pdf-1").attr("required");
+
+    }
+  }
+ 
+  function mostrarCampo2(check) {
+    if (check.checked) {
+      $("tr#tr-pdf-1").hide();
+      $("tr#tr2-pdf-1").hide();
+      $("#pdf-2").removeAttr("required");
+    } else {
+      $("tr#tr-pdf-1").show();
+      $("tr#tr2-pdf-1").show();
+      $("#pdf-2").attr("required");
+
+    }
+  }
+
+
+
+  function añadirC(campo, divImg) {
+    $("div#pdfs").append(campo);
+    $("div#pdfs").append(`<div class="col-md-2" id="imgs-pdfs"></div>`);
+    $("td#imgs-pdfs").append(divImg);
+  }
+
+  function removerC(id, id1) {
+    $(id).remove();
+    $(id1).remove();
+  }
+  function añadirArchivo(input) {
+    var i = $(input).attr("id").split("-").pop();
+    var idd = "td#td-pdf-" + i;
+    var id2 = "div#img-pdf-" + i;
+
+    if (input.checked) {
+      var cambio = `
+                 <div class="col-md-10" id="div-pdf-${i}">
+                 <input onchange="comprobarF(this)" id="pdf-${i}" type="file" name="pdf-${i}" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Archivo PDF ${i}">
+                        
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Archivo PDF ${i}</label>
+                         <p class="text-center" id="formato-pdf-${i}"> </p>
+                 </div>`;
+      var camp = `
+                 <div  id="img-pdf-${i}"></div>`;
+      añadirC(cambio, camp);
+    } else {
+      removerC(idd, id2);
+    }
+  }
+
+  function ejemplares() {
+    let inputEjemplar = $("input#ejemplar");
+    if (inputEjemplar.val() >= 1) {
+      $("table#tb").html("");
+      $("div#img-cota-1").html("");
+      $("div#incluye-pdf").html("");
+      $("div#no-incluye-pdf").html("");
+      for (var i = 1; i <= inputEjemplar.val(); i++) {
+        $("table#tb").append(`
+                  <tr>
+                                 <td style="width: 30px; overflow: hidden;">
+                                  <input  id="ejemplar${i}" name="ejemplar${i}" type="number" class="tooltips-general material-control" placeholder="Ej.${i}" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="${i}">
+                                  <span class="highlight"></span>
+                                  <span class="bar"></span>
+                                  <label>ejemplar</label>
+                                
+                                 </td>
+                                 <td style="width: 200px; overflow: hidden;">
+                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <span class="highlight"></span>
+                                  <span class="bar"></span>
+                                  <label>Cota</label>
+                                  
+                                 </td>
+                                 <td id="imgs-cota" style="width: 20px; overflow: hidden;">
+                                  <div id="img-cota-${i}"></div>
+                                 </td>
+                              </tr>
+                              <tr>
+                              <td style="width: 30px; overflow: hidden;"></td>
+                              <td id="mensaje-cota" style="width: 200px; overflow: hidden;"><div  id="cota-unica-${i}" ></div></td>
+                              <td style="width: 20px; overflow: hidden;"></td>
+                              </tr>
+                              
+                  `);
+        if (i < inputEjemplar.val()) {
+          $("div#incluye-pdf").append(`
+                        <br>
+                         <input  onchange="añadirArchivo(this)"   id="incluye-pdf-${i}" type="checkbox" name="incluye-pdf-${i}" value="${i}" class="tooltips-general" title="Incluye PDF el Ej. ${i}" >PDF Ej.${i}
+                       <br>
+                         `);
+        } else {
+          $("div#incluye-pdf").append(`
+                        <br>
+                         <input class="tooltips-general"  onchange="añadirArchivo(this)"  title="Incluye PDF el Ej.${i}" id="incluye-pdf-${i}" type="checkbox" name="incluye-pdf-${i}" value="${i}" >PDF Ej.${i}
+                         `);
+        }
+      }
+    } else {
+      $("table#tb").html("");
+      $("div#img-cota-1").html("");
+      $("div#incluye-pdf").html("");
+      $("div#no-incluye-pdf").html("");
+      $("table#tb").append(`
+                  <tr>
+                                 <td style="width: 30px; overflow: hidden;">
+                                  <input  id="ejemplar1" name="ejemplar1" type="number" class="tooltips-general material-control" placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="1">
+                                  <span class="highlight"></span>
+                                  <span class="bar"></span>
+                                  <label>ejemplar</label>
+                                
+                                 </td>
+                                 <td style="width: 200px; overflow: hidden;">
+                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <span class="highlight"></span>
+                                  <span class="bar"></span>
+                                  <label>Cota</label>
+                                  
+                                 </td>
+                                 <td id="imgs-cota" style="width: 20px; overflow: hidden;">
+                                  <div id="img-cota-1"></div>
+                                 </td>
+                              </tr>
+                              <tr>
+                              <td style="width: 30px; overflow: hidden;"></td>
+                              <td id="mensaje-cota" style="width: 200px; overflow: hidden;"><div  id="cota-unica-1" ></div></td>
+                              <td style="width: 20px; overflow: hidden;"></td>
+                              </tr>
+                              
+                  `);
+    }
+  };
+  function showModal() {
+    document.getElementById('openModal').style.display = 'block';
+  };
+
+  function CloseModal() {
+    document.getElementById('openModal').style.display = 'none';
+  };
+
+  function resetear() {
+
+    $("td#mensaje-cota").html("");
+    $("div#estatus").html("");
+    $("td#img-pdf-1").html("");
+    $("td#imgs-cota").html("");
+    $("p#formato-pdf-1").html("");
+    $("div#mensaje").html("");
+    $("tr#tr2-pdf-1").html("");
+
+    $("button#guardar").html(`<div id="estatus">
+                 <i class="zmdi zmdi-floppy"></i>
+                    </div> <p id="boton">&nbsp;&nbsp; Guardar</p>`);
+
+
+    $("table#tb").html("");
+    $("table#tb").append(`
+                    <tr>
+                                   <td style="width: 30px; overflow: hidden;">
+                                    <input  id="ejemplar1" name="ejemplar1" type="number" class="tooltips-general material-control" placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="1">
+                                    <span class="highlight"></span>
+                                    <span class="bar"></span>
+                                    <label>ejemplar</label>
+                                  
+                                   </td>
+                                   <td style="width: 200px; overflow: hidden;">
+                                    <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                    <span class="highlight"></span>
+                                    <span class="bar"></span>
+                                    <label>Cota</label>
+                                    
+                                   </td>
+                                   <td id="imgs-cota" style="width: 20px; overflow: hidden;">
+                                    <div id="img-cota-1"></div>
+                                   </td>
+                                </tr>
+                                <tr>
+                                <td style="width: 30px; overflow: hidden;"></td>
+                                <td id="mensaje-cota" style="width: 200px; overflow: hidden;"><div  id="cota-unica-1" ></div></td>
+                                <td style="width: 20px; overflow: hidden;"></td>
+                                </tr>
+                                
+                    `);
+
+
+    document.getElementById("tipo_l").focus({ preventScroll: true });
+    document.getElementById("reset").click();
+
+   let isChecked = document.getElementById("mostrar_1").checked;
+   if (isChecked) {
+     document.getElementById("mostrar_1").click();
+   }
+    
+   
+
+  };
+  $(function () {
+    let formato = $("form#formato");
+
+    let inputEjemplar1 = $("input#ejemplar1");
+    let divEjemplares = $("div#ejemplares");
+    let divCotas = $("div#cotas");
+    let divRow = $("div#row");
+    let divImgs = $("div#imgs-cota");
+    formato.on("submit", function (e) {
+      e.preventDefault();
+      let data = new FormData(this);
+
+      var isChecked = document.getElementById("mostrar_1").checked;
+    
+      if (isChecked && data.has("pdf")) {
+        data.delete("pdf");
+      }
+
+      $.ajax({
+        beforeSend: function () {
+          $("div#estatus").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          ); 
+          $("p#boton").html("Guardando...");
+        },
+        url: "/bibliotecario/insert",
+        type: "POST",
+        data: data,
+        processData: false,
+        contentType: false,
+      })
+        .done(function (res) {
+          $("div#estatus").html(
+            `<img src="/assets/icons/correcto.ico"width= "20" height= "20">`
+          );
+          $("div#mensaje").html(`<p class="text-center">${res}</p>`);
+          $("p#boton").html("Se ha guardado");
+          setTimeout(resetear, 3000);
+          $("p#mensaje-final").html(`${res}`);
+    showModal();
+        })
+        .fail(function (error) {
+          resetear();
+          manejoErrores(error);
+        });
+    });
+
+  });
+
+ //funcion que comprueba que cada cota sea unica
+  function añadirCampoPdf(input) {
+    var bandera = 1;
+    var cota1, cota2, cota, i, m;
+
+
+    var elementos = document.getElementsByTagName('input');
+
+    var tamaño = elementos.length;
+
+    var elemento1;
+    var matrizElementos = new Array();
+
+    var matrizIndice = new Array();
+
+    for (var j = 0; j < tamaño; j++) {
+
+      cota1 = elementos[j].value;
+      cota2 = $(input).val();
+      elemento1 = elementos[j].getAttribute('id').charAt(0);
+
+      if (elemento1 === "c") {
+
+        matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
+        matrizElementos.push(elementos[j].value);
+
+
+        if (cota1 === cota2) {
+          i = elementos[j].getAttribute('id').split('-').pop();
+
+          cota = cota2;
+
+        }
+      }
+    }
+
+    var tamañoM = matrizElementos.length;
+    for (var f = 0; f <= tamañoM; f++) {
+      if (cota === matrizElementos[f] && i !== matrizIndice[f]) {
+        bandera = 0;
+        $(`div#img-cota-${i}`).html(`<br>
+             <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">
+             <br>
+             <br>`);
+        $(`div#cota-unica-${i}`).html(`<br>Cota repetida con el ejemplar ${matrizIndice[f]}`);
+      }
+    }
+
+    if (bandera === 1) {
+
+      $.ajax({
+
+        url: '/bibliotecario/ec',
+        type: 'POST',
+        data: { cota: cota }
+
+      })
+        .done(function (res) {
+          if (res === '') {
+            $(`div#cota-unica-${i}`).html('');
+            $(`div#img-cota-${i}`).html(`
+          <img src="/assets/img/satisfactorio.png" width= "20" height= "20">
+          `);
+          } else {
+            $(`div#cota-unica-${i}`).html(`<p>${res}</p>`);
+            $(`div#img-cota-${i}`).html(`
+          <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`);
+          }
+
+        })
+        .fail(function (error) {
+          manejoErrores(error);
+    });
+  };
+};
+  //--------------------------------------------------------------------
+  function añadirAtt(query) {
+    $(query).attr("disabled", true);
+  };
+  function verPDF(input) {
+    let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
+    let titulo = $(input).attr("data_titulo");
+    $('#myModalLabel').text(titulo);
+    $('#pdfdoc').attr('src', url);
+    $('#myModal5').modal("show");
+  };
+
+
+  function ver(input) {
+
+    let cota = $(input).attr("id").split('-').pop();
+    $.ajax({
+      beforeSend: function () {
+        $("div#cargando").html(
+          '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+        );
+
+      },
+      url: `/ver_libro?cota=${cota}`,
+      type: 'POST'
+
+    })
+      .done(function (libro, url) {
+
+        $("div#cargando").html('');
+        $("div#modal-body-4").html('');
+        $("div#tutor").html('');
+        $("#myLabel").html('');
+        $("div#modal-body-4").append(`
+        <form  autocomplete="off" enctype="multipart/form-data" id="actualizar">
+                          
+                          <div class="container-flat-form">
+                             
+                              <div class="title-flat-form title-flat-blue">Ver/Editar</div>
+                              <div class="row">
+                                 
+                                  <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                                      <legend><strong>Información básica</strong></legend><br>
+              
+                                      <div  class="group-material" >
+                                          <span>Categoría</span>
+                                          <select  onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l"  required="" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Categoria del libro">
+                                              <option selected="selected"  >${libro.libro[0].tipo_l}</option>
+                                              <option>Libro</option>
+                                              <option>Revista</option>
+                                              <option>Trabajo de grado</option>
+                          
+                                          </select>
+                                      </div>
+                                     
+                                      
+                           <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tb">
+                            <tr>
+                                     <td  style="width: 30%; overflow: hidden; border: none;">
+                                      <input  id="ejemplar" name="ejemplar" type="number" class="tooltips-general material-control" placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="${libro.libro[0].ejemplar}">
+                                      <span class="highlight"></span>
+                                      <span class="bar"></span>
+                                      <label>ejemplar</label>
+                                    
+                                     </td>
+                                     <td style="width: 80%; overflow: hidden; border: none;">
+                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota no la puedes modificar" readonly>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Cota</label>
+                                     </td>
+                                     
+                                  </tr>
+                                  
+                              
+                              </table>
+                       
+                                      <div  class="group-material">
+                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,30}" required=""  maxlength="30" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label>Título</label>
+                                      </div>
+                                      <div  class="group-material">
+                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
+                                          <span class="highlight"></span>
+                                          <span class="bar"></span>
+                                          <label>Autor</label>
+                                      </div>
+                                      <div class="group-material" id="tutor">
+                                        
+                                      </div>
+                                      <div class="group-material">
+                                          <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" value="${libro.libro[0].volumen}" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Volumen del libro">
+                                          <span class="highlight"></span>
+                                          <span class="bar"></span>
+                                          <label>Volumen</label>
+                                      </div>
+              
+                                      <div  class="group-material">
+                                          <input id="año" name="año" type="text" class="material-control tooltips-general" placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4" minlength="4"data-toggle="tooltip" data-placement="top" value="${libro.libro[0].año}" title="Año del libro">
+                                          <span class="highlight"></span>
+                                          <span class="bar"></span>
+                                          <label>Año</label>
+                                      </div>
+                                      <div  class="group-material">
+                                          <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}"maxlength="30" value="${libro.libro[0].editorial}" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                                          <span class="highlight"></span>
+                                          <span class="bar"></span>
+                                          <label>Editorial</label>
+                                      </div>
+                                      <div  class="group-material">
+                                          <input name="estado_l" type="text" class="tooltips-general material-control" placeholder="Estado del libro" required="" pattern="[a-zA-Zá-ú ]{1,20}" maxlength="20" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].estado_l}"title="Estado del libro" disabled>
+                            
+                                      </div>
+                                      
+                                      <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="${libro.libro[0].cota}" data_url="${libro.libro[0].destino}" data_titulo=${libro.libro[0].titulo}">Ver Pdf del libro </a></p>
+                           
+                       <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf" >      
+                 <tr id="tr-pdf-1" style="border: none;">
+                    <td  style="width: 80%;  border: none;" >
+                        <input onchange="comprobarF(this)" id="pdf-2" name="pdf" type="file" required="" class="material-control tooltips-general" data-toggle="tooltip" data-placement="top" title="Archivo PDF">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label >Archivo PDF</label>
+
+                    </td>
+                    <td  style="width: 30%;  border: none;" id="img-pdf-1">
+
+                    </td>
+                </tr>
+                <tr id="tr2-pdf-1">
+                    <td style="width: 80%; border: none;"><p class="text-center" id="formato-pdf-1"></p></td>
+                    <td style="width: 30%;  border: none;">
+                    </td>
+                </tr>
+                      </table>
+                   
+                                  <div  class="group-material" >
+                                     <p class="text-center"> <input onchange="mostrarCampo2(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">Mantener archivo PDF</p>
+                                  </div>
+                                      
+                                      <p class="text-center">
+                                          
+                              <button id="guardar"  type="submit" class="btn btn-primary" ><div id="estatus"><i class="zmdi zmdi-floppy"></i></div> <p id="boton">&nbsp;&nbsp; Guardar</p> </button>
+                                          
+                                         <div id="mensaje"></div>
+                                     </p>
+                                  
+                                  </div>
+                                  
+                              </div>
+                              
+                          </div>
+                      </form>
+                      
+        `);
+
+        if (libro.libro[0].destino === 'no aplica') {
+          let q = "a#" + libro.libro[0].cota;
+          añadirAtt(q);
+        }
+
+        if (libro.libro[0].tipo_l === 'trabajo de grado') {
+          $("div#tutor").append(`
+           <input id="tutor" name="tutor_t" type="text" class="tooltips-general material-control" placeholder="Tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" value="${libro.libro[0].tutor}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+                       <span class="highlight"></span>
+                       <span class="bar"></span>
+                       <label>Autor</label>`);
+        };
+        $("div#myModal4").modal('show');
+        //  window.open('/hola','_target');
+
+      })
+      .fail(function (error) {
+        $("div#cargando").html(
+          `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+        );
+      });
+  };
+
+
+  function removerCampo(campo) {
+    $(campo).remove();
+  };
+  function eliminarLibro(input) {
+    let r = confirm('¿Estas seguro que deseas eliminar este libro?');
+    if (r) {
+      let cota = $(input).attr("id");
+      let c = "div#" + cota + 0;
+      $.ajax({
+        beforeSend: function () {
+          $("div#cargando").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          );
+          $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal").modal("show");
+
+        },
+        url: `/bibliotecario/eliminar_libro?cota=${cota}`,
+        type: 'DELETE'
+      })
+        .done(function (librosEliminados) {
+          $("div#myModal").modal("hide");
+          $("div#cargando").html('');
+          removerCampo(c);
+          $("div#cargando").html(`<h3 class="text-center">Se ha eliminado ${librosEliminados.librosEliminados} libro</h>`);
+          let j = $("#container button").size();
+          if (j === 0) {
+            $("div#container").html('');
+            $("div#cargando").html(`<h3 class="text-center">No hay resultados para mostrar</h3>`);
+
+          }
+
+
+        })
+        .fail(function (error) {
+          $("div#cargando").html(
+            `<p class="text-center"><img src="/assets/icons/robot.ico"width= "20" height= "20">Ha ocurrido un error</p>`
+          );
+          manejoErrores(error);
+        });
+    };
+  };
+  function añadirTutor(input) {
+    if ($(input).val() === 'Trabajo de grado') {
+
+      $('div#div-contenedor').show();
+    } else {
+      $('div#div-contenedor').hide();
+    }
+  };
+ //Realiza una consulta completa de todos los libros
+  function ocultarCampos(check) {
+    var limpiarButton = document.getElementById("limpiarButton");
+    limpiarButton.click();
+    var isChecked = document.getElementById("ocultar").checked;
+    if (isChecked) {
+      $('form#formato-enlinea').hide();
+      $.ajax({
+        beforeSend: function () {
+          $("div#cargando").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          );
+
+        },
+        url: '/todos-libros',
+        type: 'POST'
+      })
+        .done(function (libros) {
+          let resultados = libros.libros.length;
+          if (resultados > 0) {
+            $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
+            $("div#container").html(` <div class="container-fluid" >
+            <h2 class="text-center all-tittles">Resultados</h2>
+            <div class="table-responsive">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 6%;">#</div>
+                        <div class="div-table-cell" style="width: 10%;">Cota</div>
+                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        <div class="div-table-cell" style="width: 8%;">Titulo</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
+                        <div class="div-table-cell" style="width: 6%;"> 
+                        Eliminar</div>
+                    </div>
+            </div>
+        <div id="libros"> </div>
+        </div>`);
+            for (var i = 0; i < libros.libros.length; i++) {
+
+              $("div#container").append(`
+        <div class="table-responsive" id="${libros.libros[i].cota}0">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list">
+                        <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
+                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
+                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        
+                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        
+                       
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                        
+                    </div>
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
+                            
+                            </div>
+                    </div>
+                </div>
+            </div>`);
+            }
+
+            document.getElementsByTagName("button")[1].focus({ preventScroll: true });
+          } else {
+            $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
+          }
+        })
+        .fail(function (error) {
+          $("div#cargando").html(
+            `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+          );
+        });
+
+
+    } else {
+
+      $('form#formato-enlinea').show();
+      $("div#container").html('');
+      $("div#cargando").html('');
+    }
+  };
+  function actualizarFormato(t, tp, libro) {
+    $(t).html(`${libro.titulo}`);
+    $(tp).html(`${libro.tipo_l}`);
+  }
+  $(function () {
+    $(document).on('click', '.modal', function () {
+     $("button#login").on("click", function(e) {
+       e.preventDefault();
+      window.location = "/login"
+     });
+      $("form#noticiaEditada").on('submit', function (e) {
+
+        e.preventDefault();
+        var limpiarButton = document.getElementById("reset1");
+
+        let data = new FormData(this);
+
+        var isChecked = document.getElementById("mostrarImg").checked;
+        if (isChecked && data.has("img-1")) {
+          data.delete("img-1");
+        }
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal2").modal("hide");
+            $("div#myModal").modal("show");
+          },
+          url: "/bibliotecario/editar-noticia",
+          type: "POST",
+          data: data,
+          processData: false,
+          contentType: false,
+        })
+          .done(function (res) {
+            if (res !== '') {
+              limpiarButton.click();
+              $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
+              let bandera = 2;
+              $("div#myModal").on("hidden.bs.modal", function () {
+                if (bandera == 2) {
+                  bandera = 0;
+                  mostrarNoticias();
+                }
+              });
+            } else {
+              manejoErrores(error);
+            }
+
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+
+      });
+      $("form#preguntaEditada").on('submit', function (e) {
+        e.preventDefault();
+        var limpiarButton = document.getElementById("reset4");
+
+        let data = $(this).serialize();
+
+
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal2").modal("hide");
+            $("div#myModal").modal("show");
+          },
+          url: "/bibliotecario/editar-pregunta",
+          type: "PUT",
+          data: data,
+        })
+          .done(function (res) {
+            if (res !== '') {
+              limpiarButton.click();
+              $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;"> ${res} </p>`);
+              let bandera = 1;
+              $("div#myModal").on("hidden.bs.modal", function () {
+                if (bandera == 1) {
+                  bandera = 0;
+                  mostrarPreguntas();
+                }
+
+              });
+            } else {
+              manejoErrores(error);
+            }
+
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+
+      });
+      $("form#actualizar").on('submit', function (e) {
+         e.preventDefault();
+        var limpiarButton = document.getElementById("limpiarButton");
+        
+        let data = new FormData(this);
+
+        var isChecked = document.getElementById("mostrar").checked;
+       
+        if (isChecked && data.has("pdf")) {
+          data.delete("pdf");
+        }
+        $.ajax({
+          beforeSend: function () {
+
+            $("p#boton").html("Guardando...");
+          },
+          url: "/bibliotecario/actualizar",
+          type: "POST",
+          data: data,
+          processData: false,
+          contentType: false,
+        })
+          .done(function (res) {
+            limpiarButton.click();
+            $("div#estatus").html(
+              `<img src="/assets/icons/correcto.ico"width= "20" height= "20">`
+            );
+            $("div#mensaje").html(`<p class="text-center">${res.mensaje}</p>`);
+            $("p#boton").html("Se ha actualizado");
+            let titulo = `div#${res.libro.cota}_titulo`;
+            let tipo = `div#${res.libro.cota}_tipo`;
+            actualizarFormato(titulo, tipo, res.libro);
+
+            $("p#mensaje-final").html(`${res.mensaje}`);
+    
+            $("div#myModal4")
+              .modal("hide")
+              .on('hidden.bs.modal', function (e) {
+                showModal();
+              });
+
+          })
+          .fail(function (error) {
+           resetear();
+           manejoErrores(error);
+          });
+
+      });
+ 
+
+    });
+    
+
+    $('form#formato-enlinea').on("submit", function (e) {
+      e.preventDefault();
+      var limpiarButton = document.getElementById("limpiarButton");
+      let data = $(this).serialize();
+
+      $.ajax({
+        beforeSend: function () {
+          $("div#cargando").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          );
+
+        },
+        url: '/busqueda-especifica',
+        type: 'POST',
+        data: data
+      })
+        .done(function (libros) {
+          limpiarButton.click();
+          let resultados = libros.libros[0].length;
+          if (resultados > 0) {
+            cargando.innerHTML = `<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`;
+            container.innerHTML = ` 
+              <h2 class="text-center all-tittles">Resultados</h2>
+              <div class="table-responsive">
+                  <div class="div-table" style="margin:0 !important;">
+                      <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 6%;">#</div>
+                        <div class="div-table-cell" style="width: 10%;">Cota</div>
+                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        <div class="div-table-cell" style="width: 8%;">Titulo</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
+                        <div class="div-table-cell" style="width: 6%;"> 
+                        Eliminar</div>
+                      </div>
+              </div>`;
+
+
+            for (var i = 0; i < libros.libros[0].length; i++) {
+
+              container.insertAdjacentHTML('beforeend', `
+          <div class="table-responsive" id="${libros.libros[0][i].cota}0">
+                  <div class="div-table" style="margin:0 !important;">
+                      <div class="div-table-row div-table-row-list">
+                          <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
+                          <div  class="div-table-cell" id="${libros.libros[0][i].cota}_cota" style="width: 10%;">${libros.libros[0][i].cota}</div>
+                          <div  class="div-table-cell" id="${libros.libros[0][i].cota}_tipo" style="width: 10%;">${libros.libros[0][i].tipo_l}</div>
+                          
+                          <div class="div-table-cell" id="${libros.libros[0][i].cota}_titulo" style="width: 8%;">${libros.libros[0][i].titulo}</div>
+                          
+                         
+                          <div class="div-table-cell" style="width: 6%;">
+                              
+                              <button class="btn btn-info"  id="id-${libros.libros[0][i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                          
+                          </div>
+                          <div class="div-table-cell" style="width: 6%;">
+                              
+                            <button class="btn btn-danger" id="${libros.libros[0][i].cota}" onclick="javascript:eliminarLibro(this)"><i class="zmdi zmdi-delete"></i></button>
+  
+                           
+                          </div>
+                      </div>
+                  </div>
+              </div>`);
+
+
+            }
+
+            document.getElementsByTagName("button")[1].focus({ preventScroll: true });
+          } else {
+            cargando.innerHTML = '<h3 class="text-center">No se obtuvieron resultados</h3>';
+            container.innerHTML = '';
+
+
+          }
+        })
+        .fail(function (error) {
+          limpiarButton.click();
+          cargando.innerHTML = '<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">';
+        });
+    });
+
+
+
+  });
+</script>
+<script>
+
+  //ocultar o mostrar el campo de ingresar una nueva imagen al momento de editar una noticia
+  function mostrarCampoImg(check) {
+    if (check.checked) {
+      $("table#table-img").html('');
+    } else {
+      $("table#table-img").html(` <tr id="tr-img-1" style="border: none;">
+                      <td style="width: 200px;  border: none;">
+                        <input onchange="comprobarFI(this)" id="img-1" name="img" type="file" required=""
+                          class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                          title="Imagen">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Imagen</label>
+                     
+                      </td>
+                      <td style="width: 30px;  border: none;"  id="ico-1">
+
+                      </td>
+                    </tr>
+                    <tr id="tr2-img-1">
+                      <td style="width: 200px; border: none;">
+                          <p class="text-center" id="formato-img-1"></p>
+                     
+                      </td>
+                      <td style="width: 30px;  border: none;">
+                      </td>
+                    </tr>`);
+    }
+  }
+  //elimina una noticia
+  function eliminarUnaNoticia(id) {
+
+    let id_n = id;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/bibliotecario/eliminar?id_n=${id_n}`,
+      type: "POST",
+    })
+      .done(function (res) {
+        if (res == 'ok') {
+          let msj = 'noticia eliminada'
+          $("p#modal-p-center").html(`<p style="background-color: cornsilk;">Eliminado con exito</p>`);
+          $("div#myModal").on('hidden.bs.modal', function (e) {
+            if (msj === 'noticia eliminada') {
+              msj = '';
+              mostrarNoticias();
+
+            }
+
+          });
+        }
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  }
+  //ver la noticia en una ventana modal estatica
+  function verUnaNoticia(id) {
+    let id_n = id;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/noticia?id_n=${id_n}`,
+      type: "POST",
+    })
+      .done(function (noticia) {
+        $("div#modal-body-2").html(`
+         <div id="cuadro">
+  <div class="container-fluid" >
+  
+          <img src="${noticia.url_imagen}" alt="">
+          <a class="news-title" href="#">${noticia.titulo_noticia}</a>
+          <span class="news-text text-center">${noticia.text_noticia}</span> </div>
+        </div>
+        `);
+        $("div#myModal").modal("hide");
+        $("div#myModal2").modal("show");
+
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+  //solicitas y muestras las noticias
+  function mostrarNoticias() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/noticias",
+      type: "GET",
+    })
+      .done(function (noticias) {
+
+        $("div#cuadronot").html('');
+
+        if (noticias.length > 0) {
+          var j = 0;
+          for (var i = 0; i < noticias.length; i++) {
+
+            $('div#cuadronot').append(`
+<li>
+ <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
+ <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
+   <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
+         
+         <img src="${noticias[i].url_imagen}" alt="">
+         <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
+         <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
+        </div>
+     </li>
+     `);
+
+
+          }
+
+
+        } else {
+          $("div#cuadronot").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay noticias recientes </h3>
+                </div>
+          
+                            `);
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  };
+  //actualizas una noticia 
+  function editarUnaNoticia(input) {
+    let data = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/bibliotecario/noticia?id_n=${data}`,
+      type: "POST",
+    })
+      .done(function (noticia) {
+        $("div#modal-body-2").html('');
+        if (noticia) {
+          $("div#modal-body-2").html(`
+        <div class="container-fluid"> <form autocomplete="off" enctype="multipart/form-data" id="noticiaEditada">
+            <div class="container-flat-form">
+
+              <div class="title-flat-form title-flat-blue">Edita la noticia</div>
+              <div class="row">
+
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                  <legend><strong>Información básica</strong></legend><br>
+                  <div class="group-material">
+                    <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
+                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="35"
+                      data-toggle="tooltip" pattern="[Áa-z- -ñ]{1,}" min="1" data-placement="top" value="${noticia.titulo_noticia}"
+                      title="Título de la noticia">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Título</label>
+                  </div>
+
+                  <div class="group-material">
+                    <input id="id_n" name="id_n" type="text"  value="${noticia.id_n}" hidden>
+                  </div>
+                  <div class="group-material">
+                    <input id="destino" name="destino" type="text"  value="${noticia.url_imagen}" hidden>
+                  </div>
+
+                  <div class="group-material">
+                    <textarea id="textNoticia" name="textNoticia" type="text"
+                      class="tooltips-general material-control form-control rounded-0" style="border-color: rgb(0, 0, 255);"
+                      placeholder="Escribe aquí la noticia" required="" data-toggle="tooltip" min="20"
+                      data-placement="top" title="Texto de la noticia" value="${noticia.text_noticia}" cols="78" rows="5" wrap="hard"
+                      spellcheck="true">${noticia.text_noticia}</textarea>
+
+                  </div>
+                  <div  class="group-material" >
+                                     <p class="text-center"> <input onchange="mostrarCampoImg(this)" id="mostrarImg" name="mostrarImg" type="checkbox"  value="1" class="tooltips-general" title="Selecciona si usaras la imagen actual">Mantener la imagen almacenada</p>
+                  </div>
+                  <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-img">
+                    <tr id="tr-img-1" style="border: none;">
+                      <td style="width: 200px;  border: none;">
+                        <input onchange="comprobarFI(this)" id="img-1" name="img" type="file" required=""
+                          class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                          title="Imagen">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Imagen</label>
+                     
+                      </td>
+                      <td style="width: 30px;  border: none;"  id="ico-1">
+
+                      </td>
+                    </tr>
+                    <tr id="tr2-img-1">
+                      <td style="width: 200px; border: none;">
+                          <p class="text-center" id="formato-img-1"></p>
+                     
+                      </td>
+                      <td style="width: 30px;  border: none;">
+                      </td>
+                    </tr>
+                  </table>
+                  <p class="text-center">
+                    <button id="reset1" onclick="limpiarFN()"  type="reset" class="btn btn-info" style="margin-right: 20px;"><i
+                        class="zmdi zmdi-roller"></i>
+                
+                <p>&nbsp;&nbsp; Limpiar</p> </button>
+                <button  type="submit" class="btn btn-primary">
+              <i class="zmdi zmdi-floppy"></i>
+              <p >&nbsp;&nbsp; Guardar</p> </button>
             </div>
         </div>
-        <section class="full-reset text-center" style="padding: 40px 0;">
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-face"></i></div>
-                <div class="tile-name all-tittles">administradores</div>
-                <div class="tile-num full-reset">7</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-accounts"></i></div>
-                <div class="tile-name all-tittles">estudiantes</div>
-                <div class="tile-num full-reset">70</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-male-alt"></i></div>
-                <div class="tile-name all-tittles">docentes</div>
-                <div class="tile-num full-reset">11</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-male-female"></i></div>
-                <div class="tile-name all-tittles" style="width: 90%;">personal administrativo</div>
-                <div class="tile-num full-reset">17</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-truck"></i></div>
-                <div class="tile-name all-tittles">proveedores</div>
-                <div class="tile-num full-reset">21</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-book"></i></div>
-                <div class="tile-name all-tittles">libros</div>
-                <div class="tile-num full-reset">77</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-bookmark-outline"></i></div>
-                <div class="tile-name all-tittles">categorías</div>
-                <div class="tile-num full-reset">11</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-assignment-account"></i></div>
-                <div class="tile-name all-tittles">secciones</div>
-                <div class="tile-num full-reset">17</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-timer"></i></div>
-                <div class="tile-name all-tittles">reservaciones</div>
-                <div class="tile-num full-reset">10</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-time-restore"></i></div>
-                <div class="tile-name all-tittles" style="width: 90%;">devoluciones pendientes</div>
-                <div class="tile-num full-reset">9</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-calendar"></i></div>
-                <div class="tile-name all-tittles">préstamos</div>
-                <div class="tile-num full-reset">7</div>
-            </article>
-            <article class="tile">
-                <div class="tile-icon full-reset"><i class="zmdi zmdi-trending-up"></i></div>
-                <div class="tile-name all-tittles" style="width: 90%;">reportes y estadísticas</div>
-                <div class="tile-num full-reset">&nbsp;</div>
-            </article>
-        </section>
+      </div>
+      </form>
+      </div>`);
+
+        } else {
+          $("div#modal-body-2").html(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay información sobre esta noticia </h3>
+                </div> `);
+
+        }
+        //  let msj = 'actualizar';
+        $("div#myModal").modal("hide");
+        $("div#myModal2").modal("show");
+        /*  $("div#myModal2").on('hidden.bs.modal', function (e) {
+            if (msj === 'actualizar') {
+              msj = '';
+              mostrarNoticias(); 
+            }
+              
+          });*/
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+  //limpiar el formato de la noticia
+  function limpiarFN() {
+    $("p#formato-img-1").html('');
+    $("td#ico-1").html('');
+    $("td#ico-2").html('');
+  }
+  //boton añadir noticia muestra y oculta el formulario  
+  function añadirNoticia(input) {
+    let boton = $(input).html();
+    if (boton === "Añadir noticia") {
+      $("div#cuadronot").hide();
+      $("div#infNoticia").show();
+      $(input).html('Volver');
+    } else {
+
+      $("div#cuadronot").show();
+      $("div#infNoticia").hide();
+      mostrarNoticias();
+      $(input).html('Añadir noticia');
+    }
+
+  }
+  //el boton azul de lapiz abre una ventana modal con la informacion de la noticia a editar
+  function editarNoticia(input) {
+    let boton = $(input).html();
+    if (boton === "Editar/Eliminar noticia") {
+      $("div#cuadronot").hide();
+      $("div#infNoticia").show();
+      $(input).html('Volver');
+    } else {
+      $("div#cuadronot").show();
+      $("div#infNoticia").hide();
+      $(input).html('Editar/Eliminar noticia');
+    }
+
+  }
+  //se muestra el icono formato correcto
+  function formatoCI(id1, id2) {
+    $(id1).html("");
+    $(id2).html(
+      `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+    );
+  }
+  //se muestra el icono de formato incorrecto
+  function formatoII(id1, id2) {
+    $(id1).html(`<p>Debe ser formato jpg, png ó jpeg</p>`);
+    $(id2).html(
+      `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+    );
+  }
+  //se evalua el formato de la img de la noticia
+  function comprobarFI(img) {
+    var i = $(img).attr("id").split("-").pop();
+    var ext = $(img).val().split(".").pop().toLowerCase();
+
+    var id1 = "p#formato-img-" + i;
+    var id2 = "td#ico-" + i;
+    if ($(img).val() != "") {
+      if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+        formatoCI(id1, id2);
+      } else {
+        formatoII(id1, id2);
+      }
+    }
+  }
+
+  function cambiarF(input) {
+    let id = $(input).attr("id").split('-').pop();
+    let nId = "fe-" + id;
+  }
+  //eliminar una ficha entregada
+  //eliminar ficha reservada
+function eliminarFichaEntregada(input) {
+    
+                let cota = input;
+                $.ajax({
+                    beforeSend: function () {
+                        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+
+                    },
+                    url: `/bibliotecario/eliminarFichaEntregada?cota=${cota}`,
+                    type: 'delete'
+                })
+                    .done(function (res) {
+                      $("#myModal").modal("hide");
+                      prestamosE();
+                      $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+                    })
+                    .fail(function (error) {
+                       manejoErrores(error);
+                    });
+
+};
+//ver una ficha entregada
+function verFichaE(input) {
+  let cota = input;
+  $.ajax({
+                    beforeSend: function () {
+                        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+
+                    },
+                    url: `/ver_ficha_e?cota=${cota}`,
+                    type: 'post'
+                })
+                    .done(function (res) {
+                      $("#myModal").modal("hide");
+                     
+        $("div#modal-body-4").html('');
+        $("div#tutor").html('');
+        $("#myLabel").html('Información del préstamo');
+        $("div#modal-body-4").html(`
+           <form>
+             <div style="height:50px;">
+             <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Tipo de libro</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.tipo_l}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id2" class="col-sm-2 col-form-label">Cota</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.cota}" type="text" class="tooltips-general material-control" class="form-control" id="id2" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id3" class="col-sm-2 col-form-label">Título</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.titulo}" type="text" class="tooltips-general material-control" class="form-control" id="id3" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id4" class="col-sm-2 col-form-label">Fecha de emisión</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.fecha_e}" type="text" class="tooltips-general material-control" class="form-control" id="id4" readonly>
+             </div>
+             </div>
+   
+             <div class="form-group row">
+             <label for="id5" class="col-sm-2 col-form-label">Fecha de culminación</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.fecha_c}" type="text" class="tooltips-general material-control" class="form-control" id="id5" readonly>
+             </div>
+             </div>
+             
+             
+   
+            
+           </div>
+           <br>
+         
+             
+             </form>
+   
+           `);
+           
+                $("div#myModal4").modal('show');
+                    })
+                    .fail(function (error) {
+                       manejoErrores(error);
+                    });
+}
+  //ver una ficha
+function verFicha(input) {
+  let cota = input;
+  $.ajax({
+                    beforeSend: function () {
+                        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+
+                    },
+                    url: `/ver_ficha?cota=${cota}`,
+                    type: 'post'
+                })
+                    .done(function (res) {
+                      $("#myModal").modal("hide");
+                     
+        $("div#modal-body-4").html('');
+        $("div#tutor").html('');
+        $("#myLabel").html('Información del préstamo');
+        $("div#modal-body-4").html(`
+           <form>
+             <div style="height:50px;">
+              <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Correo electrónico del usuario</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.correo_f}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Tipo de libro</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.tipo_l}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id2" class="col-sm-2 col-form-label">Cota</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.cota}" type="text" class="tooltips-general material-control" class="form-control" id="id2" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id3" class="col-sm-2 col-form-label">Título</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.titulo}" type="text" class="tooltips-general material-control" class="form-control" id="id3" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id3" class="col-sm-2 col-form-label">Autor</label>
+             <div class="col-sm-10">
+             <input value="${res.libro.autor}" type="text" class="tooltips-general material-control" class="form-control" id="id3" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id4" class="col-sm-2 col-form-label">Fecha de emisión</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.fecha_e}" type="text" class="tooltips-general material-control" class="form-control" id="id4" readonly>
+             </div>
+             </div>
+   
+             <div class="form-group row">
+             <label for="id5" class="col-sm-2 col-form-label">Fecha de devolución</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.fecha_d}" type="text" class="tooltips-general material-control" class="form-control" id="id5" readonly>
+             </div>
+             </div>
+             
+             
+   
+            
+           </div>
+           <br>
+         
+             
+             </form>
+   
+           `);
+           
+                $("div#myModal4").modal('show');
+                    })
+                    .fail(function (error) {
+                       manejoErrores(error);
+                    });
+}
+  
+  //se aprueba una reserva
+  function aprobar(input) {
+    let cota = $(input).attr("id");
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/aprobar",
+      type: "POST",
+      data: {
+        cota: cota,
+      },
+    })
+      .done(function (res) {
+        if (res === "Préstamo aprobado exitosamente") {
+          let q = "table_" + cota;
+          $(q).remove();
+          $("#myModal").modal("hide"); 
+          prestamosVV();
+          $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          
+        }
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+  //remueve un campo
+  function removeCampo(query) {
+    $(query).remove();
+  }
+  // se recibe un libro
+  function recibir(input) {
+    let cota = $(input).attr("id");
+    let query = "div#button_" + cota;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/recibir",
+      type: "POST",
+      data: {
+        cota: cota,
+      },
+    })
+      .done(function (res) {
+        $("div#myModal").modal("hide");
+        if (res == "Libro entregado exitosamente") {
+         prestamos();
+$("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
+          $("div#myModal3").modal("show");
+          limpiar();
+        } 
+      })
+      .fail(function (error) {
+       manejoErrores(error);
+      });
+  }
+  //eliminar prestamos entregados no usado
+  function eliminarP(cota) {
+let cota_f = cota;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/eliminar",
+      type: "delete",
+      data: {
+        cota: cota,
+      },
+    })
+      .done(function (res) {
+        $("div#myModal").modal("hide");
+        if (res == "Libro eliminado exitosamente") {
+          let q = "div#table_" + cota;
+          removeCampo(q);
+          
+$("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
+          $("div#myModal3").modal("show");
+          limpiar();
+        }
+      })
+      .fail(function (error) {
+       manejoErrores(error);
+      });
+  }
+  //se limpian formularios
+  function limpiar() {
+    let filas = document.getElementsByClassName("table-responsive");
+
+    if (filas.length == 1) {
+      $("div#tabla").html(`
+                        <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay tramites para mostrar </h3>
+                </div>`);
+    }
+  }
+  //solicitas y muestras las noticias
+  function mostrarPreguntas() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/preguntas-frecuentes",
+      type: "GET",
+    })
+      .done(function (preguntas) {
+        $("div#accordion").html('');
+
+        if (preguntas.length > 0) {
+          var j = 0;
+          for (var i = 0; i < preguntas.length; i++) {
+
+            $('div#accordion').append(`
+        <div class="panel panel-default">
+          <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaPregunta('${preguntas[i].id_pf}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaPregunta('${preguntas[i].id_pf}')"><i class="zmdi zmdi-edit"></i></button></p>
+          <div class="panel-heading p-3 mb-3"  role="tab" id="heading${i}">
+            <h3 class="panel-title">
+              <a class="collapsed" role="button" title="" data-toggle="collapse" data-parent="#accordion" href="#collapse${i}" aria-expanded="true" aria-controls="collapse${i}">
+                ${preguntas[i].titulo_pregunta} 
+              </a>
+            </h3> 
+          </div> 
+          <div id="collapse${i}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading0">
+            <div class="panel-body px-3 mb-4">
+              ${preguntas[i].text_respuesta}
+             </div> 
+          </div> 
+        </div>
         
-        <%- include ("partes/piePagina") %>
+     `);
+
+
+          }
+
+
+        } else {
+          $("div#accordion").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay preguntas frecuentes guardadas </h3>
+                </div>
+          
+                            `);
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  };
+
+  //boton añadir pregunta muestra y oculta el formulario  
+  function añadirPregunta(input) {
+    let boton = $(input).html();
+    if (boton === "Añadir pregunta") {
+      $("div#accordion").hide();
+      $("form#preguntasFrecuentes").show();
+      $(input).html('Volver');
+    } else {
+
+      $("div#accordion").show();
+      $("form#preguntasFrecuentes").hide();
+      mostrarPreguntas();
+      $(input).html('Añadir pregunta');
+    }
+
+  }
+
+  //elimina una pregunta
+  function eliminarUnaPregunta(id) {
+
+    let id_pf = id;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/bibliotecario/eliminar/p_f?id_pf=${id_pf}`,
+      type: "DELETE",
+    })
+      .done(function (res) {
+        if (res == 'ok') {
+          let msj = 'pregunta eliminada'
+          $("p#modal-p-center").html(`<p style="background-color: cornsilk;">Eliminado con exito</p>`);
+          $("div#myModal").on('hidden.bs.modal', function (e) {
+            if (msj === 'pregunta eliminada') {
+              msj = '';
+              mostrarPreguntas();
+
+            }
+
+          });
+        }
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+  }
+
+  //actualizas una pregunta 
+  function editarUnaPregunta(input) {
+    let data = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: `/pregunta?id_pf=${data}`,
+      type: "POST",
+    })
+      .done(function (pregunta) {
+        $("div#modal-body-2").html('');
+        if (pregunta) {
+          $("div#modal-body-2").html(`
+        <div class="container-fluid"> <form autocomplete="off" enctype="multipart/form-data" id="preguntaEditada">
+            <div class="container-flat-form">
+
+              <div class="title-flat-form title-flat-blue">Edita la pregunta</div>
+              <div class="row">
+
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                  <legend><strong>Información básica</strong></legend><br>
+                  <div class="group-material">
+                    <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
+                      placeholder="Escribe aquí el título de la pregunta" required=""
+                      data-toggle="tooltip" pattern="[Áa-z- -ñ]{1,}" min="1" data-placement="top" value="${pregunta.titulo_pregunta}"
+                      title="Título de la pregunta">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Título</label>
+                  </div>
+
+                  <div class="group-material">
+                    <input id="id_pf" name="id_pf" type="text"  value="${pregunta.id_pf}" hidden>
+                  </div>
+
+                  <div class="group-material">
+                    <textarea id="textPregunta" name="texto" type="text"
+                      class="tooltips-general material-control form-control rounded-0" style="border-color: rgb(0, 0, 255);"
+                      placeholder="Escribe aquí la repuesta" required="" data-toggle="tooltip" min="20"
+                      data-placement="top" title="Texto respuesta a la pregunta" value="${pregunta.text_respuesta}" cols="78" rows="5" wrap="hard"
+                      spellcheck="true">${pregunta.text_respuesta}</textarea>
+
+                  </div>
+                  
+                  <p class="text-center">
+                    <button id="reset4"   type="reset" class="btn btn-info" style="margin-right: 20px;"><i
+                        class="zmdi zmdi-roller"></i>
+                
+                <p>&nbsp;&nbsp; Limpiar</p> </button>
+                <button  type="submit" class="btn btn-primary">
+              <i class="zmdi zmdi-floppy"></i>
+              <p >&nbsp;&nbsp; Guardar</p> </button>
+            </div>
+        </div>
+      </div>
+      </form>
+      </div>`);
+
+        } else {
+          $("div#modal-body-2").html(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay información sobre esta noticia </h3>
+                </div> `);
+
+        }
+        //  let msj = 'actualizar';
+        $("div#myModal").modal("hide");
+        $("div#myModal2").modal("show");
+        /*  $("div#myModal2").on('hidden.bs.modal', function (e) {
+            if (msj === 'actualizar') {
+              msj = '';
+              mostrarNoticias(); 
+            }
+              
+          });*/
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+
+  //muestra un icono y mensaje respectivamente sea correcto o incorrecto el mensaje
+  function formatoCE(id1, id2) {
+    $(id1).html("");
+    $(id2).html(
+      `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+    );
+  }
+  function formatoIE(id1, id2) {
+    $(id1).html(`<p>Debe ser formato xlsx</p>`);
+    $(id2).html(
+      `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+    );
+  }
+
+  //comprobar formato excel
+  function comprobarFE(excel) {
+    var i = $(excel).attr("id").split("-").pop();
+
+    var ext = $(excel).val().split(".").pop().toLowerCase();
+
+    var id1 = "p#formato-excel-" + i;
+    var id2 = "td#ico-" + i;
+    if ($(excel).val() != "") {
+      if (ext === "xlsx") {
+        formatoCE(id1, id2);
+      } else {
+        formatoIE(id1, id2);
+      }
+    }
+  }
+///
+
+  function seccionInicio() {
+    var seccion = document.getElementById("seccion");
+    var explicacion = document.getElementById("explicacion");
+    var enlaces = document.getElementById("enlaces");
+    var inicio = document.getElementById("inicio");
+    var container = document.getElementById("container");
+    var cargando = document.getElementById("cargando");
+    var confDias = document.getElementById("confDias");
+    var formNoticias = document.getElementById("infNoticia");
+    var formato = document.getElementById("formato");
+    formato.style.display = 'none';
+    enlaces.style.display = 'none';
+    formNoticias.style.display = 'none';
+    $("div#editarLibro").hide();
+    $("form#preguntasFrecuentes").hide();
+    $("form#nuevaBaseE").hide();
+    $("form#nuevaBaseD").hide();
+    $("button#opcion2").hide();
+    seccion.innerHTML = ` <div class="page-header">
+                <h1 class="all-tittles">
+                    UNEXPO DIP <small>Inicio</small>
+                </h1>
+            </div>`;
+    explicacion.style.display = 'none';
+    cargando.innerHTML = '';
+    // formatoEnLinea.style.display = 'none';
+    confDias.style.display = 'none';
+    inicio.style.display = 'block';
+
+    //busquedaC.style.display = 'none';
+    cargando.innerHTML = '';
+    container.innerHTML = '';
+    mostrarNoticias();
+
+  };
+
+  function prestamosVV() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/prestamosVVAjax",
+      type: "GET",
+    })
+      .done(function (fichas) {
+        $("div#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#editarLibro").hide();
+        $("div#enlaces").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("form#nuevaBaseD").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("div#editarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Préstamos pendientes</small></h1>
+               </div>`);
+        $("div#enlaces").html(`
+            <ul class="nav nav-tabs nav-justified" style="font-size: 17px;">
+                <li id="prestamosE" class="active"><a href="javascript:prestamosE()">Préstamos
+                        entregados</a></li>
+                <li id="prestamosVV"><a href="javascript:prestamosVV()">Préstamos pendientes</a></li>
+                <li id="prestamosP"><a href="javascript:prestamosP()">Reservaciones</a></li>
+            </ul>`);
+        $("li#prestamosP").removeClass("active");
+        $("li#prestamosVV").addClass("active");
+        $("li#prestamosE").removeClass("active");
+        $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/calendar_book.png" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todos los préstamos de libros realizados hasta la
+                    fecha y que ya se entregaron satisfactoriamente
+                </div>
+          </div>`);
+        $("div#container").html("");
+        if (fichas.fichas.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Listado de préstamos</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Cota</div>
+                            <div class="div-table-cell" style="width: 22%;">Correo</div>
+    
+                            <div class="div-table-cell" style="width: 15%;">F. Solicitud</div>
+                            <div class="div-table-cell" style="width: 15%;">F. Entrega</div>
+                            <div class="div-table-cell" style="width: 8%;">Ver Ficha</div>
+                            <div class="div-table-cell" style="width: 8%;">Recibir</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < fichas.fichas.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='table_${fichas.fichas[i].cota_f
+              }'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].cota_f
+              }</div>
+                            <div class="div-table-cell" style="width: 22%;">${fichas.fichas[i].correo_f
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].fecha_e
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;" id="fecha-d${fichas.fichas[i].cota_f}">${fichas.fichas[i].fecha_d
+              }</div>
+                           
+                            <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="verFicha('${fichas.fichas[i].cota_f}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+                            </div>
+                             <div class="div-table-cell" id='button_${fichas.fichas[i].cota_f
+              }' style="width: 8%;">
+    
+                                <button id='${fichas.fichas[i].cota_f
+              }' onclick='recibir(this)' class="btn btn-success"><i
+                                        class="zmdi zmdi-time-restore"></i></button>
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          
+          sobresaltarFecha(fichas, i);            }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay préstamos pendientes</h3>
+                </div>
+          
+                            `);
+        }
+
+       
+      })
+
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+
+  function prestamosE() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/prestamosAjax",
+      type: "GET",
+    })
+      .done(function (fichas) {
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+
+        $("div#editarLibro").hide();
+        $("div#enlaces").show();
+        $("form#nuevaBaseD").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Préstamos entregados</small></h1>
+               </div>`);
+        $("div#enlaces").html(`
+            <ul class="nav nav-tabs nav-justified" style="font-size: 17px;">
+                <li id="prestamosE" class="active"><a href="javascript:prestamosE()">Préstamos
+                        entregados</a></li>
+                <li id="prestamosVV"><a href="javascript:prestamosVV()">Préstamos pendientes</a></li>
+                <li id="prestamosP"><a href="javascript:prestamosP()">Reservaciones</a></li>
+            </ul>`);
+        $("li#prestamosP").removeClass("active");
+        $("li#prestamosVV").removeClass("active");
+        $("li#prestamosE").addClass("active");
+        $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/calendar_book.png" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todos los préstamos de libros realizados hasta la
+                    fecha y que ya se entregaron satisfactoriamente
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (fichas.fichas.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Listado de préstamos</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Cota</div>
+                            <div class="div-table-cell" style="width: 22%;">Correo</div>
+    
+                            <div class="div-table-cell" style="width: 15%;">F. Solicitud</div>
+                            <div class="div-table-cell" style="width: 15%;">F. Entrega</div>
+                            <div class="div-table-cell" style="width: 8%;">Ver Ficha</div>
+                            <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < fichas.fichas.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='t_${fichas.fichas[i].cota_f
+              }'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].cota_f
+              }</div>
+                            <div class="div-table-cell" style="width: 22%;">${fichas.fichas[i].correo_f
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].fecha_e
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].fecha_c
+              }</div>
+                            
+    
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="verFichaE('${fichas.fichas[i].cota_f}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                            <div class="div-table-cell" id='button_${fichas.fichas[i].cota_f
+              }' style="width: 8%;">
+                            <button onclick="eliminarFichaEntregada('${fichas.fichas[i].cota_f
+              }')" class="btn btn-danger"><i
+                                    class="zmdi zmdi-delete"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay préstamos entregados </h3>
+                </div>
+          
+                            `);
+                            sobresaltarFecha(res, i);
+                          }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+
+  function prestamosP() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/prestamosPAjax",
+      type: "GET",
+    })
+      .done(function (fichas) {
+        $("div#confDias").hide();
+        $("form#nuevaBaseE").hide();
+        $("form#nuevaBaseD").hide();
+        $("div#preguntasF").hide();
+        $("div#editarLibro").hide();
+        $("div#cargando").html('');
+        $("div#inicio").hide();
+        $("form#ingresarLibro").hide();
+        $("div#enlaces").show();
+        $("form#formato").hide();
+        $("div#editarLibro").hide();
+
+        $("div#explicacion").show();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Reservaciones</small></h1>
+               </div>`);
+        $("div#enlaces").html(`
+            <ul class="nav nav-tabs nav-justified" style="font-size: 17px;">
+                <li id="prestamosE" class="active"><a href="javascript:prestamosE()">Préstamos
+                        entregados</a></li>
+                <li id="prestamosVV"><a href="javascript:prestamosVV()">Préstamos pendientes</a></li>
+                <li id="prestamosP"><a href="javascript:prestamosP()">Reservaciones</a></li>
+            </ul>`);
+        $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/calendar_book.png" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todos los préstamos de libros realizados hasta la
+                    fecha y que ya se entregaron satisfactoriamente
+                </div>
+          </div>`);
+        $("li#prestamosP").addClass("active");
+        $("li#prestamosVV").removeClass("active");
+        $("li#prestamosE").removeClass("active");
+        $("div#container").html('');
+        $("div#myModal").modal("hide");
+        $("#container").show();
+        if (fichas.fichas.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Listado de reservaciones</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Cota</div>
+                            <div class="div-table-cell" style="width: 22%;">Correo</div>
+    
+                            <div class="div-table-cell" style="width: 15%;">F. Solicitud</div>
+                            <div class="div-table-cell" style="width: 15%;">F. Entrega</div>
+                            <div class="div-table-cell" style="width: 8%;">Aprobar</div>
+                            <div class="div-table-cell" style="width: 8%;">Ver Ficha</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < fichas.fichas.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='table_${fichas.fichas[i].cota_f
+              }'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].cota_f
+              }</div>
+                            <div class="div-table-cell" style="width: 22%;">${fichas.fichas[i].correo_f
+              }</div>
+                            <div id="fe-${fichas.fichas[i].cota_f
+              }" class="div-table-cell"  style="width: 15%;">${fichas.fichas[i].fecha_e
+              } <img src="/assets/img/calendar_book.png" alt="calendar" id="img-${fichas.fichas[i].cota_f
+              }"
+                        style="max-width: 15%;"onclick="cambiarF(this)"></div>
+                            <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].fecha_d
+              }</div>
+                            <div class="div-table-cell" id='button_${fichas.fichas[i].cota_f
+              }' style="width: 8%;">
+    
+                                <button id='${fichas.fichas[i].cota_f
+              }' onclick='aprobar(this)' class="btn btn-success"><i
+                                        class="zmdi zmdi-time-restore"></i></button>
+    
+                            </div>
+                            <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="verFicha('${fichas.fichas[i].cota_f}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+                        sobresaltarFecha(res, i);
+                      }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay reservaciones </h3>
+                </div>
+          
+                            `);
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+  function seccionConfDias() {
+    $("input#ambosCampos").click();
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
+        $("div#myModal").modal("show");
+      },
+      url: "/bibliotecario/conf-dias",
+      type: "GET",
+    })
+      .done(function (res) {
+        $("div#myModal").modal("hide");
+        $("form#nuevaBaseE").hide();
+        $("form#nuevaBaseD").hide();
+        $("#container").html('');
+
+        $("div#explicacion").show();
+        $("div#preguntasF").hide();
+
+        $("div#seccion").html(`<div class="page-header">
+                <h1  class="all-tittles">UNEXPO SBDIP <small>Límite de días y libros</small></h1>
+            </div>`);
+        $("div#enlaces").hide();
+        $("div#cargando").html('');
+        $("div#explicacion").html(`<div class="row">
+                 
+                 <div class="col-xs-12 col-sm-4 col-md-3">
+                     <img src="/assets/icons/libro-lomo.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                 </div>
+                 <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
+                     Bienvenido en esta sección podrás configurar el límite para la cantidad de libros a retirar y días del préstamo. Si existen valores guardados actualmente, se mostrarán por defecto.
+                 </div>
+             </div>`);
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#formato").hide();
+        $("div#container").hide();;
+        $("div#editarLibro").hide();
+        if (res.objeto) {
+          $("input#input-cantidad").attr("value", res.objeto.cantidad_libros);
+          $("input#input-dias").attr("value", res.objeto.dias_prestamo);
+        }
+        $("div#confDias").show();
+        $("form#Dias").show();
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      })
+  }
+  function añadirMaterial() {
+    var formato = document.getElementById("formato");
+    formato.style.display = 'block';
+    $("div#confDias").hide();
+    $("form#nuevaBaseE").hide();
+    $("form#nuevaBaseD").hide();
+$("#enlaces").hide();
+    $("div#explicacion").show();
+    $("div#preguntasF").hide();
+    $("div#cargando").html('');
+    $("div#inicio").hide();
+    $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                  <img src="/assets/icons/libros.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                  Bienvenido a la sección para agregar nuevos libros a la biblioteca, deberas de llenar todos los campos para poder registrar el libro. Puedes registrar uno o varios libros con el mismo archivo PDF.
+                </div>
+          </div>`);
+    $("div#container").html("");
+    $("div#seccion").html(` 
+                <div class="page-header">
+                  <h1  class="all-tittles">UNEXPO SBDIP <small>Libros</small></h1>
+               </div>`);
+    $("div#editarLibro").hide();
+
+  }
+  function editarLibro() {
+    var ocultar = document.getElementById("ocultar");
+    var isChecked = ocultar.checked;
+    if (isChecked) {
+      ocultar.click();
+    }
+    $("form#formato").hide();
+    $("form#nuevaBaseE").hide();
+    $("#enlaces").hide();
+    $("#container").show();
+    $("div#explicacion").show();
+    $("form#nuevaBaseD").hide();
+    $("div#preguntasF").hide();
+    $("div#confDias").hide();
+    $("div#inicio").hide();
+    $("div#explicacion").html(`
+          <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/icons/busqueda.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
+                    Bienvenido en esta sección podrás ver, editar y eliminar libros. Así como también, realizar una busqueda en especifico o verlos todos.
+                </div>
+          </div>`);
+    $("div#container").html("");
+    $("form#formato-enlinea").show();
+    $("div#seccion").html(` 
+                <div class="page-header">
+                  <h1  class="all-tittles">UNEXPO SBDIP <small>Libros</small></h1>
+               </div>`);
+    $("div#cargando").html('');
+    $("div#editarLibro").show();
+
+  }
+  function seccionPreguntas() {
+    $("form#formato").hide();
+    $("form#nuevaBaseE").hide();
+    $("form#nuevaBaseD").hide();
+    $("div#confDias").hide();
+    $("div#inicio").hide();
+    $("button#opcion2").show();
+    $("form#preguntasFrecuentes").hide();
+    $("div#cargando").html('');
+    $("div#enlaces").html('');
+    $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Preguntas frecuentes</small></h1>
+      </div>`);
+    $("div#explicacion").hide();
+    $("form#formato-enlinea").hide();
+    $("div#busquedaC").hide();
+    $("div#editarLibro").hide();
+    $("div#accordion").show();
+    $("div#container").html('');
+    $("div#preguntasF").show();
+
+    mostrarPreguntas();
+
+  }
+  function actualizarBaseE() {
+    $("form#formato").hide();
+    $("form#nuevaBaseE").show();
+    $("div#accordion").html('');
+
+    $("div#explicacion").show();
+
+    $("form#nuevaBaseD").hide();
+    $("div#confDias").hide();
+    $("div#inicio").hide();
+    $("button#opcion2").hide();
+    $("form#preguntasFrecuentes").hide();
+    $("div#cargando").html('');
+    $("div#enlaces").html('');
+    $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Actualiza la base de datos</small></h1>
+      </div>`);
+    $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/icons/user.ico" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido, en esta sección podrás actualizar la base de datos de los estudiantes o docentes. Recuerda que la cedula de identidad debe tener el formato ej. v-99999999 ó e-99999999, y debe ser la primera columna, seguido por la columna nombres, apellidos y especializacion respectivamente. No hay distinción entre mayúsculas y minúsculas.
+                </div>
+          </div>`);
+    $("form#formato-enlinea").hide();
+    $("div#busquedaC").hide();
+    $("div#editarLibro").hide();
+
+    $("div#container").html('')
+  }
+
+  function actualizarBaseD() {
+    $("form#formato").hide();
+    $("form#nuevaBaseD").show();
+
+    $("div#accordion").html('');
+    $("form#nuevaBaseE").hide();
+    $("div#confDias").hide();
+    $("div#inicio").hide();
+    $("div#explicacion").show();
+    $("button#opcion2").hide();
+    $("form#preguntasFrecuentes").hide();
+    $("div#cargando").html('');
+    $("div#enlaces").html('');
+    $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Actualiza la base de datos</small></h1>
+      </div>`);
+    $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/icons/user.ico" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido, en esta sección podrás actualizar la base de datos de los estudiantes o docentes. Recuerda que la cedula de identidad debe tener el formato ej. v-99999999 ó e-99999999, y debe ser la primera columna, seguido por la columna nombres, apellidos y materia respectivamente. No hay distinción entre mayúsculas y minúsculas.
+                </div>
+          </div>`);
+
+    $("form#formato-enlinea").hide();
+    $("div#busquedaC").hide();
+    $("div#editarLibro").hide();
+
+    $("div#container").html('')
+  }
+
+</script>
+
+<script>
+  function ocultar(input) {
+    let i = $(input).val();
+    if (i == 1) {
+      $("#libros").hide();
+      $("#dias").show();
+    } else if (i == 2) {
+      $("#dias").hide();
+      $("#libros").show();
+    } else if (i == 3) {
+      $("#dias").show();
+      $("#libros").show();
+    }
+  };
+  $(function () {
+    seccionInicio();
+    $("form#formDias").on('change', function() {
+      $("div#cargando").html('');
+    });
+    //funcion para enviar el documento excel a la ruta por medio de ajax
+    $("form#nuevaBaseE").on('submit', function (e) {
+      e.preventDefault();//al ejecutarse el evento submit el formulario se limpia, esta linea de codigo evita este proceso. sino se realiza el formulario se limpia antes de enviarse la informacion
+      let data = new FormData(this);//Se toma la informacion del fomulario y se crea un objeto formData, para que este sea enviado en forma de formato y pueda ser procesado por multer
+
+      $.ajax({
+        beforeSend: function () {//funcion que se ejecuta mientras que se obtiene respuesta
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");//Se abre ventana modal
+        },
+        url: "/bibliotecario/nuevaBaseE",//url
+        type: "POST",//tipo de ruta
+        data: data,//data
+        processData: false,
+        contentType: false,
+      })
+        .done(function (res) {
+          if (res.message == 'Actualizada con éxito') {//mensaje de respuesta
+            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res.message}</p>`);
+            $("#reset3").click();//limpieza del formulario
+          }
+        })
+        .fail(function (error) {
+          $("#reset3").click();//limpieza del formulario
+          manejoErrores(error);//Funcion para manejar el error
+
+        });
+    })
+    $("form#nuevaBaseD").on('submit', function (e) {
+      e.preventDefault();//evita que el formulario se limpie antes de enviar la informacion, el cual es un proceso normal al activarse el evento submit
+      let data = new FormData(this);//Se crea un objeto formData, el cual tiene la forma del formato de html, esto es importante porque sino no es reconocido por el middleware multer.js
+
+      $.ajax({
+        beforeSend: function () {//funcion que se ejecuta antes de recibir respuesta
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");//se abre ventana modal
+        },
+        url: "/bibliotecario/nuevaBaseD",//url
+        type: "POST",//tipo de ruta
+        data: data,//data
+        processData: false,
+        contentType: false,
+      })
+        .done(function (res) {
+          if (res.message == 'Actualizada con éxito') {//respuesta
+            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res.message}</p>`);
+            $("#reset4").click();//se limpia el formulario
+          }
+
+
+        })
+        .fail(function (error) {
+          $("#reset4").click();//se limpia el formulario
+          manejoErrores(error);
+
+        });
+    })
+
+    $("form#formDias").on('submit', function (e) {
+      e.preventDefault();
+      let data = $(this).serialize();
+
+      $.ajax({
+        beforeSend: function () {
+          $("div#cargando").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          );
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");//se abre ventana modal
+        },
+        url: "/bibliotecario/conf-dias",
+        type: "POST",
+        data: data
+      })
+        .done(function (res) {
+              $("div#myModal").modal("hide");
+          if (res != '') {
+            $("div#cargando").html('<p class="text-center">Se ha configurado con éxito<p>');
+          } else {
+            $("div#cargando").html(
+              `<p class="text-center> Ha ocurrido un error<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20"><p>`
+            );
+          }
+        })
+        .fail(function (error) {
+          $("div#cargando").html(
+            `<p class="text-center> Ha ocurrido un error<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20"><p>`
+          );
+          manejoErrores(error);
+        });
+    });
+    $("form#nuevaNoticia").on('submit', function (e) {
+      e.preventDefault();
+      let data = new FormData(this);
+
+      $.ajax({
+        beforeSend: function () {
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");
+        },
+        url: "/bibliotecario/nuevaNoticia",
+        type: "POST",
+        data: data,
+        processData: false,
+        contentType: false,
+      })
+        .done(function (res) {
+          if (res != '') {
+            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
+            $("#reset1").click();
+          } else if (res == '') {
+            $("p#modal-p-center").html(
+              '<img src="/assets/icons/notificacion-error.ico" width= "100" height= "100">'
+            );
+          }
+          $("div#myModal").on('hidden.bs.modal', function () {
+            $('button#reset1').click;
+            $('button#opcion1').click;
+          });
+
+        })
+        .fail(function (error) {
+          manejoErrores(error);
+
+        });
+    })
+    $("form#preguntasFrecuentes").on('submit', function (e) {
+      e.preventDefault();
+      let data = $(this).serialize();
+
+      $.ajax({
+        beforeSend: function () {
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");
+        },
+        url: "/bibliotecario/nueva-p-f",
+        type: "POST",
+        data: data,
+      })
+        .done(function (res) {
+          if (res != '') {
+            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
+            $("#reset2").click();
+          } else if (res == '') {
+            $("p#modal-p-center").html(
+              '<img src="/assets/icons/notificacion-error.ico" width= "100" height= "100">'
+            );
+          }
+          $("div#myModal").on('hidden.bs.modal', function () {
+            $('button#reset2').click;
+            $('button#opcion2').click;
+          });
+
+        })
+        .fail(function (error) {
+        manejoErrores(error);
+
+        });
+    })
+
+  });
+</script>
+
+
+<body>
+  <div id="myModal" class="modal fade">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content" style="background-color: transparent">
+        <div id="modal-contenido">
+          <br />
+          <p class="text-center" id="modal-p-center">
+            <img src="/assets/gif/loading-22.gif" width="100" height="100" />
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
+  <div id="myModal2" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div id="modal-body-2" class="modal-body">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="myModal3" class="modal fade">
+    <div class="modal-dialog">
+      <div class="container-fluid">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body" id="modal-body-3">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="myModal4" class="modal fade">
+    <div class="modal-dialog">
+      <div class="container-fluid">
+        <div class="modal-content">
+          <div class="modal-header-sm" style="background:rgb(45, 101, 206);">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myLabel"
+                style="font-size: 25px; font-weight:900; text-align: center; color: white;">Modal title</h4>
+        </div>
+          <div class="modal-body" id="modal-body-4">
+
+
+
+
+
+
+          </div>
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <div id="myModal5" class="modal fade">
+    <div class="modal-dialog">
+      <div class="container-fluid">
+        <div class="modal-content">
+          <div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+            <!--  <h4 class="modal-title" id="myModalLabel">Modal title</h4>-->
+          </div>
+          <div >
+            <iframe id="pdfdoc" height="400" width="100%" src='' ></iframe>
+
+
+          </div>
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <div id="myModalError" class="modal fade">
+    <div class="modal-dialog">
+      <div class="container-fluid">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+              &times;
+            </button>
+          </div>
+          <div id="modal-cuerpo">
+
+
+
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="openModal" class=" modalDialog">
+    <div>
+      <a href="#close" title="Close" class="close" onclick="javascript:CloseModal();">X</a>
+      <p class="text-center" id="mensaje-final"></p>
+    </div>
+  </div>
+
+  <%- include ("partes/navegacionB") %>
+  <div class="content-page-container full-reset custom-scroll-containers">
+    <%- include ("partes/navegacionSuperiorB") %>
+    <div class="container" id="seccion">
+      <div class="page-header">
+        <h1 class="all-tittles">
+          Sistema bibliotecario <small>Inicio</small>
+        </h1>
+      </div>
+    </div>
+    <div class="container-fluid" id="enlaces"></div>
+    <div class="container-fluid" id="explicacion"></div>
+
+
+    <div class="container-fluid" id="tabla">
+
+      <div class="container-fluid" id="inicio">
+        <button class="btn btn-primary btn-block" id="opcion1" onclick="javascript:añadirNoticia(this)">Añadir
+          noticia</button>
+
+        <div class="container-fluid" id="infNoticia">
+          <form autocomplete="off" enctype="multipart/form-data" id="nuevaNoticia">
+            <div class="container-flat-form">
+
+              <div class="title-flat-form title-flat-blue">Nueva noticia</div>
+              <div class="row">
+
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                  <legend><strong>Información básica</strong></legend><br>
+                  <div class="group-material">
+                    <input  name="titulo" type="text" class="tooltips-general material-control"
+                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="35"
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,30}"  data-placement="top"
+                      title="Título de la noticia">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Título</label>
+                  </div>
+
+                  <div class="group-material">
+                    <textarea id="textNoticia" name="textNoticia" type="text"
+                      class="tooltips-general material-control form-control rounded-0"
+                      style="border-color: rgb(0, 0, 255);" placeholder="Escribe aquí la noticia" required="" pattern="[a-zA-Zá-ú ]{1,30}"
+                      data-toggle="tooltip" min="20" data-placement="top" title="Texto de la noticia" cols="78" rows="5"
+                      wrap="hard" spellcheck="true"></textarea>
+
+                  </div>
+
+                  <table class="table table-responsive " style="table-layout: fixed; border: none;">
+                    <tr id="tr-img-1" style="border: none;">
+                      <td style="width: 200px;  border: none;">
+                        <input onchange="comprobarFI(this)" id="img-1" name="img" type="file" required=""
+                          class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                          title="Imagen">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Imagen</label>
+
+                      </td>
+                      <td style="width: 30px;  border: none;" id="ico-1">
+
+                      </td>
+                    </tr>
+                    <tr id="tr2-img-1">
+                      <td style="width: 200px; border: none;">
+                        <p class="text-center" id="formato-img-1"></p>
+
+                      </td>
+                      <td style="width: 30px;  border: none;">
+                      </td>
+                    </tr>
+                  </table>
+                  <p class="text-center">
+                    <button id="reset1" onclick="limpiarFN()" type="reset" class="btn btn-info"
+                      style="margin-right: 20px;"><i class="zmdi zmdi-roller"></i>
+
+                      <p>&nbsp;&nbsp; Limpiar</p>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="zmdi zmdi-floppy"></i>
+                      <p>&nbsp;&nbsp; Guardar</p>
+                    </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div id="cuadronot">
+
+
+
+        </div>
+
+      </div>
+
+      <form class="form-inline" id="formDias">
+        <div class="container-flat-form" id="confDias">
+
+          <div class="title-flat-form title-flat-blue">Nueva configuración</div>
+          <div class="row">
+
+            <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+
+
+              <div class="form-group  mx-sm-3" id="dias">
+                <label for="dias">Días de préstamo</label>
+                <input type="number" required="" name="dias" id="input-dias" class="material-control" minlength="1"
+                  placeholder="Días de préstamos">
+
+              </div>
+              <div class="form-group mx-sm-3" id="libros">
+                <label for="libros">Límite de libros</label>
+                <input type="number" required="" id="input-cantidad" class=" material-control" name="libros" minlength="1"
+                  placeholder="Límite de libros">
+              </div>
+              <div class="form-group mx-sm-3">
+
+                <br>
+                Modificar:<br>
+                <input onchange="ocultar(this)" type="radio" value="1" id="dias_prestamos" name="cambio">Días de
+                préstamo<br>
+
+                <input onchange="ocultar(this)" type="radio" value="2" id="limite_libros" name="cambio"> Límite de
+                libros<br>
+
+                <input onchange="ocultar(this)" type="radio" value="3" name="cambio" id="ambosCampos"> Límite de libros
+                y días de
+                préstamo<br>
+
+              </div>
+
+              <div class="form-group mx-sm-3">
+                <button type="submit" class="btn btn-primary">Configurar</button>
+
+              </div>
+
+
+            </div>
+
+          </div>
+        </div>
+      </form>
+
+      <div class="container-fluid">
+        <form autocomplete="off" enctype="multipart/form-data" id="formato">
+
+          <div class="container-flat-form">
+
+            <div class="title-flat-form title-flat-blue">Nuevo libro</div>
+            <div class="row">
+
+              <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                <legend><strong>Información básica</strong></legend><br>
+
+                <div class="group-material">
+                  <span>Categoría</span>
+                  <select onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige la categoría del libro">
+                    <option disabled="" selected="">Selecciona una categoría</option>
+                    <option>Libro</option>
+                    <option>Revista</option>
+                    <option>Trabajo de grado</option>
+
+                  </select>
+                </div>
+
+                <div class="group-material">
+                  <input id="ejemplar" onchange="ejemplares()" name="ejemplar" type="number"
+                    class="tooltips-general material-control" placeholder="Escribe aquí el numero de ejemplares"
+                    required="" maxlength="4" data-toggle="tooltip" pattern="^[0-9]+" min="1" data-placement="top"
+                    title="Numero de ejemplares">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>ejemplares</label>
+
+                </div>
+                <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tb">
+                  <tr>
+                    <td style="width: 30px; overflow: hidden; border: none;">
+                      <input id="ejemplar1" name="ejemplar1" type="number" class="tooltips-general material-control"
+                        placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                        title="Número de ejemplar, sólo números" value="1">
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>ejemplar</label>
+                    </td>
+                    <td style="width: 200px; overflow: hidden; border: none;">
+                      <input id="cota-1" onchange="añadirCampoPdf(this)" name="cota_1" type="text"
+                        class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro"
+                        required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip"
+                        data-placement="top" title="Ej. cota_1, cota 1">
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Cota</label>
+
+                    </td>
+                    <td id="imgs-cota" style="width: 20px; overflow: hidden; border: none;">
+                      <div class="tooltips-general material-control" id="img-cota-1"></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 30px; overflow: hidden; border: none;"></td>
+                    <td id="mensaje-cota" style="width: 200px; border: none; overflow: hidden;">
+                      <div id="cota-unica-1"></div>
+                    </td>
+                    <td style="width: 20px; border: none; overflow: hidden;"></td>
+                  </tr>
+
+                </table>
+
+                <div class="group-material">
+                  <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
+                    placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}"
+                    maxlength="30" data-toggle="tooltip" data-placement="top"
+                    title="Escribe el título o nombre del libro, sólo letras">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Título</label>
+                </div>
+                <div class="group-material">
+                  <input id="autor" name="autor" type="text" class="tooltips-general material-control"
+                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30"
+                    data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Autor</label>
+                </div>
+                <div name="tutor" class="group-material" id="tutor">
+
+                </div>
+                <div name="volumen" class="group-material">
+                  <input id="volumen" name="volumen" type="number" class="tooltips-general material-control"
+                    placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" pattern="^[0-9]+" min="1"
+                    data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Volumen</label>
+                </div>
+
+                <div class="group-material">
+                  <input id="año" name="año" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4" minlength="4"
+                    data-toggle="tooltip" data-placement="top" title="Solamente números, sin espacios">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Año</label>
+                </div>
+                <div class="group-material">
+                  <input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30"
+                    data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Editorial</label>
+                </div>
+                <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf">
+                  <tr id="tr-pdf-1" style="border: none;">
+                    <td style="width: 200px;  border: none;">
+                      <input onchange="comprobarF(this)" id="pdf-1" name="pdf" type="file" required=""
+                        class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                        title="Archivo PDF">
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Archivo PDF</label>
+
+                    </td>
+                    <td style="width: 30px;  border: none;" id="img-pdf-1">
+
+                    </td>
+                  </tr>
+                  <tr id="tr2-pdf-1">
+                    <td style="width: 200px; border: none;">
+                      <p class="text-center" id="formato-pdf-1"></p>
+                    </td>
+                    <td style="width: 30px;  border: none;">
+                    </td>
+                  </tr>
+                </table>
+
+                <div class="group-material">
+                  <p class="text-center"> <input onchange="mostrarCampo(this)" id="mostrar_1" name="mostrar_1"
+                      type="checkbox" value="1" class="tooltips-general" title="Incluye PDF">No incluye archivo PDF</p>
+                </div>
+
+                <p class="text-center">
+                  <button onclick="resetear()" id="reset" type="reset" class="btn btn-info" style="margin-right: 20px;">
+                    <div><i class="zmdi zmdi-roller"></i></div>
+                    <p>&nbsp;&nbsp; Limpiar</p>
+                  </button>
+                  <button id="guardar" type="submit" class="btn btn-primary">
+                    <div id="estatus"><i class="zmdi zmdi-floppy"></i></div>
+                    <p id="boton">&nbsp;&nbsp; Guardar</p>
+                  </button>
+
+                <div id="mensaje"></div>
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="container-fluid" style="margin: 0px;" id="editarLibro">
+        <div class="page-header" style="border: none; ">
+          <h2 class="text-center" style="background-color:rgb(217, 217, 226) ;">¿Buscas un libro en particular?</h2>
+          <div class="group-material">
+            <p class="text-center"> <input onchange="ocultarCampos(this)" id="ocultar" name="ocultar" type="checkbox"
+                value="1" class="tooltips-general" title="no, quiero ver todos los libros">No, quiero ver todos los
+              libros</p>
+          </div>
+        </div>
+        <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea">
+          <div class="row justify-content-md-center">
+              <div class="col-sm-4 col-md-2">
+                  <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"
+                  placeholder="Cota" maxlength="25" data-toggle="tooltip" data-placement="top"
+                  title="Ej. cota_1 cota 1">
+                  <label >Cota</label>
+              </div>
+              <div class="col-sm-4 col-md-2">
+                  <select onchange="añadirTutor(this)" id="tipo_l_unico" name="tipo_l"
+                  class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                  title="Elige la categoría del libro">
+                  <option disabled="" selected="">Tipo de libro</option>
+                  <option>Libro</option>
+                  <option>Revista</option>
+                  <option>Trabajo de grado</option>
+
+              </select>
+              </div>
+              <div class="col-sm-4 col-md-2"> 
+                  <input id="ejemplar_unico" name="ejemplar" type="number"
+                  class="tooltips-general material-control" placeholder="Ejemplar" maxlength="4"
+                  data-toggle="tooltip" pattern="^[0-9]+" min="1" data-placement="top"
+                  title="Numero de ejemplares">
+                  <label >Ejemplar</label>
+              </div>
+              <div class="col-sm-4 col-md-2">
+                  <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
+                  placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  data-placement="top" title="Escribe el título o nombre del libro">
+                  <label >Título</label>
+              </div>
+              <div class="col-sm-4 col-md-2">
+                  <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
+                  placeholder="Autor"pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  data-placement="top" title="Escribe el nombre del autor del libro"> <label >Autor</label>
+              </div>
+               
+              <div class="col-sm-4 col-md-2" id="div-contenedor">
+
+                   <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
+                  placeholder="Tutor" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  data-placement="top" title="Escribe el nombre del tutor del libro">
+                  <label >Tutor</label>
+              </div>
+          
+          <div class="col-sm-4 col-md-2"> 
+              <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
+              placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
+              data-placement="top" title="Escribe el volumen del libro">
+              <label >Volumen</label>
+          </div>
+              <div class="col-sm-4 col-md-2">  
+                  <input id="año_unico" name="año" type="text" class="material-control tooltips-general"
+                  placeholder="Año" pattern="[0-9]{4}" maxlength="4" data-toggle="tooltip" minlength="4"
+                  data-placement="top" title="Solamente números, sin espacios">
+                  <label >Año</label>
+              </div>
+                  <div class="col-sm-4 col-md-2">
+                      <input id="editorial_unico" name="editorial" type="text"
+                      class="material-control tooltips-general" placeholder="Editorial"pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                      <label >Editorial</label>
+                  </div>
+                  <div class="col-sm-4 col-md-2">
+                    
+                      <button id="limpiarButton" style="margin-block: 10px;" type="reset" class="btn btn-light">Limpiar</button>
+                  </div>
+                  <div class="col-sm-4 col-md-2">
+                    
+                      <button  style="margin-block: 10px;" type="submit"  class="btn btn-primary">Aplicar filtros</button>
+                  </div>
+              </div>
+      </form></div>
+      </div>
+      <div class="container-fluid" id="preguntasF">
+        <button class="btn btn-primary btn-block" id="opcion2" onclick="javascript:añadirPregunta(this)">Añadir
+          pregunta</button>
+
+        <div class="container-fluid" id="divContPre">
+          <form autocomplete="off" enctype="multipart/form-data" id="preguntasFrecuentes">
+            <div class="container-flat-form">
+
+              <div class="title-flat-form title-flat-blue">Nueva pregunta</div>
+              <div class="row">
+
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                  <legend><strong>Información básica</strong></legend><br>
+                  <div class="group-material">
+                    <input " name="titulo" type="text" class="tooltips-general material-control"
+                      placeholder="Escribe la pregunta sin signos de interrogación" required=""
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="200" min="1" data-placement="top"
+                      title="Título de la pregunta">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Título</label>
+                  </div>
+
+                  <div class="group-material">
+                    <textarea id="respuesta" name="textRespuesta" type="text"
+                      class="tooltips-general material-control form-control rounded-0"
+                      style="border-color: rgb(0, 0, 255);" placeholder="Escribe aquí la respuesta " required=""
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="100" min="1" data-placement="top" title="Texto de la respuesta" cols="78"
+                      rows="5" wrap="hard" spellcheck="true"></textarea>
+
+                  </div>
+
+
+                  <p class="text-center">
+                    <button id="reset2" type="reset" class="btn btn-info" style="margin-right: 20px;"><i
+                        class="zmdi zmdi-roller"></i>
+
+                      <p>&nbsp;&nbsp; Limpiar</p>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="zmdi zmdi-floppy"></i>
+                      <p>&nbsp;&nbsp; Guardar</p>
+                    </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
+      </div>
+  
+        
+                      
+       
+
+      <div class="container-fluid" id="divExcel">
+        <form autocomplete="off" enctype="multipart/form-data" id="nuevaBaseE">
+          <div class="container-flat-form">
+
+            <div class="title-flat-form title-flat-blue">Actualiza la base de datos estudiantil</div>
+            <div class="row">
+
+              <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                <legend><strong>Información básica</strong></legend><br>
+
+
+                <table class="table table-responsive " style="table-layout: fixed; border: none;">
+                  <tr id="tr-excel-1" style="border: none;">
+                    <td style="width: 200px;  border: none;">
+                      <input onchange="comprobarFE(this)" id="excel-1" name="excel" type="file" required=""
+                        class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                        title="Excel">
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Excel</label>
+
+                    </td>
+                    <td style="width: 30px;  border: none;" id="ico-1">
+
+                    </td>
+                  </tr>
+                  <tr id="tr2-excel-1">
+                    <td style="width: 200px; border: none;">
+                      <p class="text-center" id="formato-excel-1"></p>
+
+                    </td>
+                    <td style="width: 30px;  border: none;">
+                    </td>
+                  </tr>
+                </table>
+                <p class="text-center">
+                  <button id="reset3" onclick="limpiarFN()" type="reset" class="btn btn-info"
+                    style="margin-right: 20px;"><i class="zmdi zmdi-roller"></i>
+
+                    <p>&nbsp;&nbsp; Limpiar</p>
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="zmdi zmdi-floppy"></i>
+                    <p>&nbsp;&nbsp; Guardar</p>
+                  </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form autocomplete="off" enctype="multipart/form-data" id="nuevaBaseD">
+          <div class="container-flat-form">
+
+            <div class="title-flat-form title-flat-blue">Actualiza la base de datos docente</div>
+            <div class="row">
+
+              <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                <legend><strong>Información básica</strong></legend><br>
+
+
+                <table class="table table-responsive " style="table-layout: fixed; border: none;">
+                  <tr id="tr-excel-1" style="border: none;">
+                    <td style="width: 200px;  border: none;">
+                      <input onchange="comprobarFE(this)" id="excel-2" name="excel" type="file" required=""
+                        class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                        title="Excel">
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Excel</label>
+
+                    </td>
+                    <td style="width: 30px;  border: none;" id="ico-2">
+
+                    </td>
+                  </tr>
+                  <tr id="tr2-excel-1">
+                    <td style="width: 200px; border: none;">
+                      <p class="text-center" id="formato-excel-2"></p>
+
+                    </td>
+                    <td style="width: 30px;  border: none;">
+                    </td>
+                  </tr>
+                </table>
+                <p class="text-center">
+                  <button id="reset4" onclick="limpiarFN()" type="reset" class="btn btn-info"
+                    style="margin-right: 20px;"><i class="zmdi zmdi-roller"></i>
+
+                    <p>&nbsp;&nbsp; Limpiar</p>
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="zmdi zmdi-floppy"></i>
+                    <p>&nbsp;&nbsp; Guardar</p>
+                  </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div id="cargando"></div>
+      <div class="container-fluid" id="container"></div>
+      
+    </div>
+    <%- include ("partes/piePagina") %>
+  </div>
 </body>
 
 </html>
