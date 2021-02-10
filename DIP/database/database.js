@@ -9,11 +9,11 @@ var Sequelize = require('sequelize')//Se requiere sequelize
   
 /*	if (process.env.HEROKU_POSTGRESQL_URL) {// si existe las variables que me brinda heroku
 */	 
-	  sequelize = new Sequelize('dac0j20jseaopf', 'ekjhvybjsxvjht', 'f0bfdb609022a67de2a619aa09660e6b1b487d8769b0acae3ce66b631ca38e8b', {
+	  sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_CURLY_URL, {
 		dialect:  'postgres',
 		protocol: 'postgres',
-		port:     '5432',
-		host:     'ec2-54-90-13-87.compute-1.amazonaws.com',
+		port:     match[4],
+		host:     match[3],
 		logging:  true 
 	  })
 /*	} else {
@@ -28,8 +28,10 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	});
 	
 	}
-*/
-    
+
+    (async () => {
+			
+		});*/
 	sequelize.authenticate()//autentifica la conexion
 	.then(async function(){
 		
