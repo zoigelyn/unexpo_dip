@@ -149,7 +149,7 @@ function comprobarF(archivo) {
 function tipoTrabajo(trabajo) {
   if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
     $("div#tutor").html(`
-         <input id="tutor" name="tutor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[Áa-z- -ñ]{1,}" maxlength="70" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
+         <input id="tutor" name="tutor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
                      <span class="highlight"></span>
                      <span class="bar"></span>
                      <label>Autor</label>`);
@@ -438,7 +438,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
 
     var elementos = document.getElementsByTagName('input');
-console.log(elementos)
+
     var tamaño = elementos.length;
 
     var elemento1;
@@ -589,13 +589,13 @@ console.log(elementos)
                               </table>
                        
                                       <div  class="group-material">
-                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,30}" required=""  maxlength="30" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
+                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,100}" required=""  maxlength="100" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Título</label>
                                       </div>
                                       <div  class="group-material">
-                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
+                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Autor</label>
@@ -617,7 +617,7 @@ console.log(elementos)
                                           <label>Año</label>
                                       </div>
                                       <div  class="group-material">
-                                          <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}"maxlength="30" value="${libro.libro[0].editorial}" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                                          <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"maxlength="100" value="${libro.libro[0].editorial}" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Editorial</label>
@@ -2876,7 +2876,7 @@ $("#enlaces").hide();
                   <legend><strong>Información básica</strong></legend><br>
                   <div class="group-material">
                     <input  name="titulo" type="text" class="tooltips-general material-control"
-                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="35"
+                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="100"
                       data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,30}"  data-placement="top"
                       title="Título de la noticia">
                     <span class="highlight"></span>
@@ -3059,8 +3059,8 @@ $("#enlaces").hide();
 
                 <div class="group-material">
                   <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
-                    placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}"
-                    maxlength="30" data-toggle="tooltip" data-placement="top"
+                    placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top"
                     title="Escribe el título o nombre del libro, sólo letras">
                   <span class="highlight"></span>
                   <span class="bar"></span>
@@ -3068,7 +3068,7 @@ $("#enlaces").hide();
                 </div>
                 <div class="group-material">
                   <input id="autor" name="autor" type="text" class="tooltips-general material-control"
-                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30"
+                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
                     data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
                   <span class="highlight"></span>
                   <span class="bar"></span>
@@ -3096,7 +3096,7 @@ $("#enlaces").hide();
                 </div>
                 <div class="group-material">
                   <input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
-                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30"
+                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
                     data-toggle="tooltip" data-placement="top" title="Editorial del libro">
                   <span class="highlight"></span>
                   <span class="bar"></span>

@@ -16,22 +16,22 @@ const Libros = sequelize.define('libros', {
         allowNull: false
     },
     autor: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
     allowNull: false,
     defaultValue: 'no aplica'
 },
     tutor: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
     allowNull: false,
     defaultValue: 'no aplica'
 },
     editorial: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
     allowNull: false,
     defaultValue: 'no aplica'
 },
     titulo:{
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(100),
         allowNull:false
     },
     año:{
