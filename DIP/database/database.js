@@ -12,9 +12,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 		dialect:  'postgres',
 		dialectOptions: {
 			ssl: {
-			  key: cKey,
-			  cert: cCert,
-			  ca: cCA
+				rejectUnauthorized: false
 			}
 		  },
 		protocol: 'postgres',
