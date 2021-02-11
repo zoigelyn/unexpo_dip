@@ -38,7 +38,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	.then(async function(){
 		
 		
-	await sequelize.sync({force: true})	//Elimina las tablas existentes en la base de datos y crea las nuevas en base a los modelos
+	await sequelize.sync({alter: true})	//Elimina las tablas existentes en la base de datos y crea las nuevas en base a los modelos
 		console.log('conectado');
 		
 	})
