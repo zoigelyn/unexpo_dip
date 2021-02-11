@@ -2615,7 +2615,7 @@ $("#enlaces").hide();
     $("form#formDias").on('submit', function (e) {
       e.preventDefault();
       let data = $(this).serialize();
-
+     
       $.ajax({
         beforeSend: function () {
           $("div#cargando").html(

@@ -141,7 +141,6 @@ let coma = '';
 module.exports.existeCota = async function (req, res, next) {
 
  const cota = req.body.cota;
-console.log(cota);
 try {
 const libro = await Libros.findOne({
   where: {
@@ -158,7 +157,7 @@ if (libro){
   res.send('');
 }
 }catch(error){
-  console.log(error);
+ res.status(500);
 }
 };
 //consulta de libros
@@ -217,39 +216,6 @@ module.exports.revista = async function (req, res, next) {
   }
 };
 
-/*module.exports.totalLibros = async function (req, res, next) {
-  try {
-    const libros = await Libros.findAll({
-      attributes: [
-        'cota',
-        ['tipo_l', 'tipo de material bibliografico'],
-        'autor',
-        'tutor',
-        'editorial',
-        'titulo',
-        'año',
-        'volumen',
-        'estado_l',
-        ['created_at', 'fecha de registro'],
-        ['updated_at', 'fecha de ultima actualizacion']
-      ]
-    });
-    if (libros) {
-
-    res.render('libros', {
-      titulo: 'Catalogo',
-      usuarioL: req.session.usuarioL,
-      libros: libros
-    });
-  }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      data: {},
-      message: 'ha ocurrido un error',
-    });
-  }
-};*/
 //Función que consulta todos los libros
 module.exports.todosLibros = async function (req, res, next) {
   try {

@@ -28,13 +28,20 @@ module.exports.vistaDiasPrestamo = async function (req, res, next) {
 module.exports.guardarConfDias = async function (req, res, next) {
 
   try {
+    
     const { dias, libros } = req.body;
+    
     const configurado = await ConfDiasLibros.update({//actualiza con método sequelize los límites establecidos
-      dias_prestamo: dias,
+     dias_prestamo: dias,
       cantidad_libros: libros,
+     }, {
+       where: {
       id_c: 1
+     } 
     });
+    
 
+     
     if (configurado) {
       res.status(200).send('guardado con exito');
     } else {
@@ -42,6 +49,7 @@ module.exports.guardarConfDias = async function (req, res, next) {
     }
   } catch (error) {
     res.status(500);
+    console.log(error);
   }
 };
 //guardar dias de prestamo y limite de libros
