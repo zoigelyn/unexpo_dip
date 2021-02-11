@@ -277,10 +277,14 @@ module.exports.crearTipoU = async function (req, res, next) {
       console.log('Cargada la información inicial TU');
       next();
     }
+    } else {
+      next();
     }
     
   } catch (error) {
     // console.log(error)
+    
+     next(error);
   }
 };
 //Crea en la base de datos los tipos de libros permitidos 
@@ -306,10 +310,14 @@ if (existe.length == 0) {
       next();
 
     }
+} else {
+  next();
 }
     
   } catch (error) {
     //  console.log(error)
+    
+    next(error);
   }
 };
 //Crea en la base de datos los estados de libro permitidos
@@ -334,8 +342,11 @@ if (existe.length == 0) {
       next();
     }
   
+} else {
+  next();
 }
    } catch (error) {
+     next(error);
     //console.log(error)
   }
 };
@@ -365,10 +376,13 @@ if ( existe.length == 0) {
       next();
 
     }
+} else {
+  next();
 }
    
   } catch (error) {
     // console.log(error)
+    next(error);
   }
 };
 //Vista del formulario para configurar los dias de préstamos y la cantidad límite de libros para retirar
