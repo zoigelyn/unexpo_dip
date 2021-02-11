@@ -7,9 +7,9 @@ require('dotenv').config({path: destino});
 var Sequelize = require('sequelize')//Se requiere sequelize
 	  , sequelize = null
   
-/**/		if (process.env.HEROKU_POSTGRESQL_URL) {// si existe las variables que me brinda heroku
+/**/		if (process.env.DATABASE_URL) {// si existe las variables que me brinda heroku
  
-	  sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_URL, {
+	  sequelize = new Sequelize(process.env.DATABASE_URL, {
 		dialect:  'postgres',
 		protocol: 'postgres',
 		port:     '5432',
