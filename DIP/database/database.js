@@ -8,16 +8,21 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	  , sequelize = null
   
 /**/		if (process.env.DATABASE_URL) {// si existe las variables que me brinda heroku
- console.log('si entre');
 	  sequelize = new Sequelize(process.env.DATABASE_URL, {
 		dialect:  'postgres',
+		dialectOptions: {
+			ssl: {
+			  key: cKey,
+			  cert: cCert,
+			  ca: cCA
+			}
+		  },
 		protocol: 'postgres',
 		port:     '5432',
 		host:     'ec2-54-90-13-87.compute-1.amazonaws.com',
 		logging:  true 
 	  })
 	} else {
-		console.log('no entre')
 	//Sino se ejecuta localmente
 	  sequelize = new Sequelize(process.env.NAME_DATABASE, process.env.USUARIO_DATABASE, process.env.CLAVE_DATABASE,{
 		dialect:"postgres", 
