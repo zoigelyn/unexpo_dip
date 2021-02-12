@@ -120,7 +120,7 @@ module.exports.insertarBaseE = async function (req, res, next) {
 
 
       if (creacion) { //Si se realiza la creacion se buscan usuarios con el tipo de usuario "estudiante"
-        let filePath = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename);
+        let filePath = path.join(__dirname, '../noPublic/uploads/', req.file.filename);
         fs.unlinkSync(filePath);
         const usuariosE = await Usuarios.findAll({//Se realiza una busqueda en el modelo Estudiante con el metodo findAll proporcionado por sequelize
           where: {
