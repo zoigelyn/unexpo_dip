@@ -20,7 +20,7 @@ function generateUUID() {
 // funcion donde se expresa la ubicación del archivo
 //En este caso selecciono una ubicación no publica, para que esta no sea accesible a nadie más
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, '../Public/uploadsExcel'),//ubicación del archivo
+  destination: path.join(__dirname, '../noPublic/uploads'),//ubicación del archivo
   filename: (req, file, cb) => {
     cb(null, generateUUID() + path.extname(file.originalname).toLowerCase()); // se genera un id unico y se le añade el tipo de archivo de mi archivo original 
   }
@@ -39,7 +39,7 @@ const excelFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: storage,
-  dest: path.join(__dirname, '../Public/uploadsExcel'),
+  dest: path.join(__dirname, '../noPublic/uploads'),
   fileFilter: excelFilter
 });
 module.exports.upload = upload;
@@ -49,7 +49,7 @@ module.exports.insertarBaseE = async function (req, res, next) {
   try {
     let bandera = 0;
     // si se realiza la carga de archivo exitosamente se gernera un objeto file, el cual es accesible desde req, y en el se encuentra toda la informacion del archivo cargado
-    let ruta = path.join(__dirname, '..\\Public\\uploadsExcel\\', req.file.filename)//ruta del archivo
+    let ruta = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename)//ruta del archivo
 
     readXlsxFile(ruta).then(async function (rows) {//el middleware toma el archivo de la ruta y extrae las filas
       rows.shift(); //Se desplaza el primer elemento, el encabezado
@@ -120,8 +120,8 @@ module.exports.insertarBaseE = async function (req, res, next) {
 
 
       if (creacion) { //Si se realiza la creacion se buscan usuarios con el tipo de usuario "estudiante"
-        let filePath = path.join(__dirname, '..\\Public\\uploadsExcel\\', req.file.filename);
-        fs.unlinkSync(filePath);
+        /*let filePath = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename);
+        fs.unlinkSync(filePath);*/
         const usuariosE = await Usuarios.findAll({//Se realiza una busqueda en el modelo Estudiante con el metodo findAll proporcionado por sequelize
           where: {
             tipo_u: 'estudiante'// la busqueda se condiciona
@@ -275,8 +275,8 @@ module.exports.insertarBaseD = async function (req, res, next) {
 
 
       if (creacion) {
-        let filePath = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename); //si se realiza la creacion se procede a eliminar el archivo excel, debido a que no es necesario su almacenamiento despues de haber importado los datos en la base de datos
-        fs.unlinkSync(filePath);
+       /* let filePath = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename); //si se realiza la creacion se procede a eliminar el archivo excel, debido a que no es necesario su almacenamiento despues de haber importado los datos en la base de datos
+        fs.unlinkSync(filePath);*/
         var usuariosD = await Usuarios.findAll({//consulta del modelo Usuarios
           where: {
             tipo_u: 'docente'//se condiciona la consulta para usuarios con el tipo de dato docente
