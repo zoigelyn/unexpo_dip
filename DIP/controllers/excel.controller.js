@@ -49,7 +49,7 @@ module.exports.insertarBaseE = async function (req, res, next) {
   try {
     let bandera = 0;
     // si se realiza la carga de archivo exitosamente se gernera un objeto file, el cual es accesible desde req, y en el se encuentra toda la informacion del archivo cargado
-    let ruta = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename)//ruta del archivo
+    let ruta = path.join(__dirname, '../noPublic/uploads/', req.file.filename)//ruta del archivo
 
     readXlsxFile(ruta).then(async function (rows) {//el middleware toma el archivo de la ruta y extrae las filas
       rows.shift(); //Se desplaza el primer elemento, el encabezado
