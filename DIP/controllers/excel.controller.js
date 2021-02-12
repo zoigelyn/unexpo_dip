@@ -206,7 +206,7 @@ module.exports.insertarBaseD = async function (req, res, next) {
 
   try {
     let bandera = 0;
-    let ruta = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename)// ruta del archivo excel
+    let ruta = path.join(__dirname, '../noPublic/uploads/', req.file.filename)// ruta del archivo excel
 
     readXlsxFile(ruta).then(async function (rows) {
 
@@ -275,7 +275,7 @@ module.exports.insertarBaseD = async function (req, res, next) {
 
 
       if (creacion) {
-        let filePath = path.join(__dirname, '..\\noPublic\\uploads\\', req.file.filename); //si se realiza la creacion se procede a eliminar el archivo excel, debido a que no es necesario su almacenamiento despues de haber importado los datos en la base de datos
+        let filePath = path.join(__dirname, '../noPublic/uploads/', req.file.filename); //si se realiza la creacion se procede a eliminar el archivo excel, debido a que no es necesario su almacenamiento despues de haber importado los datos en la base de datos
         fs.unlinkSync(filePath);
         var usuariosD = await Usuarios.findAll({//consulta del modelo Usuarios
           where: {
