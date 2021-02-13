@@ -659,7 +659,7 @@ module.exports.multas = async function (req, res, next) {
     const conf = await ConfDiasLibros.findOne();
     if (fichas.length > 0) {
       for (var i = 0; i < fichas.length; i++) {
-        let multaTotal = Number(fichas.multa)  + Number(conf.multa)
+        let multaTotal = parseInt(fichas.multa)  + parseInt(conf.multa)
         await Fichas.update({
          multa: multaTotal,
         }, {

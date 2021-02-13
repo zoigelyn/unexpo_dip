@@ -29,11 +29,39 @@ module.exports.guardarConfDias = async function (req, res, next) {
 
   try {
     
-    const { dias, libros } = req.body;
-    
+    const { dias, libros, multa, unidad } = req.body;
+    let d, l, m, u;
+ const conf = await ConfDiasLibros.findOne({
+   where:
+   {
+     id_c: 1
+     }
+ });
+ if (dias) {
+   d = parseInt(dias)
+ } else {
+   d = conf.dias_prestamo 
+ }
+ if (libros) {
+   l = parseInt(libros)
+ } else {
+   l = conf.cantidad_libros
+ }
+ if (multa) {
+   m = parseInt(multa)
+ } else {
+   m = conf.multa
+ }
+ if (unidad) {
+   u = unidad
+ } else {
+   u = conf.unidad
+ }
     const configurado = await ConfDiasLibros.update({//actualiza con método sequelize los límites establecidos
-     dias_prestamo: dias,
-      cantidad_libros: libros,
+     dias_prestamo: d ,
+      cantidad_libros: l,
+      multa: m,
+      unidad: u
      }, {
        where: {
       id_c: 1
@@ -57,9 +85,9 @@ module.exports.guardarConf = async function (req, res, next) {
   try {
     const { dias, cantidad, unidad, multa } = req.body;
     const configurado = await ConfDiasLibros.create({// Crea en la base de datos los límites para el préstamo de libros
-      dias_prestamo: dias,
-      cantidad_libros: cantidad,
-      multa: multa,
+      dias_prestamo: parseInt(dias),
+      cantidad_libros: parseInt(cantidad),
+      multa: parseInt(multa),
       unidad: unidad
       
     });

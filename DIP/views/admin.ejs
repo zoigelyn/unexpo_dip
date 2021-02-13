@@ -1581,7 +1581,38 @@ function verFicha(input) {
                        manejoErrores(error);
                     });
 }
-  
+    function ocultar(id) {
+   if (id = 'd'){
+     $("#input-dias").show();
+     $("#input-cantidad").hide();
+     $("#input-multa").hide();
+     $("#input-unidad").hide();
+   }
+   if (id = 'l'){
+     $("#input-cantidad").show();
+     $("#input-dias").hide();
+     $("#input-multa").hide();
+     $("#input-unidad").hide();
+   }
+   if (id = 'm'){
+     $("#input-multa").show();
+     $("#input-dias").hide();
+     $("#input-multa").hide();
+     $("#input-unidad").hide();
+   }
+   if (id = 'u'){
+     $("#input-unidad").show();
+     $("#input-cantidad").hide();
+     $("#input-multa").hide();
+     $("#input-dias").hide();
+   }
+   if (id = 't'){
+     $("#input-dias").show();
+     $("#input-cantidad").show();
+     $("#input-multa").show();
+     $("#input-unidad").show();
+   }
+  };
   //se aprueba una reserva
   function aprobar(input) {
     let cota = $(input).attr("id");
@@ -2324,7 +2355,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
       });
   }
   function seccionConfDias() {
-  //  $("input#ambosCampos").click();
+ 
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
@@ -2534,19 +2565,7 @@ $("#enlaces").hide();
 </script>
 
 <script>
-  function ocultar(input) {
-    let i = $(input).val();
-    if (i == 1) {
-      $("#libros").hide();
-      $("#dias").show();
-    } else if (i == 2) {
-      $("#dias").hide();
-      $("#libros").show();
-    } else if (i == 3) {
-      $("#dias").show();
-      $("#libros").show();
-    }
-  };
+
   $(function () {
     seccionInicio();
     $("form#formDias").on('change', function() {
@@ -2979,7 +2998,7 @@ $("#enlaces").hide();
                 <button type="submit" class="btn btn-primary">Configurar</button>
 
               </div>
-
+             
 
             </div>
 
