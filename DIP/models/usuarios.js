@@ -10,8 +10,7 @@ const Usuarios = sequelize.define('usuarios', {
     },
     tipo_u: {
         type:Sequelize.STRING(20),
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     cedula_u: {
         type: Sequelize.STRING(10),

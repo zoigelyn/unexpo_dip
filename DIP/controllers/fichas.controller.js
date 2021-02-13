@@ -252,7 +252,7 @@ res.send({
 //función que consulta la ficha de reserva o préstamo
 module.exports.miFicha = async function (req, res, next) {
   const cota = req.query.cota
-  console.log(cota);
+
   try {
     const ficha = await Fichas.findOne({
       where: {
@@ -674,4 +674,36 @@ module.exports.multas = async function (req, res, next) {
   } catch (error) {
     next(error);
   }
+  };
+  
+  //funcion
+module.exports.verMulta = async function (req, res, next) {
+  const cota = req.query.cota
+
+  try {
+    const ficha = await Fichas.findOne({
+      where: {
+        cota_f: cota
+      }
+    });
+   
+    const conf = await ConfDiasLibros.findOne({
+      where: {
+        id_c: 1
+      }
+    });
+
+    if (ficha && conf) {
+      res.status(200).send({
+        ficha: ficha,
+        conf: conf
+      });
+    } 
+  } catch (error) {
+   res.status(500);
+  }
+};
+  //
+  module.exports.pagarMulta = async function(req, res, next) {
+
   };

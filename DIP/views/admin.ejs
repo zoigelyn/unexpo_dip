@@ -976,6 +976,36 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
       });
  
+      $("form#formMulta").on('submit', function(e) {
+        e.preventDefault();
+        let data = $(this).serialize();
+
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal4").modal("hide");
+            $("div#myModal").modal("show");
+          },
+          url: "/bibliotecario/multa_paga",
+          type: "PUT",
+          data: data,
+        })
+          .done(function (res) {
+            if (res == 'Multa paga') {
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+              $("#myModal").modal("hide");
+              $("myModal3").modal("show");
+                }
+
+              })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+
+
+      });
 
     });
     
@@ -1068,7 +1098,69 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
   });
 </script>
 <script>
+  //verifica el estado de la multa
+function verificarMulta(Cota) {
+  let cota = Cota;
+  $.ajax({
+   beforeSend: function () {
+                        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal("show");
 
+                    },
+                    url: `/bibliotecario/multa-ficha?cota=${cota}`,
+                    type: 'POST'
+                })
+                    .done(function (res) { 
+                      
+                        $("#myModal").modal("hide");
+                     
+        $("div#modal-body-4").html('');
+        $("div#tutor").html('');
+        $("#myLabel").html('Usuario multado por este libro');
+        ("#myLabel").css("color", "#FF0040");
+        $("div#modal-body-4").html(`
+           <form id="formMulta">
+             <div style="height:50px;">
+              <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Correo electrónico del usuario</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.correo_f}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Usuario</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.correo_f}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Multa</label>
+             <div class="col-sm-10">
+             <input value="'${res.ficha.multa}' + '${res.conf.unidad}'"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+                <button type="submit" class="btn btn-primary">Multa cancelada</button>
+
+              </div>
+            
+           </div>
+           <br>
+         
+             
+             </form>`);
+   $("div#myModal4").modal('show');
+                     
+  
+  
+                    })
+                    .fail(function (error) {
+                       manejoErrores(error);
+                    });
+
+};
   //ocultar o mostrar el campo de ingresar una nueva imagen al momento de editar una noticia
   function mostrarCampoImg(check) {
     if (check.checked) {
@@ -1182,8 +1274,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
           var j = 0;
           for (var i = 0; i < noticias.length; i++) {
 
-            $('div#cuadronot').append(`
-<li>
+            $('div#cuadronot').append(`<li>
  <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
  <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
    <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
@@ -1581,7 +1672,8 @@ function verFicha(input) {
                        manejoErrores(error);
                     });
 }
-    function ocultar(id) {
+//No se utiliza  
+function ocultar(id) {
    if (id = 'd'){
      $("#input-dias").show();
      $("#input-cantidad").hide();
@@ -1649,9 +1741,14 @@ function verFicha(input) {
     $(query).remove();
   }
   // se recibe un libro
-  function recibir(input) {
-    let cota = $(input).attr("id");
-    let query = "div#button_" + cota;
+  function recibir(input, multa) {
+/*alert(multa);
+alert(input);
+    if (multa == 0) {
+      verificarMulta(input);
+    }
+*/
+    let cota = input;
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(
@@ -2079,7 +2176,9 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
               }' style="width: 8%;">
     
                                 <button id='${fichas.fichas[i].cota_f
-              }' onclick='recibir(this)' class="btn btn-success"><i
+              }' onclick="recibir('${fichas.fichas[i].cota_f
+              }', '${fichas.fichas[i].multa
+              }')" class="btn btn-success"><i
                                         class="zmdi zmdi-time-restore"></i></button>
     
                             </div>
