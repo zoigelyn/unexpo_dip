@@ -14,6 +14,16 @@ const ConfDiasLibros = sequelize.define('conf_dias_libros', {
             isInt: true 
         }
     },
+    multa: {
+        type: Sequelize.INTEGER,
+        allowNull:false,
+        defaultValue: 1
+    },
+    unidad: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: 'Bolivares'
+    },
     cantidad_libros: {
         type: Sequelize.INTEGER,
         allowNull: false,

@@ -23,19 +23,23 @@ const Fichas = sequelize.define('fichas', {
         }
     },
     fecha_e:{
-      type: Sequelize.DATE,
+      type: Sequelize.DATEONLY,
       allowNull: false
       },
     
     fecha_d: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
         allowNull: false
         },
-     fecha_c :Sequelize.DATE,
+     fecha_c :Sequelize.DATEONLY,
     estado_f: {
         type: Sequelize.STRING(20),
         allowNull: false
         },
+    multa: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+    },
     createdAt:{
         type: Sequelize.DATE,
         field: 'created_at'

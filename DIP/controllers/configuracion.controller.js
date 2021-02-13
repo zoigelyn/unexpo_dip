@@ -39,7 +39,7 @@ module.exports.guardarConfDias = async function (req, res, next) {
       id_c: 1
      } 
     });
-    
+  
 
      
     if (configurado) {
@@ -49,17 +49,19 @@ module.exports.guardarConfDias = async function (req, res, next) {
     }
   } catch (error) {
     res.status(500);
-    console.log(error);
   }
 };
 //guardar dias de prestamo y limite de libros
 module.exports.guardarConf = async function (req, res, next) {
 
   try {
-    const { dias, libros } = req.body;
+    const { dias, cantidad, unidad, multa } = req.body;
     const configurado = await ConfDiasLibros.create({// Crea en la base de datos los límites para el préstamo de libros
       dias_prestamo: dias,
-      cantidad_libros: libros
+      cantidad_libros: cantidad,
+      multa: multa,
+      unidad: unidad
+      
     });
 
     if (configurado) {

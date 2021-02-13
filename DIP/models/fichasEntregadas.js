@@ -22,12 +22,12 @@ const fichasEntregadas = sequelize.define('fichas_entregadas', {
         }
     },
     fecha_e:{
-      type: Sequelize.DATE,
+      type: Sequelize.DATEONLY,
       allowNull: false
       },
     
 
-     fecha_c :Sequelize.DATE,
+     fecha_c :Sequelize.DATEONLY,
     estado_f: {
         type: Sequelize.STRING,
         allowNull: false

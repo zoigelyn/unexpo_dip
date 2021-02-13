@@ -649,3 +649,29 @@ try {
   next(error)
 }
 };
+module.exports.multas = async function (req, res, next) {
+  try {
+    const fichas = await Fichas.findAll({
+      where: {
+        estado_f: 'vencido'
+      }
+    });
+    const conf = await ConfDiasLibros.findOne();
+    if (fichas.length > 0) {
+      for (var i = 0; i < fichas.length; i++) {
+        let multaTotal = Number(fichas.multa)  + Number(conf.multa)
+        await Fichas.update({
+         multa: multaTotal,
+        }, {
+          where: {
+            correo_f: fichas[i].correo_f
+          }
+        });
+      }
+        }
+       
+   
+  } catch (error) {
+    next(error);
+  }
+  };

@@ -2961,21 +2961,17 @@ $("#enlaces").hide();
                 <input type="number" required="" id="input-cantidad" class=" material-control" name="libros" minlength="1"
                   placeholder="Límite de libros">
               </div>
-              <div class="form-group mx-sm-3">
-
-                <br>
-                Modificar:<br>
-                <input onchange="ocultar(this)" type="radio" value="1" id="dias_prestamos" name="cambio">Días de
-                préstamo<br>
-
-                <input onchange="ocultar(this)" type="radio" value="2" id="limite_libros" name="cambio"> Límite de
-                libros<br>
-
-                <input onchange="ocultar(this)" type="radio" value="3" name="cambio" id="ambosCampos"> Límite de libros
-                y días de
-                préstamo<br>
-
+              <div class="form-group mx-sm-3" id="multa">
+                <label for="multa">Multa por día vencido</label>
+                <input type="number" required="" id="input-multa" class=" material-control" name="multa" minlength="1"
+                  placeholder="Multa por día vencido">
               </div>
+              <div class="form-group mx-sm-3" id="unidad">
+                <label for="unidad">Unidad</label>
+                <input type="text" required="" id="input-unidad" class=" material-control" name="libros" minlength="1" pattern="[a-zA-Zá-ú]{1.20}"
+                  placeholder="Límite de libros">
+              </div>
+             
 
               <div class="form-group mx-sm-3">
                 <button type="submit" class="btn btn-primary">Configurar</button>

@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 
 
 var CronJob = require("cron").CronJob;
-const {actualizarEstadoF, actualizarR} = require("./controllers/fichas.controller");
+const {actualizarEstadoF, actualizarR, multas} = require("./controllers/fichas.controller");
 
 var cronJob1 = new CronJob({
   cronTime: '01 00 00 * * *',
@@ -75,6 +75,7 @@ var cronJob1 = new CronJob({
     console.log('Actualzando fichas del  '+ new Date()); 
     actualizarR();
     actualizarEstadoF();
+    multas();
   },
   start: true,
   timeZone: "America/Caracas"
