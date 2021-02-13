@@ -2119,6 +2119,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
       type: "GET",
     })
       .done(function (fichas) {
+        $("#myModal").modal("hide");
         $("div#confDias").hide();
         $("div#preguntasF").hide();
         $("#container").show();
@@ -2211,6 +2212,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
             
                         `);
+                        sobresaltarFecha(fichas, i);
           }
         } else {
           $("div#container").append(`
@@ -2219,7 +2221,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
           
                             `);
-                            sobresaltarFecha(res, i);
+                           
                           }
 
         $("div#myModal").modal("hide");
@@ -2252,7 +2254,6 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
         $("div#enlaces").show();
         $("form#formato").hide();
         $("div#editarLibro").hide();
-
         $("div#explicacion").show();
         $("div#seccion").html(` 
                 <div class="page-header">
@@ -2337,7 +2338,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
             
                         `);
-                        sobresaltarFecha(res, i);
+                        sobresaltarFecha(fichas, i);
                       }
         } else {
           $("div#container").append(`
