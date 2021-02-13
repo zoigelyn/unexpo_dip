@@ -39,7 +39,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 		
 		
 	await sequelize.sync({force: true})	//Elimina las tablas existentes en la base de datos y crea las nuevas en base a los modelos
-		console.log('conectado');
+		console.log('conectado a la base de datos');
 		
 	})
 	.catch(error => {
