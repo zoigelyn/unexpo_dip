@@ -2,6 +2,38 @@
 <html lang="es">
 <%- include ("partes/cabecera") %>
 <script>
+   //animacion para la seccion de noticias
+            $(document).ready(function () {
+    var first = 0;
+    var speed = 700;
+    var pause = 7500;
+    function removeFirst() {
+      let elementos = $('div#cuadronot').find('li').length;
+      if (elementos <= 1) {
+        clearInterval(intervalId);
+      }
+      first = $('div#cuadronot li:first').html();
+      $('div#cuadronot li:first')
+        .animate({ opacity: 0 }, speed)
+        .fadeOut('slow', function () {
+          $(this).remove();
+        });
+
+      addLast(first);
+
+    }
+    function addLast(first) {
+
+      last = '<li style="display:none;">' + first + '</li>';
+      $('div#cuadronot').append(last);
+      $('div#cuadronot li:last')
+        .animate({ opacity: 1 }, speed)
+        .fadeIn('slow')
+    }
+
+    intervalId = setInterval(removeFirst, pause);
+
+  });
   //manejo de errores para todas las solicitudes ajax
   function manejoErrores(error) {
     let message;
@@ -59,40 +91,7 @@
 
   };
 
-  //animacion para la seccion de noticias
-  $(document).ready(function () {
-    var first = 0;
-    var speed = 700;
-    var pause = 7500;
-    function removeFirst() {
-      let elementos = $('div#cuadronot').find('li').length;
-      if (elementos <= 1) {
-        clearInterval(intervalId);
-      }
-      first = $('div#cuadronot li:first').html();
-      $('div#cuadronot li:first')
-        .animate({ opacity: 0 }, speed)
-        .fadeOut('slow', function () {
-          $(this).remove();
-        });
-
-      addLast(first);
-
-    }
-    function addLast(first) {
-
-      last = '<li style="display:none;">' + first + '</li>';
-      $('div#cuadronot').append(last);
-      $('div#cuadronot li:last')
-        .animate({ opacity: 1 }, speed)
-        .fadeIn('slow')
-    }
-
-    intervalId = setInterval(removeFirst, pause);
-
-  });
-
-
+         
 </script>
 <script>
 function formatoC(id1, id2) {
