@@ -31,7 +31,7 @@ const Libros = sequelize.define('libros', {
     defaultValue: 'no aplica'
 },
     titulo:{
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(200),
         allowNull:false
     },
     año:{

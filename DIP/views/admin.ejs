@@ -668,7 +668,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                       </form>
                       
         `);
-
+alert(libro.libro[0].destino)
         if (libro.libro[0].destino === 'no aplica') {
           let q = "a#" + libro.libro[0].cota;
           añadirAtt(q);
@@ -741,8 +741,11 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
     if ($(input).val() === 'Trabajo de grado') {
 
       $('div#div-contenedor').show();
+      $('div#editorialD').hide();
     } else {
       $('div#div-contenedor').hide();
+      $('div#editorialD').show();
+      
     }
   };
  //Realiza una consulta completa de todos los libros
@@ -3214,7 +3217,7 @@ $("#enlaces").hide();
                   <span class="bar"></span>
                   <label>Año</label>
                 </div>
-                <div class="group-material">
+                <div class="group-material" id="editorialD">
                   <input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
                     placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
                     data-toggle="tooltip" data-placement="top" title="Editorial del libro">
