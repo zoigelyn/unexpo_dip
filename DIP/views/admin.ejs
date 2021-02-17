@@ -254,7 +254,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -299,7 +299,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"  data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
