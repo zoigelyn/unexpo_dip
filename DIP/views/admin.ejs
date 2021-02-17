@@ -767,6 +767,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
       })
         .done(function (libros) {
           let resultados = libros.libros.length;
+          $("div#myModal").modal("hide");
           if (resultados > 0) {
             $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
             $("div#container").html(` <div class="container-fluid" >

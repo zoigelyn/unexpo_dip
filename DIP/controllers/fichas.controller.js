@@ -79,7 +79,27 @@ module.exports.prestamosVVAjax = async function (req, res, next) {
 
 
 };
+function calculoD(fecha) {
+  let f = new Date(fecha);
 
+  let d = f.getDay();
+  let mes, dia;
+
+  if (d == 6) {
+      f.setDate(f.getDate() + 2);
+      f = new Date(f);
+
+  } else if (d == 0) {
+      f.setDate(f.getDate() + 1);
+      f = new Date(f);
+
+  }  else {
+      f = new Date(f);
+  } 
+  
+  return f;
+
+}
 // funcion para reservar un libro
 module.exports.reservarLibro = async function (req, res, next) {
  
@@ -123,9 +143,10 @@ i = 0;
 
   try {
     if (reservas.length < cantidadL) {
-      const dia = cantidadD;
+      const dia = parseInt(cantidadD);
       var nd = sumarDias(dia, fecha_emision);
-      let fecha_d = new Date(nd);
+      let f = calculoD(nd);
+      let fecha_d = new Date(f);
       if (!fecha_d) {
         var fecha_devolucion = nd;
       }
