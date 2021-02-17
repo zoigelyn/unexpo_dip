@@ -577,7 +577,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                     
                                      </td>
                                      <td style="width: 80%; overflow: hidden; border: none;">
-                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota no la puedes modificar" readonly>
+                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" placeholder="solo se acepta _ sin espacios" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota no la puedes modificar" readonly>
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Cota</label>
@@ -589,7 +589,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                               </table>
                        
                                       <div  class="group-material">
-                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,100}" required=""  maxlength="100" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
+                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,200}" required=""  maxlength="200" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
                             <span class="highlight"></span>
                             <span class="bar"></span>
                             <label>Título</label>
@@ -3183,8 +3183,8 @@ $("#enlaces").hide();
 
                 <div class="group-material">
                   <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
-                    placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
-                    maxlength="100" data-toggle="tooltip" data-placement="top"
+                    placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,200}"
+                    maxlength="200" data-toggle="tooltip" data-placement="top"
                     title="Escribe el título o nombre del libro, sólo letras">
                   <span class="highlight"></span>
                   <span class="bar"></span>
@@ -3312,7 +3312,7 @@ $("#enlaces").hide();
               </div>
               <div class="col-sm-4 col-md-2">
                   <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
-                  placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,200}" maxlength="2000" data-toggle="tooltip"
                   data-placement="top" title="Escribe el título o nombre del libro">
                   <label >Título</label>
               </div>
