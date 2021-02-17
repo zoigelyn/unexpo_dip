@@ -254,7 +254,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -299,7 +299,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"  data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"  data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -672,8 +672,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         if (libro.libro[0].destino === 'no aplica') {
           
           let q = "a#a" + libro.libro[0].cota;
-          alert(q)
-          $(q).attr("disabled", true);
+          añadirAtt(q);
         }
 
         if (libro.libro[0].tipo_l === 'trabajo de grado') {
@@ -3161,8 +3160,8 @@ $("#enlaces").hide();
                     <td style="width: 200px; overflow: hidden; border: none;">
                       <input id="cota-1" onchange="añadirCampoPdf(this)" name="cota_1" type="text"
                         class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro"
-                        required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip"
-                        data-placement="top" title="Ej. cota_1, cota 1">
+                        required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip"
+                        data-placement="top" title="Ej. cota_1 sin espacios">
                       <span class="highlight"></span>
                       <span class="bar"></span>
                       <label>Cota</label>
@@ -3288,9 +3287,9 @@ $("#enlaces").hide();
         <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea">
           <div class="row justify-content-md-center">
               <div class="col-sm-4 col-md-2">
-                  <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"
+                  <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"
                   placeholder="Cota" maxlength="25" data-toggle="tooltip" data-placement="top"
-                  title="Ej. cota_1 cota 1">
+                  title="Ej. cota_1 Sin espacios">
                   <label >Cota</label>
               </div>
               <div class="col-sm-4 col-md-2">
