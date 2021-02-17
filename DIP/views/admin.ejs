@@ -299,7 +299,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -961,12 +961,14 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
             actualizarFormato(titulo, tipo, res.libro);
 
             $("p#mensaje-final").html(`${res.mensaje}`);
-    
-            $("div#myModal4")
+            if (res.mensaje == "Actualizado con éxito") {
+               $("div#myModal4")
               .modal("hide")
               .on('hidden.bs.modal', function (e) {
                 showModal();
               });
+            }
+           
 
           })
           .fail(function (error) {
@@ -2064,7 +2066,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
     $("button#opcion2").hide();
     seccion.innerHTML = ` <div class="page-header">
                 <h1 class="all-tittles">
-                    UNEXPO DIP <small>Inicio</small>
+                    UNEXPO SBDIP <small>Inicio</small>
                 </h1>
             </div>`;
     explicacion.style.display = 'none';
@@ -2508,6 +2510,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
   function añadirMaterial() {
     var formato = document.getElementById("formato");
     formato.style.display = 'block';
+    resetear();
     $("div#confDias").hide();
     $("form#nuevaBaseE").hide();
     $("form#nuevaBaseD").hide();
