@@ -670,9 +670,10 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         `);
 
         if (libro.libro[0].destino === 'no aplica') {
-          alert('entre')
+          
           let q = "a#a" + libro.libro[0].cota;
-          añadirAtt(q);
+          alert(q)
+          $(q).attr("disabled", true);
         }
 
         if (libro.libro[0].tipo_l === 'trabajo de grado') {
