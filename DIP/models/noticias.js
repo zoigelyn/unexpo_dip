@@ -19,7 +19,7 @@ const Noticias = sequelize.define('noticias', {
         allowNull: false
     },
     titulo_noticia: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(200),
         allowNull: false,
         Unique: true
     },
