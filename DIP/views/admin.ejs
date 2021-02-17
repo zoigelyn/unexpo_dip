@@ -1338,8 +1338,8 @@ function verificarMulta(Cota) {
                   <legend><strong>Información básica</strong></legend><br>
                   <div class="group-material">
                     <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
-                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="35"
-                      data-toggle="tooltip" pattern="[Áa-z- -ñ]{1,}" min="1" data-placement="top" value="${noticia.titulo_noticia}"
+                      placeholder="Escribe aquí el título de la noticia" required="" maxlength="200"
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,200}" min="1" data-placement="top" value="${noticia.titulo_noticia}"
                       title="Título de la noticia">
                     <span class="highlight"></span>
                     <span class="bar"></span>
@@ -2081,6 +2081,10 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
     //busquedaC.style.display = 'none';
     cargando.innerHTML = '';
     container.innerHTML = '';
+    let boton = $("#opcion1").html();
+    if (boton == 'Volver') {
+      $("#opcion1").click;
+    }
     mostrarNoticias();
 
   };
