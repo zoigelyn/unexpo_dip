@@ -627,7 +627,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                             
                                       </div>
                                       
-                                      <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="${libro.libro[0].cota}" data_url="${libro.libro[0].destino}" data_titulo=${libro.libro[0].titulo}">Ver Pdf del libro </a></p>
+                                      <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="a${libro.libro[0].cota}" data_url="${libro.libro[0].destino}" data_titulo=${libro.libro[0].titulo}">Ver Pdf del libro </a></p>
                            
                        <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf" >      
                  <tr id="tr-pdf-1" style="border: none;">
@@ -668,9 +668,10 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                       </form>
                       
         `);
-alert(libro.libro[0].destino)
+
         if (libro.libro[0].destino === 'no aplica') {
-          let q = "a#" + libro.libro[0].cota;
+          alert('entre')
+          let q = "a#a" + libro.libro[0].cota;
           añadirAtt(q);
         }
 
