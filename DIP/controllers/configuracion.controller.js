@@ -5,15 +5,14 @@ const Tipo_Usuario = require('../models/tipoUsuario');
 const Tipo_Libro = require('../models/tipoLibro');
 const Estado_Libro = require('../models/estadoLibro');
 const Estado_Prestamo = require('../models/estadoPrestamo');
+const Respuestas = require ('../models/respuestas');
 const { render } = require('ejs');
 //listo vista de configuracion dias de prestamos en solicitud ajax
 module.exports.vistaDiasPrestamo = async function (req, res, next) {
   try {
-    const objeto = await ConfDiasLibros.findOne({//Se consulta con un metodo sequelize para devolver al cliente los límites actualmente establecidos
-      where: {
-        id_c: 1
-      }
-    });
+    const objeto = await ConfDiasLibros.findOne();//Se consulta con un metodo sequelize para devolver al cliente los límites actualmente establecidos
+     
+    
 
     res.status(200).send({
       objeto: objeto
@@ -24,6 +23,7 @@ module.exports.vistaDiasPrestamo = async function (req, res, next) {
 
 
 };
+
 //modifica dias de prestamo y limite de libros
 module.exports.guardarConfDias = async function (req, res, next) {
 
@@ -31,12 +31,8 @@ module.exports.guardarConfDias = async function (req, res, next) {
     
     const { dias, libros, multa, unidad } = req.body;
     let d, l, m, u;
- const conf = await ConfDiasLibros.findOne({
-   where:
-   {
-     id_c: 1
-     }
- });
+    
+ const conf = await ConfDiasLibros.findOne();
  if (dias) {
    d = parseInt(dias)
  } else {
@@ -57,6 +53,7 @@ module.exports.guardarConfDias = async function (req, res, next) {
  } else {
    u = conf.unidad
  }
+ 
     const configurado = await ConfDiasLibros.update({//actualiza con método sequelize los límites establecidos
      dias_prestamo: d ,
       cantidad_libros: l,
@@ -84,13 +81,30 @@ module.exports.guardarConf = async function (req, res, next) {
 
   try {
     const { dias, cantidad, unidad, multa } = req.body;
-    const configurado = await ConfDiasLibros.create({// Crea en la base de datos los límites para el préstamo de libros
+    const configuracion = await ConfDiasLibros.findAll();
+    if (configuracion)
+    {
+      const configurado = await ConfDiasLibros.update({
+        dias_prestamo: parseInt(dias),
+        cantidad_libros: parseInt(cantidad),
+        multa: parseInt(multa),
+        unidad: unidad
+        }, {
+          where: {
+         id_c: 1
+        } 
+       }); 
+    
+    } else {
+     const configurado = await ConfDiasLibros.create({// Crea en la base de datos los límites para el préstamo de libros
       dias_prestamo: parseInt(dias),
       cantidad_libros: parseInt(cantidad),
       multa: parseInt(multa),
       unidad: unidad
       
-    });
+    }); 
+    }
+    
 
     if (configurado) {
       res.render('tarea', {//Se renderiza, en nuestro caso se usa el motor de plantillas ejs
@@ -224,11 +238,16 @@ module.exports.unaPregunta = async function (req, res, next) {
 //Se renderiza a preguntasCreadas.ejs
 module.exports.mostrarPreguntas = async function (req, res, next) {
   const preguntas = await Preguntas.findAll();
-
-  res.render('preguntasCreadas', {
+  const objeto = await ConfDiasLibros.findOne();
+  const respuestas = await Respuestas.findAll();
+  if (objeto && respuestas.length > 0) {
+  res.redirect('/prueba-c');
+  } else {
+   res.render('preguntasCreadas', {
     titulo: 'Preguntas',
     preguntas: preguntas
-  });
+  }); 
+  }
 };
 //Se elimina una pregunta y inmediatamente se renderiza para almacenar en la base de datos la pregunta faltante
 module.exports.eliminarPregunta = async function (req, res, next) {
@@ -283,7 +302,7 @@ module.exports.vistaPreguntaUnica = function (req, res, next) {
 module.exports.vistaTareaCompleta = function (req, res, next) {
   res.render('tarea', {
     titulo: 'Configuracion completa',
-    mensaje: 'Configuracion completada satisfactoriamente',
+    mensaje: 'Configuración completada satisfactoriamente',
     tarea: 'correcta'
   });
 };
@@ -425,9 +444,16 @@ if ( existe.length == 0) {
 };
 //Vista del formulario para configurar los dias de préstamos y la cantidad límite de libros para retirar
 module.exports.vistaConfDias = async function (req, res, next) {
+ 
+  const objeto = await ConfDiasLibros.findOne();
+if (objeto) {
+res.redirect('/prueba-c');
+} else {
   res.render('confDias', {
     titulo: 'Configuración'
   });
+}
+  
 };
 
 

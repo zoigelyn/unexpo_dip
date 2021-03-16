@@ -38,7 +38,7 @@ var Sequelize = require('sequelize')//Se requiere sequelize
 	.then(async function(){
 		
 		
-	await sequelize.sync({alter: true})	//Elimina las tablas existentes en la base de datos y crea las nuevas en base a los modelos
+	await sequelize.sync({alter: true})	//si existe la tabla se comprueba cada atributo y se cambie si es necesario y sino se crea la tabla
 		console.log('conectado a la base de datos');
 		
 	})

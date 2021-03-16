@@ -2,38 +2,35 @@
 <html lang="es">
 <%- include ("partes/cabecera") %>
 <script>
-   //animacion para la seccion de noticias
-            $(document).ready(function () {
-    var first = 0;
-    var speed = 700;
-    var pause = 7500;
-    function removeFirst() {
-      let elementos = $('div#cuadronot').find('li').length;
-      if (elementos <= 1) {
-        clearInterval(intervalId);
-      }
-      first = $('div#cuadronot li:first').html();
-      $('div#cuadronot li:first')
-        .animate({ opacity: 0 }, speed)
-        .fadeOut('slow', function () {
-          $(this).remove();
-        });
+  //animacion para la seccion de noticias
 
-      addLast(first);
+  var first = 0;
+  var speed = 700;
 
-    }
-    function addLast(first) {
+  function removeFirst() {
 
-      last = '<li style="display:none;">' + first + '</li>';
-      $('div#cuadronot').append(last);
-      $('div#cuadronot li:last')
-        .animate({ opacity: 1 }, speed)
-        .fadeIn('slow')
-    }
 
-    intervalId = setInterval(removeFirst, pause);
+    first = $('div#cuadronot li:first').html();
+    $('div#cuadronot li:first')
+      .animate({ opacity: 0 }, speed)
+      .fadeOut('slow', function () {
+        $(this).remove();
+      });
 
-  });
+    addLast(first);
+
+  }
+  function addLast(first) {
+
+    last = '<li style="display:none;">' + first + '</li>';
+    $('div#cuadronot').append(last);
+    $('div#cuadronot li:last')
+      .animate({ opacity: 1 }, speed)
+      .fadeIn('slow')
+  }
+
+
+
   //manejo de errores para todas las solicitudes ajax
   function manejoErrores(error) {
     let message;
@@ -72,7 +69,7 @@
                 <p class="text-center" style="font-size:20px; ">
                         ${statusText}   (Error: ${statusCode})
                         <br><p class="text-center" style="font-size:25px;"> ${message}</p> </p>`);
-    } else if ( statusCode == 403 || statusCode == 401) {
+    } else if (statusCode == 403 || statusCode == 401) {
       $("div#modal-cuerpo").html(`<p class="text-center" style=" font-weight:bold; font-size:30px; "> <img src="/assets/icons/peligro.ico"width= "180" height= "180" ></p>
  <br>
                 
@@ -91,89 +88,98 @@
 
   };
 
-         
+
 </script>
 <script>
-function formatoC(id1, id2) {
-  $(id1).html("");
-  $(id2).html(
-    `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
-  );
-}
-function formatoI(id1, id2) {
-  $(id1).html(`<p>Debe ser formato pdf</p>`);
-  $(id2).html(
-    `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
-  );
-}
-function comprobarF(archivo) {
-  var i = $(archivo).attr("id").split("-").pop();
-  var ext = $(archivo).val().split(".").pop().toLowerCase();
+  function formatoC(id1, id2) {
+    $(id1).html("");
+    $(id2).html(
+      `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+    );
+  }
+  function formatoI(id1, id2) {
+    $(id1).html(`<p>Debe ser formato pdf</p>`);
+    $(id2).html(
+      `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+    );
+  }
+  function comprobarF(archivo) {
+    var i = $(archivo).attr("id").split("-").pop();
+    var ext = $(archivo).val().split(".").pop().toLowerCase();
 
-  var id1 = "p#formato-pdf-" + i;
-  var id2 = "td#img-pdf-" + i;
-  if ($(archivo).val() != "") {
-    if (ext === "pdf") {
-      formatoC(id1, id2);
-    } else {
-      formatoI(id1, id2);
+    var id1 = "p#formato-pdf-" + i;
+    var id2 = "td#img-pdf-" + i;
+    if ($(archivo).val() != "") {
+      if (ext === "pdf") {
+        formatoC(id1, id2);
+      } else {
+        formatoI(id1, id2);
+      }
     }
   }
-}
-/*function mostrarCampo(check) {
-  if (check.checked) {
-    $("table#table-pdf").html('');
-  } else {
 
-    $("table#table-pdf").html(`<tr id="tr-pdf-1" style="border: none;">
-                  <td  style="width: 200px;  border: none;" >
-                      <input onchange="comprobarF(this)" id="pdf-1" name="pdf" type="file" required="" class="material-control tooltips-general" data-toggle="tooltip" data-placement="top" title="Archivo PDF">
-                              <span class="highlight"></span>
-                              <span class="bar"></span>
-                              <label >Archivo PDF</label>
-
-                  </td>
-                  <td  style="width: 30px;  border: none;" id="img-pdf-1">
-
-                  </td>
-              </tr>
-              <tr id="tr2-pdf-1">
-                  <td style="width: 200px; border: none;"><p class="text-center" id="formato-pdf-1"></p></td>
-                  <td style="width: 30px;  border: none;">
-                  </td>
-              </tr>`);
-
-  }
-}*/
-function tipoTrabajo(trabajo) {
-  if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
-    $("div#tutor").html(`
+  function tipoTrabajo(trabajo) {
+    if ($(trabajo).val().toLowerCase() === "trabajo de grado") {
+      $("div#tutorD").html(`
          <input id="tutor" name="tutor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el tutor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del tutor del libro">
                      <span class="highlight"></span>
                      <span class="bar"></span>
                      <label>Autor</label>`);
-  } else {
-    $("div#tutor").html("");
+      $('div#editorialD').html('');
+      $('div#volumenD').html('');
+    } else if ($(trabajo).val().toLowerCase() === "revista") {
+      $('div#autorD').html('');
+      $('div#volumenD').html(`<input id="volumen" name="volumen" type="number" class="tooltips-general material-control"
+              placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
+              data-placement="top" title="Escribe el volumen del libro">
+              <label >Volumen</label>`);
+      $('div#editorialD').html(`<input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
+                    data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Editorial</label>`);
+    } else {
+      $("div#tutorD").html("");
+      $('div#volumenD').html(`<input id="volumen" name="volumen" type="number" class="tooltips-general material-control"
+              placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
+              data-placement="top" title="Escribe el volumen del libro">
+              <label >Volumen</label>`);
+      $('div#autorD').html(`<input  name="autor" type="text" class="tooltips-general material-control"
+                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
+                    data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Autor</label>`);
+      $('div#editorialD').html(`<input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
+                    data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Editorial</label>`);
+    }
   }
-}
-function sobresaltarFecha(res, i) {
-let fechaActual = new Date();
-let fecha_d = res.fichas[i].fecha_d;
-let dia = fecha_d.split('-')[2];
-let mes = fecha_d.split('-')[1] - 1;
-let año = fecha_d.split('-')[0];
-let fecha_devolucion = new Date(año, mes, dia);
-let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
-        if (resultado) {
-            let q = "#fecha-d" + res.fichas[i].cota_f;
-            $(q).css({ 'color': 'red' });
-        }
-};
+  function sobresaltarFecha(res, i) {
+    let fechaActual = new Date();
+    let fecha_d = res.fichas[i].fecha_d;
+    let dia = fecha_d.split('-')[2];
+    let mes = fecha_d.split('-')[1] - 1;
+    let año = fecha_d.split('-')[0];
+    let fecha_devolucion = new Date(año, mes, dia);
+ 
+    let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
+let r = fechaActual.getDay() === fecha_devolucion.getDay();
+
+    if (resultado && !r) {
+      let q = "#fecha-d" + res.fichas[i].cota_f;
+      $(q).css({ 'color': 'red' });
+    }
+  };
 
 
 
-  
+
   function mostrarCampo(check) {
     if (check.checked) {
       $("tr#tr-pdf-1").hide();
@@ -186,7 +192,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
     }
   }
- 
+
   function mostrarCampo2(check) {
     if (check.checked) {
       $("tr#tr-pdf-1").hide();
@@ -253,7 +259,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$|([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -373,12 +379,12 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
     document.getElementById("tipo_l").focus({ preventScroll: true });
     document.getElementById("reset").click();
 
-   let isChecked = document.getElementById("mostrar_1").checked;
-   if (isChecked) {
-     document.getElementById("mostrar_1").click();
-   }
-    
-   
+    let isChecked = document.getElementById("mostrar_1").checked;
+    if (isChecked) {
+      document.getElementById("mostrar_1").click();
+    }
+
+
 
   };
   $(function () {
@@ -394,7 +400,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
       let data = new FormData(this);
 
       var isChecked = document.getElementById("mostrar_1").checked;
-    
+
       if (isChecked && data.has("pdf")) {
         data.delete("pdf");
       }
@@ -403,7 +409,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         beforeSend: function () {
           $("div#estatus").html(
             '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
-          ); 
+          );
           $("p#boton").html("Guardando...");
         },
         url: "/bibliotecario/insert",
@@ -420,7 +426,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
           $("p#boton").html("Se ha guardado");
           setTimeout(resetear, 3000);
           $("p#mensaje-final").html(`${res}`);
-    showModal();
+          showModal();
         })
         .fail(function (error) {
           resetear();
@@ -430,7 +436,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
   });
 
- //funcion que comprueba que cada cota sea unica
+  //funcion que comprueba que cada cota sea unica
   function añadirCampoPdf(input) {
     var bandera = 1;
     var cota1, cota2, cota, i, m;
@@ -455,17 +461,17 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         elemento1 = elementos[j].getAttribute('id').charAt(0);
         if (elemento1 === 'c') {
 
-        matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
-        matrizElementos.push(elementos[j].value);
+          matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
+          matrizElementos.push(elementos[j].value);
 
 
-        if (cota1 === cota2) {
-          i = elementos[j].getAttribute('id').split('-').pop();
+          if (cota1 === cota2) {
+            i = elementos[j].getAttribute('id').split('-').pop();
 
-          cota = cota2;
+            cota = cota2;
 
+          }
         }
-      }
       }
     }
 
@@ -491,7 +497,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
       })
         .done(function (res) {
-        
+
           if (res === '') {
 
             $(`div#cota-unica-${i}`).html('');
@@ -507,9 +513,9 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         })
         .fail(function (error) {
           manejoErrores(error);
-    });
+        });
+    };
   };
-};
   //--------------------------------------------------------------------
   function añadirAtt(query) {
     $(query).attr("disabled", true);
@@ -593,16 +599,16 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                             <span class="bar"></span>
                             <label>Título</label>
                                       </div>
-                                      <div  class="group-material">
+                                      <div  class="group-material" id="autorD">
                                           <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
                                           <label>Autor</label>
                                       </div>
-                                      <div class="group-material" id="tutor">
+                                      <div class="group-material" id="tutorD">
                                         
                                       </div>
-                                      <div class="group-material">
+                                      <div class="group-material" id="volumenD">
                                           <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" value="${libro.libro[0].volumen}" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Volumen del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
@@ -615,7 +621,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
                                           <span class="bar"></span>
                                           <label>Año</label>
                                       </div>
-                                      <div  class="group-material">
+                                      <div  class="group-material" id="editorialD">
                                           <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"maxlength="100" value="${libro.libro[0].editorial}" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
                                           <span class="highlight"></span>
                                           <span class="bar"></span>
@@ -669,7 +675,7 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
         `);
 
         if (libro.libro[0].destino === 'no aplica') {
-          
+
           let q = "a#a" + libro.libro[0].cota;
           añadirAtt(q);
         }
@@ -707,26 +713,28 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
             '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
           );
           $("p#modal-p-center").html(
-              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
-            );
-            $("div#myModal").modal("show");
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal("show");
 
         },
         url: `/bibliotecario/eliminar_libro?cota=${cota}`,
         type: 'DELETE'
       })
         .done(function (librosEliminados) {
-          $("div#myModal").modal("hide");
+          $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">Se ha eliminado ${librosEliminados.librosEliminados} libros </p>`);
           $("div#cargando").html('');
           removerCampo(c);
           $("div#cargando").html(`<h3 class="text-center">Se ha eliminado ${librosEliminados.librosEliminados} libro</h>`);
           let j = $("#container button").size();
-          if (j === 0) {
-            $("div#container").html('');
-            $("div#cargando").html(`<h3 class="text-center">No hay resultados para mostrar</h3>`);
+          $("div#myModal").on("hidden.bs.modal", function () {
 
-          }
+            if (j === 0) {
+              $("div#container").html('');
+              $("div#cargando").html(`<h3 class="text-center">No hay resultados para mostrar</h3>`);
 
+            }
+          });
 
         })
         .fail(function (error) {
@@ -741,14 +749,12 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
     if ($(input).val() === 'Trabajo de grado') {
 
       $('div#div-contenedor').show();
-      $('div#editorialD').hide();
     } else {
       $('div#div-contenedor').hide();
-      $('div#editorialD').show();
-      
+
     }
   };
- //Realiza una consulta completa de todos los libros
+  //Realiza una consulta completa de todos los libros
   function ocultarCampos(check) {
     var limpiarButton = document.getElementById("limpiarButton");
     limpiarButton.click();
@@ -840,10 +846,10 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
   }
   $(function () {
     $(document).on('click', '.modal', function () {
-     $("button#login").on("click", function(e) {
-       e.preventDefault();
-      window.location = "/login"
-     });
+      $("button#login").on("click", function (e) {
+        e.preventDefault();
+        window.location = "/login"
+      });
       $("form#noticiaEditada").on('submit', function (e) {
 
         e.preventDefault();
@@ -932,13 +938,13 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
       });
       $("form#actualizar").on('submit', function (e) {
-         e.preventDefault();
+        e.preventDefault();
         var limpiarButton = document.getElementById("limpiarButton");
-        
+
         let data = new FormData(this);
 
         var isChecked = document.getElementById("mostrar").checked;
-       
+
         if (isChecked && data.has("pdf")) {
           data.delete("pdf");
         }
@@ -966,55 +972,32 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
 
             $("p#mensaje-final").html(`${res.mensaje}`);
             if (res.mensaje == "Actualizado con éxito") {
-               $("div#myModal4")
-              .modal("hide")
-              .on('hidden.bs.modal', function (e) {
-                showModal();
-              });
+
+              $("div#myModal4")
+                .modal("hide")
+                .on('hidden.bs.modal', function (e) {
+                  if (res.mensaje == "Actualizado con éxito") {
+                    res.mensaje = '';
+                    showModal();
+
+                  }
+
+                });
+
             }
-           
+
 
           })
           .fail(function (error) {
-           resetear();
-           manejoErrores(error);
-          });
-
-      });
- 
-      $("form#formMulta").on('submit', function(e) {
-        e.preventDefault();
-        let data = $(this).serialize();
-
-        $.ajax({
-          beforeSend: function () {
-            $("p#modal-p-center").html(
-              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
-            );
-            $("div#myModal4").modal("hide");
-            $("div#myModal").modal("show");
-          },
-          url: "/bibliotecario/multa_paga",
-          type: "PUT",
-          data: data,
-        })
-          .done(function (res) {
-            if (res == 'Multa paga') {
-              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
-              $("#myModal").modal("hide");
-              $("myModal3").modal("show");
-                }
-
-              })
-          .fail(function (error) {
+            resetear();
             manejoErrores(error);
           });
 
-
       });
 
+
     });
-    
+
 
     $('form#formato-enlinea').on("submit", function (e) {
       e.preventDefault();
@@ -1104,69 +1087,6 @@ let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
   });
 </script>
 <script>
-  //verifica el estado de la multa
-function verificarMulta(Cota) {
-  let cota = Cota;
-  $.ajax({
-   beforeSend: function () {
-                        $("p#modal-p-center").html(
-          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
-        );
-        $("div#myModal").modal("show");
-
-                    },
-                    url: `/bibliotecario/multa-ficha?cota=${cota}`,
-                    type: 'POST'
-                })
-                    .done(function (res) { 
-                      
-                        $("#myModal").modal("hide");
-                     
-        $("div#modal-body-4").html('');
-        $("div#tutor").html('');
-        $("#myLabel").html('Usuario multado por este libro');
-        ("#myLabel").css("color", "#FF0040");
-        $("div#modal-body-4").html(`
-           <form id="formMulta">
-             <div style="height:50px;">
-              <div class="form-group row">
-             <label for="id1" class="col-sm-2 col-form-label">Correo electrónico del usuario</label>
-             <div class="col-sm-10">
-             <input value="${res.ficha.correo_f}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
-             </div>
-             </div>
-             <div class="form-group row">
-             <label for="id1" class="col-sm-2 col-form-label">Usuario</label>
-             <div class="col-sm-10">
-             <input value="${res.ficha.correo_f}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
-             </div>
-             </div>
-             <div class="form-group row">
-             <label for="id1" class="col-sm-2 col-form-label">Multa</label>
-             <div class="col-sm-10">
-             <input value="'${res.ficha.multa}' + '${res.conf.unidad}'"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
-             </div>
-             </div>
-             <div class="form-group row">
-                <button type="submit" class="btn btn-primary">Multa cancelada</button>
-
-              </div>
-            
-           </div>
-           <br>
-         
-             
-             </form>`);
-   $("div#myModal4").modal('show');
-                     
-  
-  
-                    })
-                    .fail(function (error) {
-                       manejoErrores(error);
-                    });
-
-};
   //ocultar o mostrar el campo de ingresar una nueva imagen al momento de editar una noticia
   function mostrarCampoImg(check) {
     if (check.checked) {
@@ -1262,6 +1182,7 @@ function verificarMulta(Cota) {
   }
   //solicitas y muestras las noticias
   function mostrarNoticias() {
+
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(
@@ -1277,12 +1198,13 @@ function verificarMulta(Cota) {
         $("div#cuadronot").html('');
 
         if (noticias.length > 0) {
-          var j = 0;
+
           for (var i = 0; i < noticias.length; i++) {
 
             $('div#cuadronot').append(`<li>
  <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
- <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
+ 
+  <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
    <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
          
          <img src="${noticias[i].url_imagen}" alt="">
@@ -1291,9 +1213,26 @@ function verificarMulta(Cota) {
         </div>
      </li>
      `);
+          }
+          if (noticias.length == 1) {
+            clearInterval(intervalId);
+            $("div#myModal").modal("hide");
 
+          } else if (noticias.length > 1) {
+
+
+            $("div#myModal").modal("hide");
+            let bandera = 2;
+            $("div#myModal").on("hidden.bs.modal", function () {
+              if (bandera == 2) {
+
+                bandera = 0;
+                intervalId = setInterval(removeFirst, 7500);
+              }
+            });
 
           }
+
 
 
         } else {
@@ -1303,9 +1242,12 @@ function verificarMulta(Cota) {
                 </div>
           
                             `);
+          clearInterval(intervalId);
+          $("div#myModal").modal("hide");
         }
 
-        $("div#myModal").modal("hide");
+
+
       })
       .fail(function (error) {
         manejoErrores(error);
@@ -1413,13 +1355,7 @@ function verificarMulta(Cota) {
         //  let msj = 'actualizar';
         $("div#myModal").modal("hide");
         $("div#myModal2").modal("show");
-        /*  $("div#myModal2").on('hidden.bs.modal', function (e) {
-            if (msj === 'actualizar') {
-              msj = '';
-              mostrarNoticias(); 
-            }
-              
-          });*/
+        
       })
       .fail(function (error) {
         manejoErrores(error);
@@ -1434,7 +1370,7 @@ function verificarMulta(Cota) {
   //boton añadir noticia muestra y oculta el formulario  
   function añadirNoticia(input) {
     let boton = $(input).html();
-    if (boton === "Añadir noticia") {
+    if (boton == "Añadir noticia") {
       $("div#cuadronot").hide();
       $("div#infNoticia").show();
       $(input).html('Volver');
@@ -1497,48 +1433,48 @@ function verificarMulta(Cota) {
   }
   //eliminar una ficha entregada
   //eliminar ficha reservada
-function eliminarFichaEntregada(input) {
-    
-                let cota = input;
-                $.ajax({
-                    beforeSend: function () {
-                        $("p#modal-p-center").html(
+  function eliminarFichaEntregada(input) {
+
+    let cota = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
         $("div#myModal").modal("show");
 
-                    },
-                    url: `/bibliotecario/eliminarFichaEntregada?cota=${cota}`,
-                    type: 'delete'
-                })
-                    .done(function (res) {
-                      $("#myModal").modal("hide");
-                      prestamosE();
-                      $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
-          $("#myModal3").modal("show");
-                    })
-                    .fail(function (error) {
-                       manejoErrores(error);
-                    });
+      },
+      url: `/bibliotecario/eliminarFichaEntregada?cota=${cota}`,
+      type: 'delete'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        prestamosE();
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+        $("#myModal3").modal("show");
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
 
-};
-//ver una ficha entregada
-function verFichaE(input) {
-  let cota = input;
-  $.ajax({
-                    beforeSend: function () {
-                        $("p#modal-p-center").html(
+  };
+  //ver una ficha entregada
+  function verFichaE(input) {
+    let cota = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
         $("div#myModal").modal("show");
 
-                    },
-                    url: `/ver_ficha_e?cota=${cota}`,
-                    type: 'post'
-                })
-                    .done(function (res) {
-                      $("#myModal").modal("hide");
-                     
+      },
+      url: `/ver_ficha_e?cota=${cota}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+
         $("div#modal-body-4").html('');
         $("div#tutor").html('');
         $("#myLabel").html('Información del préstamo');
@@ -1587,30 +1523,30 @@ function verFichaE(input) {
              </form>
    
            `);
-           
-                $("div#myModal4").modal('show');
-                    })
-                    .fail(function (error) {
-                       manejoErrores(error);
-                    });
-}
+
+        $("div#myModal4").modal('show');
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
   //ver una ficha
-function verFicha(input) {
-  let cota = input;
-  $.ajax({
-                    beforeSend: function () {
-                        $("p#modal-p-center").html(
+  function verFicha(input) {
+    let cota = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
         $("div#myModal").modal("show");
 
-                    },
-                    url: `/ver_ficha?cota=${cota}`,
-                    type: 'post'
-                })
-                    .done(function (res) {
-                      $("#myModal").modal("hide");
-                     
+      },
+      url: `/ver_ficha?cota=${cota}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+
         $("div#modal-body-4").html('');
         $("div#tutor").html('');
         $("#myLabel").html('Información del préstamo');
@@ -1660,6 +1596,12 @@ function verFicha(input) {
              <input value="${res.ficha.fecha_d}" type="text" class="tooltips-general material-control" class="form-control" id="id5" readonly>
              </div>
              </div>
+             <div class="form-group row">
+             <label for="id6" class="col-sm-2 col-form-label">Multa</label>
+             <div class="col-sm-10">
+             <input value="${res.ficha.multa} ${res.conf.unidad}" type="text" class="tooltips-general material-control" class="form-control" id="id6" readonly>
+             </div>
+             </div>
              
              
    
@@ -1671,50 +1613,29 @@ function verFicha(input) {
              </form>
    
            `);
-           
-                $("div#myModal4").modal('show');
-                    })
-                    .fail(function (error) {
-                       manejoErrores(error);
-                    });
+if (res.ficha.multa > 0) {
+      $('#id6').css({ 'color': 'red' });
 }
-//No se utiliza  
-function ocultar(id) {
-   if (id = 'd'){
-     $("#input-dias").show();
-     $("#input-cantidad").hide();
-     $("#input-multa").hide();
-     $("#input-unidad").hide();
-   }
-   if (id = 'l'){
-     $("#input-cantidad").show();
-     $("#input-dias").hide();
-     $("#input-multa").hide();
-     $("#input-unidad").hide();
-   }
-   if (id = 'm'){
-     $("#input-multa").show();
-     $("#input-dias").hide();
-     $("#input-multa").hide();
-     $("#input-unidad").hide();
-   }
-   if (id = 'u'){
-     $("#input-unidad").show();
-     $("#input-cantidad").hide();
-     $("#input-multa").hide();
-     $("#input-dias").hide();
-   }
-   if (id = 't'){
-     $("#input-dias").show();
-     $("#input-cantidad").show();
-     $("#input-multa").show();
-     $("#input-unidad").show();
-   }
-  };
-  //se aprueba una reserva
-  function aprobar(input) {
-    let cota = $(input).attr("id");
-    $.ajax({
+        $("div#myModal4").modal('show');
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  }
+   //se aprueba una reserva
+  function aprobar(c,f) {
+   ;
+    let cota = c;
+    let fechaActual = new Date();
+        let fecha_d = f;
+        let dia = fecha_d.split('-')[2];
+        let mes = fecha_d.split('-')[1] - 1;
+        let año = fecha_d.split('-')[0];
+        let fecha_e = new Date(año, mes, dia);
+        let resultado = fechaActual.getTime() >= fecha_e.getTime();
+       
+    if (resultado) {
+       $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
@@ -1730,30 +1651,36 @@ function ocultar(id) {
       .done(function (res) {
         if (res === "Préstamo aprobado exitosamente") {
           let q = "table_" + cota;
-          $(q).remove();
-          $("#myModal").modal("hide"); 
-          prestamosVV();
+          $("#myModal").modal("hide");
+          
           $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
           $("#myModal3").modal("show");
-          
+       $("div#myModal3").on('hidden.bs.modal', function (e) {
+            if (res === "Préstamo aprobado exitosamente") {
+              res = '';
+               $(q).remove();
+               prestamosP();
+            }
+              
+          });
         }
       })
       .fail(function (error) {
         manejoErrores(error);
       });
-  }
+ 
+    } else {
+      $("#modal-body-3").html(`<p class="text-center">No puedes aprobar un préstamo antes de la fecha de petición</p>`);
+          $("#myModal3").modal("show");
+    }
+    }
   //remueve un campo
   function removeCampo(query) {
     $(query).remove();
   }
   // se recibe un libro
   function recibir(input, multa) {
-/*alert(multa);
-alert(input);
-    if (multa == 0) {
-      verificarMulta(input);
-    }
-*/
+  
     let cota = input;
     $.ajax({
       beforeSend: function () {
@@ -1771,19 +1698,26 @@ alert(input);
       .done(function (res) {
         $("div#myModal").modal("hide");
         if (res == "Libro entregado exitosamente") {
-         prestamos();
-$("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
+          let q = "#table_" + cota;
+          $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
           $("div#myModal3").modal("show");
-          limpiar();
-        } 
+          
+          $("div#myModal3").on('hidden.bs.modal', function (e) {
+            if (res == "Libro entregado exitosamente") {
+           
+               $(q).remove();
+            }
+              
+          });
+        }
       })
       .fail(function (error) {
-       manejoErrores(error);
+        manejoErrores(error);
       });
   }
   //eliminar prestamos entregados no usado
   function eliminarP(cota) {
-let cota_f = cota;
+    let cota_f = cota;
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(
@@ -1802,14 +1736,14 @@ let cota_f = cota;
         if (res == "Libro eliminado exitosamente") {
           let q = "div#table_" + cota;
           removeCampo(q);
-          
-$("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
+
+          $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
           $("div#myModal3").modal("show");
           limpiar();
         }
       })
       .fail(function (error) {
-       manejoErrores(error);
+        manejoErrores(error);
       });
   }
   //se limpian formularios
@@ -2048,7 +1982,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
       }
     }
   }
-///
+  ///
 
   function seccionInicio() {
     var seccion = document.getElementById("seccion");
@@ -2197,8 +2131,9 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
             
                         `);
-          
-          sobresaltarFecha(fichas, i);            }
+
+            sobresaltarFecha(fichas, i);
+          }
         } else {
           $("div#container").append(`
                             <div class="container-fluid">
@@ -2208,7 +2143,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                             `);
         }
 
-       
+
       })
 
       .fail(function (error) {
@@ -2321,7 +2256,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
             
                         `);
-                        sobresaltarFecha(fichas, i);
+            sobresaltarFecha(fichas, i);
           }
         } else {
           $("div#container").append(`
@@ -2330,8 +2265,8 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
                 </div>
           
                             `);
-                           
-                          }
+
+        }
 
         $("div#myModal").modal("hide");
       })
@@ -2405,8 +2340,9 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
     
                             <div class="div-table-cell" style="width: 15%;">F. Solicitud</div>
                             <div class="div-table-cell" style="width: 15%;">F. Entrega</div>
-                            <div class="div-table-cell" style="width: 8%;">Aprobar</div>
                             <div class="div-table-cell" style="width: 8%;">Ver Ficha</div>
+                            <div class="div-table-cell" style="width: 8%;">Aprobar</div>
+                            
                         </div>
                     </div>
                 </div>
@@ -2426,29 +2362,28 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
               }</div>
                             <div id="fe-${fichas.fichas[i].cota_f
               }" class="div-table-cell"  style="width: 15%;">${fichas.fichas[i].fecha_e
-              } <img src="/assets/img/calendar_book.png" alt="calendar" id="img-${fichas.fichas[i].cota_f
-              }"
-                        style="max-width: 15%;"onclick="cambiarF(this)"></div>
+              } </div>
                             <div class="div-table-cell" style="width: 15%;">${fichas.fichas[i].fecha_d
               }</div>
-                            <div class="div-table-cell" id='button_${fichas.fichas[i].cota_f
+                          <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="verFicha('${fichas.fichas[i].cota_f}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+                            </div> 
+                              <div class="div-table-cell" id='button_${fichas.fichas[i].cota_f
               }' style="width: 8%;">
     
                                 <button id='${fichas.fichas[i].cota_f
-              }' onclick='aprobar(this)' class="btn btn-success"><i
+              }' onclick="aprobar('${fichas.fichas[i].cota_f}', '${fichas.fichas[i].fecha_e}')" class="btn btn-success"><i
                                         class="zmdi zmdi-time-restore"></i></button>
     
                             </div>
-                            <div class="div-table-cell" style="width: 8%;">
-                                <button onclick="verFicha('${fichas.fichas[i].cota_f}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
             
                         `);
-                        sobresaltarFecha(fichas, i);
-                      }
+            sobresaltarFecha(fichas, i);
+          }
         } else {
           $("div#container").append(`
                             <div class="container-fluid">
@@ -2465,7 +2400,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
       });
   }
   function seccionConfDias() {
- 
+
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
@@ -2505,8 +2440,8 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
         if (res.objeto) {
           $("input#input-cantidad").attr("value", res.objeto.cantidad_libros);
           $("input#input-dias").attr("value", res.objeto.dias_prestamo);
-           $("input#input-multa").attr("value", res.objeto.multa);
-            $("input#input-unidad").attr("value", res.objeto.unidad);
+          $("input#input-multa").attr("value", res.objeto.multa);
+          $("input#input-unidad").attr("value", res.objeto.unidad);
         }
         $("div#confDias").show();
         $("form#Dias").show();
@@ -2522,7 +2457,7 @@ $("div#modal-body-3").html(`<p class="text-center">${res}</p>`)
     $("div#confDias").hide();
     $("form#nuevaBaseE").hide();
     $("form#nuevaBaseD").hide();
-$("#enlaces").hide();
+    $("#enlaces").hide();
     $("div#explicacion").show();
     $("div#preguntasF").hide();
     $("div#cargando").html('');
@@ -2679,7 +2614,7 @@ $("#enlaces").hide();
 
   $(function () {
     seccionInicio();
-    $("form#formDias").on('change', function() {
+    $("form#formDias").on('change', function () {
       $("div#cargando").html('');
     });
     //funcion para enviar el documento excel a la ruta por medio de ajax
@@ -2747,7 +2682,7 @@ $("#enlaces").hide();
     $("form#formDias").on('submit', function (e) {
       e.preventDefault();
       let data = $(this).serialize();
-     
+
       $.ajax({
         beforeSend: function () {
           $("div#cargando").html(
@@ -2763,7 +2698,7 @@ $("#enlaces").hide();
         data: data
       })
         .done(function (res) {
-              $("div#myModal").modal("hide");
+          $("div#myModal").modal("hide");
           if (res != '') {
             $("div#cargando").html('<p class="text-center">Se ha configurado con éxito<p>');
           } else {
@@ -2807,7 +2742,7 @@ $("#enlaces").hide();
           }
           $("div#myModal").on('hidden.bs.modal', function () {
             $('button#reset1').click;
-            $('button#opcion1').click;
+            // $('button#opcion1').click;
           });
 
         })
@@ -2847,7 +2782,7 @@ $("#enlaces").hide();
 
         })
         .fail(function (error) {
-        manejoErrores(error);
+          manejoErrores(error);
 
         });
     })
@@ -2905,8 +2840,8 @@ $("#enlaces").hide();
           <div class="modal-header-sm" style="background:rgb(45, 101, 206);">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title" id="myLabel"
-                style="font-size: 25px; font-weight:900; text-align: center; color: white;">Modal title</h4>
-        </div>
+              style="font-size: 25px; font-weight:900; text-align: center; color: white;">Modal title</h4>
+          </div>
           <div class="modal-body" id="modal-body-4">
 
 
@@ -2932,10 +2867,9 @@ $("#enlaces").hide();
           <div>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-            <!--  <h4 class="modal-title" id="myModalLabel">Modal title</h4>-->
-          </div>
-          <div >
-            <iframe id="pdfdoc" height="400" width="100%" src='' ></iframe>
+             </div>
+          <div>
+            <iframe id="pdfdoc" height="400" width="100%" src=''></iframe>
 
 
           </div>
@@ -3007,9 +2941,9 @@ $("#enlaces").hide();
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                   <legend><strong>Información básica</strong></legend><br>
                   <div class="group-material">
-                    <input  name="titulo" type="text" class="tooltips-general material-control"
+                    <input name="titulo" type="text" class="tooltips-general material-control"
                       placeholder="Escribe aquí el título de la noticia" required="" maxlength="200"
-                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,200}"  data-placement="top"
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,200}" data-placement="top"
                       title="Título de la noticia">
                     <span class="highlight"></span>
                     <span class="bar"></span>
@@ -3019,9 +2953,9 @@ $("#enlaces").hide();
                   <div class="group-material">
                     <textarea id="textNoticia" name="textNoticia" type="text"
                       class="tooltips-general material-control form-control rounded-0"
-                      style="border-color: rgb(0, 0, 255);" placeholder="Escribe aquí la noticia" required="" pattern="[a-zA-Zá-ú ]{1,30}"
-                      data-toggle="tooltip" min="20" data-placement="top" title="Texto de la noticia" cols="78" rows="5"
-                      wrap="hard" spellcheck="true"></textarea>
+                      style="border-color: rgb(0, 0, 255);" placeholder="Escribe aquí la noticia" required=""
+                      pattern="[a-zA-Zá-ú ]{1,30}" data-toggle="tooltip" min="20" data-placement="top"
+                      title="Texto de la noticia" cols="78" rows="5" wrap="hard" spellcheck="true"></textarea>
 
                   </div>
 
@@ -3090,8 +3024,8 @@ $("#enlaces").hide();
               </div>
               <div class="form-group mx-sm-3" id="libros">
                 <label for="libros">Límite de libros</label>
-                <input type="number" required="" id="input-cantidad" class=" material-control" name="libros" minlength="1"
-                  placeholder="Límite de libros">
+                <input type="number" required="" id="input-cantidad" class=" material-control" name="libros"
+                  minlength="1" placeholder="Límite de libros">
               </div>
               <div class="form-group mx-sm-3" id="multa">
                 <label for="multa">Multa por día vencido</label>
@@ -3100,16 +3034,16 @@ $("#enlaces").hide();
               </div>
               <div class="form-group mx-sm-3" id="unidad">
                 <label for="unidad">Unidad</label>
-                <input type="text" required="" id="input-unidad" class=" material-control" name="libros" minlength="1" pattern="[a-zA-Zá-ú]{1.20}"
-                  placeholder="Unidad">
+                <input type="text" required="" id="input-unidad" class=" material-control" name="libros" minlength="1"
+                  pattern="[a-zA-Zá-ú]{1.20}" placeholder="Unidad">
               </div>
-             
+
 
               <div class="form-group mx-sm-3">
                 <button type="submit" class="btn btn-primary">Configurar</button>
 
               </div>
-             
+
 
             </div>
 
@@ -3164,8 +3098,9 @@ $("#enlaces").hide();
                     <td style="width: 200px; overflow: hidden; border: none;">
                       <input id="cota-1" onchange="añadirCampoPdf(this)" name="cota_1" type="text"
                         class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro"
-                        required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip"
-                        data-placement="top" title="Ej. cota_1 sin espacios">
+                        required="" maxlength="25"
+                        pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$"
+                        data-toggle="tooltip" data-placement="top" title="Ej. cota_1 sin espacios">
                       <span class="highlight"></span>
                       <span class="bar"></span>
                       <label>Cota</label>
@@ -3194,18 +3129,19 @@ $("#enlaces").hide();
                   <span class="bar"></span>
                   <label>Título</label>
                 </div>
-                <div class="group-material">
-                  <input id="autor" name="autor" type="text" class="tooltips-general material-control"
-                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
-                    data-toggle="tooltip" data-placement="top" title="Escribe el nombre del autor del libro">
+                <div class="group-material" id="autorD">
+                  <input name="autor" type="text" id="autor" class="tooltips-general material-control"
+                    placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top"
+                    title="Escribe el nombre del autor del libro">
                   <span class="highlight"></span>
                   <span class="bar"></span>
                   <label>Autor</label>
                 </div>
-                <div name="tutor" class="group-material" id="tutor">
+                <div name="tutor" class="group-material" id="tutorD">
 
                 </div>
-                <div name="volumen" class="group-material">
+                <div name="volumen" class="group-material" id="volumenD">
                   <input id="volumen" name="volumen" type="number" class="tooltips-general material-control"
                     placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" pattern="^[0-9]+" min="1"
                     data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
@@ -3216,16 +3152,16 @@ $("#enlaces").hide();
 
                 <div class="group-material">
                   <input id="año" name="año" type="text" class="material-control tooltips-general"
-                    placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4" minlength="4"
-                    data-toggle="tooltip" data-placement="top" title="Solamente números, sin espacios">
+                    placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4"
+                    minlength="4" data-toggle="tooltip" data-placement="top" title="En formato de 4 dígitos, Ej. 2010">
                   <span class="highlight"></span>
                   <span class="bar"></span>
                   <label>Año</label>
                 </div>
                 <div class="group-material" id="editorialD">
                   <input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
-                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100"
-                    data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                    placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
                   <span class="highlight"></span>
                   <span class="bar"></span>
                   <label>Editorial</label>
@@ -3288,16 +3224,17 @@ $("#enlaces").hide();
               libros</p>
           </div>
         </div>
-        <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea">
-          <div class="row justify-content-md-center">
+        <div class="container-fluid">
+          <form class="form-inline" style="text-align:center; " id="formato-enlinea">
+            <div class="row justify-content-md-center">
               <div class="col-sm-4 col-md-2">
-                  <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$"
-                  placeholder="Cota" maxlength="25" data-toggle="tooltip" data-placement="top"
-                  title="Ej. cota_1 Sin espacios">
-                  <label >Cota</label>
+                <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"
+                  pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" placeholder="Cota"
+                  maxlength="25" data-toggle="tooltip" data-placement="top" title="Ej. cota_1 Sin espacios">
+                <label>Cota</label>
               </div>
               <div class="col-sm-4 col-md-2">
-                  <select onchange="añadirTutor(this)" id="tipo_l_unico" name="tipo_l"
+                <select onchange="añadirTutor(this)" id="tipo_l_unico" name="tipo_l"
                   class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
                   title="Elige la categoría del libro">
                   <option disabled="" selected="">Tipo de libro</option>
@@ -3305,62 +3242,64 @@ $("#enlaces").hide();
                   <option>Revista</option>
                   <option>Trabajo de grado</option>
 
-              </select>
-              </div>
-              <div class="col-sm-4 col-md-2"> 
-                  <input id="ejemplar_unico" name="ejemplar" type="number"
-                  class="tooltips-general material-control" placeholder="Ejemplar" maxlength="4"
-                  data-toggle="tooltip" pattern="^[0-9]+" min="1" data-placement="top"
-                  title="Numero de ejemplares">
-                  <label >Ejemplar</label>
+                </select>
               </div>
               <div class="col-sm-4 col-md-2">
-                  <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
+                <input id="ejemplar_unico" name="ejemplar" type="number" class="tooltips-general material-control"
+                  placeholder="Ejemplar" maxlength="4" data-toggle="tooltip" pattern="^[0-9]+" min="1"
+                  data-placement="top" title="Numero de ejemplares">
+                <label>Ejemplar</label>
+              </div>
+              <div class="col-sm-4 col-md-2">
+                <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
                   placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,200}" maxlength="2000" data-toggle="tooltip"
                   data-placement="top" title="Escribe el título o nombre del libro">
-                  <label >Título</label>
+                <label>Título</label>
               </div>
               <div class="col-sm-4 col-md-2">
-                  <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
-                  placeholder="Autor"pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                  data-placement="top" title="Escribe el nombre del autor del libro"> <label >Autor</label>
+                <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
+                  placeholder="Autor" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  data-placement="top" title="Escribe el nombre del autor del libro"> <label>Autor</label>
               </div>
-               
+
               <div class="col-sm-4 col-md-2" id="div-contenedor">
 
-                   <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
+                <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
                   placeholder="Tutor" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
                   data-placement="top" title="Escribe el nombre del tutor del libro">
-                  <label >Tutor</label>
+                <label>Tutor</label>
               </div>
-          
-          <div class="col-sm-4 col-md-2"> 
-              <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
-              placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
-              data-placement="top" title="Escribe el volumen del libro">
-              <label >Volumen</label>
-          </div>
-              <div class="col-sm-4 col-md-2">  
-                  <input id="año_unico" name="año" type="text" class="material-control tooltips-general"
-                  placeholder="Año" pattern="[0-9]{4}" maxlength="4" data-toggle="tooltip" minlength="4"
-                  data-placement="top" title="Solamente números, sin espacios">
-                  <label >Año</label>
+
+              <div class="col-sm-4 col-md-2">
+                <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
+                  placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
+                  data-placement="top" title="Escribe el volumen del libro">
+                <label>Volumen</label>
               </div>
-                  <div class="col-sm-4 col-md-2">
-                      <input id="editorial_unico" name="editorial" type="text"
-                      class="material-control tooltips-general" placeholder="Editorial"pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
-                      <label >Editorial</label>
-                  </div>
-                  <div class="col-sm-4 col-md-2">
-                    
-                      <button id="limpiarButton" style="margin-block: 10px;" type="reset" class="btn btn-light">Limpiar</button>
-                  </div>
-                  <div class="col-sm-4 col-md-2">
-                    
-                      <button  style="margin-block: 10px;" type="submit"  class="btn btn-primary">Aplicar filtros</button>
-                  </div>
+              <div class="col-sm-4 col-md-2">
+                <input id="año_unico" name="año" type="text" class="material-control tooltips-general" placeholder="Año"
+                  pattern="[0-9]{4}" maxlength="4" data-toggle="tooltip" minlength="4" data-placement="top"
+                  title="Solamente números, sin espacios">
+                <label>Año</label>
               </div>
-      </form></div>
+              <div class="col-sm-4 col-md-2">
+                <input id="editorial_unico" name="editorial" type="text" class="material-control tooltips-general"
+                  placeholder="Editorial" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
+                  data-placement="top" title="Editorial del libro">
+                <label>Editorial</label>
+              </div>
+              <div class="col-sm-4 col-md-2">
+
+                <button id="limpiarButton" style="margin-block: 10px;" type="reset"
+                  class="btn btn-light">Limpiar</button>
+              </div>
+              <div class="col-sm-4 col-md-2">
+
+                <button style="margin-block: 10px;" type="submit" class="btn btn-primary">Aplicar filtros</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
       <div class="container-fluid" id="preguntasF">
         <button class="btn btn-primary btn-block" id="opcion2" onclick="javascript:añadirPregunta(this)">Añadir
@@ -3376,10 +3315,9 @@ $("#enlaces").hide();
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                   <legend><strong>Información básica</strong></legend><br>
                   <div class="group-material">
-                    <input " name="titulo" type="text" class="tooltips-general material-control"
-                      placeholder="Escribe la pregunta sin signos de interrogación" required=""
-                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,}" " minlength="1" data-placement="top"
-                      title="Título de la pregunta">
+                    <input  name=" titulo" type="text" class="tooltips-general material-control"
+                      placeholder="Escribe la pregunta sin signos de interrogación" required="" data-toggle="tooltip"
+                      pattern="[a-zA-Zá-ú ]{1,}"  minlength=" 1" data-placement="top" title="Título de la pregunta">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label>Título</label>
@@ -3389,8 +3327,8 @@ $("#enlaces").hide();
                     <textarea id="respuesta" name="textRespuesta" type="text"
                       class="tooltips-general material-control form-control rounded-0"
                       style="border-color: rgb(0, 0, 255);" placeholder="Escribe aquí la respuesta " required=""
-                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,}"  minlength="1" data-placement="top" title="Texto de la respuesta" cols="78"
-                      rows="5" wrap="hard" spellcheck="true"></textarea>
+                      data-toggle="tooltip" pattern="[a-zA-Zá-ú ]{1,}" minlength="1" data-placement="top"
+                      title="Texto de la respuesta" cols="78" rows="5" wrap="hard" spellcheck="true"></textarea>
 
                   </div>
 
@@ -3412,10 +3350,10 @@ $("#enlaces").hide();
         </div>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
       </div>
-  
-        
-                      
-       
+
+
+
+
 
       <div class="container-fluid" id="divExcel">
         <form autocomplete="off" enctype="multipart/form-data" id="nuevaBaseE">
@@ -3517,7 +3455,7 @@ $("#enlaces").hide();
       </div>
       <div id="cargando"></div>
       <div class="container-fluid" id="container"></div>
-      
+
     </div>
     <%- include ("partes/piePagina") %>
   </div>

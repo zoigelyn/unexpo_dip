@@ -2,34 +2,76 @@
   <html lang="es">
 
     <%- include ("partes/cabecera2") %>
+<script>
+        function existeCorreo(input){
+         let correo = $(input).val();
+         
+    $.ajax({
+         beforeSend: function(){
+             $('div#existeCorreo').html('');
+             $('div#existeCorreo').html('<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>');
+         },
+        url: '/ingresar/existe-c',
+        type: 'POST',
+        data: {correo: correo}        
+    })
+    .done(function(res){
+        $('div#existeCorreo').html('');
+        if(res!==false){
+          $('div#existeCorreo').html('');  
+        }else{
+         $('div#existeCorreo').html(`<p class="text-center"><img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">Usted no se encuentra registrado</p>`);
+        }
+        
 
+    })
+    .fail(function(error){
+        $('div#existeCorreo').html('<p class="text-center">!Ha fallado la solicitud¡</p>');
+       
+    });
+     }
+function comprobarContraseña(input) {
+    let clave1 = $("input#clave").val();
+    let clave2 = $(input).val();
+   
+    if (clave1 !== clave2) {
+        $("div#mensajeC").html('<p class="text-center" style="color: rgb(0,0,0);">Su clave no coincide</p>');
+    }else{
+        $("div#mensajeC").html('');
+    }
+ }
+ 
+</script>
 <body class="full-cover-background" >
 
 
 <% if (conf == 1) { %><!--Primera parte del restablecimiento de contraseña-->
     <div class="form-container">
-        <p class="text-center" style="margin-top: 50px;">
+        <p class="text-center" >
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
         </p>
-    <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa tu correo electrónico </h4>
+    <h4 class="text-center all-tittles" style="margin-bottom: 20px;">Ingresa tu correo electrónico </h4>
 
     <% if (mensajeRecuperacion) { %>
-        <div>
+        <div class="text-center">
             <%= mensajeRecuperacion%>
         </div>
     <% } %> 
     
     
-    <form action= '/recuperacion' method="POST" autocomplete="off">
+    <form action= '/recuperacion' method="POST" autocomplete="off" style="margin-top: 30px;">
 
         <div class="group-material-login">
-            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="50">
+            <input name="correo" type="email" class="material-login-control material-control" onkeyup="existeCorreo(this)" required="" maxlength="50">
             <span class="highlight-login"></span>
             <span class="bar-login"></span>
             <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
         </div>
 
-           
+           <div id="existeCorreo" style="position: absolute; margin-left: 100px;">
+                       
+        </div>
+        <br><br>
         <button class="btn-login" type="submit"> Aceptar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
         
     </form>
@@ -37,7 +79,7 @@
  
 <% if (conf == 2) { %><!--Segunda parte donde se muestran las preguntas de seguridad y se solicitan las respuestas-->
     <div class="form-container">
-        <p class="text-center" style="margin-top: 200px;">
+        <p class="text-center" >
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
         </p>
     <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa  las respuestas correspondientes</h4>
@@ -85,7 +127,7 @@
 
     <% if (conf == 3) { %><!--Cuando ya se han comprobado las respuestas a las preguntas de seguridad-->
     <div class="form-container">
-        <p class="text-center" style="margin-top: 100px;">
+        <p class="text-center" >
             <i class="zmdi zmdi-help-outline  zmdi-hc-4x"></i>
         </p>
     <h4 class="text-center all-tittles" style="margin-bottom: 30px;">Ingresa  tu nueva contraseña</h4>
@@ -96,23 +138,25 @@
     <% } %> 
     
     <form action= '/recuperar/cambio_clave?correo=<%=correo%>' method="POST" autocomplete="off">
-
+        
         <div class="group-material-login">
-            <input name="correo" type="email" class="material-login-control material-control" required="" maxlength="50">
+            <input name="correo" type="email" id="correo" class="material-login-control material-control" onkeyup="existeCorreo(this)" required="" maxlength="50">
             <span class="highlight-login"></span>
             <span class="bar-login"></span>
             <label><i class="zmdi zmdi-email"></i> &nbsp; Correo electrónico</label>
         </div>
-
+        <div id="existeCorreo" style="position: absolute; margin-left: 100px;">
+                       
+        </div>
 
         <div class="group-material">
-            <input name="clave" type="password" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
+            <input name="clave" type="password" id="clave" class="material-control material-control-login" placeholder="Contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Escribe una contraseña">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Contraseña</label>
         </div>
         <div class="group-material">
-            <input name="claveControl" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
+            <input name="claveControl" onkeyup="javascript: comprobarContraseña(this)" type="password" class="material-control material-control-login" placeholder="Repite la contraseña" required="" maxlength="10" data-toggle="tooltip" data-placement="top" title="Repite la contraseña">
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Repetir contraseña</label>

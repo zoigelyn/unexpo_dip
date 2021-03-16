@@ -15,6 +15,7 @@
         data: {correo: correo}        
     })
     .done(function(res){
+        
         $('div#existeCorreo').html('');
         if(res===false){
           $('div#existeCorreo').html('');  
@@ -47,7 +48,7 @@ function comprobarContraseña(input) {
 <body class="full-cover-background">
     
     <div class="form-container">
-        <p class="text-center" style="margin-top: 350px;">
+        <p class="text-center" style="margin-top: 150px;">
             <i class="zmdi zmdi-accounts zmdi-hc-4x"></i>
         </p>
         <h4 class="text-center all-tittles" style="margin-bottom: 20px;">Ingresa tus datos</h4>

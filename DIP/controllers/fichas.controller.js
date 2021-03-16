@@ -29,12 +29,12 @@ module.exports.existeConfigDias = async function (req, res, next) {
 module.exports.prestamosAjax = async function (req, res, next) {
   try {
     const prestamos = await fichasEntregadas.findAll();
-    if (prestamos){
-      res.status(200).send({fichas: prestamos});
+    if (prestamos) {
+      res.status(200).send({ fichas: prestamos });
     }
-  
+
   } catch (error) {
-  res.status(500);
+    res.status(500);
   }
 
 
@@ -48,8 +48,8 @@ module.exports.prestamosPAjax = async function (req, res, next) {
         estado_f: 'pendiente'
       }
     });
-    if (prestamos){
-      res.status(200).send({fichas: prestamos});
+    if (prestamos) {
+      res.status(200).send({ fichas: prestamos });
     }
   } catch (error) {
     res.status(500);
@@ -69,44 +69,26 @@ module.exports.prestamosVVAjax = async function (req, res, next) {
         ]
       }
     });
-    if (prestamos){
-      res.status(200).send({fichas: prestamos});
+    if (prestamos) {
+      res.status(200).send({ fichas: prestamos });
     }
 
   } catch (error) {
-   res.status(500);
+    res.status(500);
   }
 
 
 };
-function calculoD(fecha) {
-  let f = new Date(fecha);
 
-  let d = f.getDay();
-  let mes, dia;
-
-  if (d == 6) {
-      f.setDate(f.getDate() + 2);
-      f = new Date(f);
-
-  } else if (d == 0) {
-      f.setDate(f.getDate() + 1);
-      f = new Date(f);
-
-  }  else {
-      f = new Date(f);
-  } 
-  
-  return f;
-
-}
 // funcion para reservar un libro
 module.exports.reservarLibro = async function (req, res, next) {
- 
-  const { cota, fecha_e } = req.body;
-  let reservas = {};
 
-   reservas = await Fichas.findAll({
+  const { cota, fecha_e } = req.body;
+  console.log('1');
+  let reservas = {};
+  let fecha_emision;
+
+  reservas = await Fichas.findAll({
     where: {
       correo_f: req.session.usuarioL.correo_u
     }
@@ -115,27 +97,30 @@ module.exports.reservarLibro = async function (req, res, next) {
   const cantidadL = configurado.cantidad_libros;
   const cantidadD = configurado.dias_prestamo;
 
-  function sumarDias(dia, fecha_emision) {
-    var diaSemana = 5;
-    var i = 0;
-    while (diaSemana == 5 || diaSemana == 6) {
-     
+  function sumarDias2(dia, fecha_emision) {
+    var diaSemana = 0;// modificar a cero en caso de hallar solución
+    var i = 0;//modificar el uno al 0
+    while (diaSemana == 0 || diaSemana == 6) {//modificar el cero por cinco en caso de halalr solucion
+
       var dias = Number(dia + i);
       var fecha = fecha_emision;
       var nuevaFecha = new Date(fecha);
       nuevaFecha.setDate(nuevaFecha.getDate() + dias);
       var numeroD = new Date(nuevaFecha);
-       diaSemana = numeroD.getDay();
-     i++;
+      diaSemana = numeroD.getDay();
+      i++;
     }
-i = 0;
+    i = 0;
     return numeroD;
   }
 
   if (fecha_e) {
-    var fecha_emision = fecha_e;
+        let dia = fecha_e.split('-')[2];
+        let mes = fecha_e.split('-')[1] - 1;
+        let año = fecha_e.split('-')[0];
+         fecha_emision = new Date(año, mes, dia);
   } else {
-    var fecha_emision = new Date();
+     fecha_emision = new Date();
   }
 
 
@@ -144,25 +129,16 @@ i = 0;
   try {
     if (reservas.length < cantidadL) {
       const dia = parseInt(cantidadD);
-      var nd = sumarDias(dia, fecha_emision);
-      let f = calculoD(nd);
-      let fecha_d = new Date(f);
-      if (!fecha_d) {
-        var fecha_devolucion = nd;
-      }
-      else {
-        var fecha_devolucion = fecha_d;
-      };
-
-   let  nFicha = await Fichas.create({
+      var fecha_d = sumarDias2(dia, fecha_emision);
+      let nFicha = await Fichas.create({
         cota_f: cota.toLowerCase(),
         correo_f: req.session.usuarioL.correo_u,
         fecha_e: fecha_emision,
-        fecha_d: fecha_devolucion,
+        fecha_d: fecha_d,
         estado_f: 'pendiente',
       });
       if (nFicha) {
-      var actualizadoL = await Libros.update({
+        var actualizadoL = await Libros.update({
           estado_l: 'no disponible'
         }, {
           where: {
@@ -173,9 +149,9 @@ i = 0;
 
 
 
-      if (nFicha && actualizadoL){
+      if (nFicha && actualizadoL) {
         res.status(200).send('Se ha reservado con exito');
-      }else{
+      } else {
         res.status(500).send({
           message: 'Libro no reservado'
         });
@@ -185,8 +161,7 @@ i = 0;
     };
 
   } catch (error) {
-    console.log(error);
-   res.status(500);
+    res.status(500);
   }
 };
 //Mis reservas, listo. Consulta las reservas activas del usuario logeado
@@ -204,25 +179,25 @@ module.exports.misReservas = async function (req, res, next) {
 
     let libros = await Libros.findAll();
 
-for (var j = 0; j < libros.length; j++) {
- 
-    for (var i = 0; i < fichas.length; i++) {
-     
-       if ( fichas[i].cota_f === libros[j].cota){
-         titulo[i] = libros[j].titulo;
-         autor[i] = libros[j].autor;
-       }
-     }
-    
-    }  
-res.status(200).send({
+    for (var j = 0; j < libros.length; j++) {
+
+      for (var i = 0; i < fichas.length; i++) {
+
+        if (fichas[i].cota_f === libros[j].cota) {
+          titulo[i] = libros[j].titulo;
+          autor[i] = libros[j].autor;
+        }
+      }
+
+    }
+    res.status(200).send({
       fichas: fichas,
       autor: autor,
       titulo: titulo,
     });
   } catch {
-    
-   res.status(500);
+
+    res.status(500);
   }
 };
 module.exports.misPrestamos = async function (req, res, next) {
@@ -233,10 +208,14 @@ module.exports.misPrestamos = async function (req, res, next) {
     let fichas = await Fichas.findAll({
       where: {
         [Op.or]: [
-          { estado_f: 'vigente',
-          correo_f: req.session.usuarioL.correo_u },
-          { estado_f: 'vencido',
-          correo_f: req.session.usuarioL.correo_u }
+          {
+            estado_f: 'vigente',
+            correo_f: req.session.usuarioL.correo_u
+          },
+          {
+            estado_f: 'vencido',
+            correo_f: req.session.usuarioL.correo_u
+          }
         ]
       },
     });
@@ -246,18 +225,18 @@ module.exports.misPrestamos = async function (req, res, next) {
         [Op.or]: fichas.cota_f,
       }
     }*/);
-for (var j = 0; j < libros.length; j++) {
- 
-    for (var i = 0; i < fichas.length; i++) {
-     
-       if ( fichas[i].cota_f === libros[j].cota){
-         titulo[i] = libros[j].titulo;
-         autor[i] = libros[j].autor;
-       }
-     }
-    
-    }  
-res.send({
+    for (var j = 0; j < libros.length; j++) {
+
+      for (var i = 0; i < fichas.length; i++) {
+
+        if (fichas[i].cota_f === libros[j].cota) {
+          titulo[i] = libros[j].titulo;
+          autor[i] = libros[j].autor;
+        }
+      }
+
+    }
+    res.send({
       fichas: fichas,
       autor: autor,
       titulo: titulo,
@@ -280,23 +259,26 @@ module.exports.miFicha = async function (req, res, next) {
         cota_f: cota
       }
     });
-    console.log('-------------------------');
-    console.log(ficha)
+    
     const libro = await Libros.findOne({
       where: {
         cota: cota
       }
     });
 
+    const conf = await ConfDiasLibros.findOne();
+
+
     if (ficha && libro) {
       res.status(200).send({
         ficha: ficha,
-        libro: libro
+        libro: libro,
+        conf: conf
       });
-    } 
+    }
   } catch (error) {
     console.log(error);
-   res.status(500);
+    res.status(500);
   }
 };
 //función que consulta la ficha de reserva o préstamo
@@ -319,24 +301,24 @@ module.exports.miFichaE = async function (req, res, next) {
         ficha: ficha,
         libro: libro
       });
-    } 
+    }
   } catch (error) {
     console.log(error);
-   res.status(500);
+    res.status(500);
   }
 };
 
 module.exports.aprobarFicha = async function (req, res, next) {
 
-  let  cota  = req.body.cota;
+  let cota = req.body.cota;
 
   if (cota) {
     cota = cota.toLowerCase();
   }
 
   try {
-   
-   let nFicha = await Fichas.update({
+
+    let nFicha = await Fichas.update({
       estado_f: 'vigente'
     }, {
       where: {
@@ -346,11 +328,11 @@ module.exports.aprobarFicha = async function (req, res, next) {
 
     if (nFicha) {
       res.status(200).send('Préstamo aprobado exitosamente');
-     
-    } 
+
+    }
 
   } catch (error) {
-   res.status(500);
+    res.status(500);
   }
 };
 
@@ -368,20 +350,20 @@ module.exports.eliminarReserva = async function (req, res, next) {
       }
     });
     if (fichaEliminada) {
-       actualizarE =  await Libros.update({
+      actualizarE = await Libros.update({
         estado_l: 'disponible',
-      } , {
-        where: {cota: cota}
-       });
- }
-       if (actualizarE != '') {
-          res.status(200).send('Se ha eliminado con éxito');  
-       }
-   
-   
+      }, {
+        where: { cota: cota }
+      });
+    }
+    if (actualizarE != '') {
+      res.status(200).send('Se ha eliminado con éxito');
+    }
+
+
   } catch (error) {
     res.status(500);
-  
+
   }
 };
 
@@ -390,7 +372,7 @@ module.exports.eliminarReserva = async function (req, res, next) {
 module.exports.recibirLibro = async function (req, res, next) {
 
   const cota = req.body.cota;
-let fichaEliminada, actualizarEstado;
+  let fichaEliminada, actualizarEstado;
   try {
     let ficha = await Fichas.findOne({
       where: {
@@ -407,23 +389,23 @@ let fichaEliminada, actualizarEstado;
     });
     if (creada) {
 
-   fichaEliminada = await Fichas.destroy({
+      fichaEliminada = await Fichas.destroy({
         where: {
           cota_f: cota,
         }
-                  });
-     actualizarEstado =  await Libros.update({
-       estado_l: 'disponible',
-     } , {
-       where: {cota: cota}
+      });
+      actualizarEstado = await Libros.update({
+        estado_l: 'disponible',
+      }, {
+        where: { cota: cota }
       });
     }
-    if (fichaEliminada != '' && actualizarEstado != '' ) {
-res.status(200).send('Libro entregado exitosamente');
+    if (fichaEliminada != '' && actualizarEstado != '') {
+      res.status(200).send('Libro entregado exitosamente');
     }
 
   } catch (error) {
-   res.status(500);
+    res.status(500);
   }
 };
 
@@ -432,11 +414,11 @@ res.status(200).send('Libro entregado exitosamente');
 //Elimina una ficha entregada listo
 module.exports.eliminarFichaE = async function (req, res, next) {
 
-  const  cota  = req.query.cota;
+  const cota = req.query.cota;
 
   try {
-  
-   const fichaEliminada = await fichasEntregadas.destroy({
+
+    const fichaEliminada = await fichasEntregadas.destroy({
       where: {
         cota_f: cota,
       }
@@ -451,165 +433,309 @@ module.exports.eliminarFichaE = async function (req, res, next) {
   } catch (error) {
     res.status(500);
   }
-}; 
+};
 //función que actualice el estado de fichas y envia a los usuarios un recordatorio sobre la vigencia del préstamo que tengan activo
 module.exports.actualizarEstadoF = async function (req, res, next) {
-try {
-  const fichas = await Fichas.findAll({
-    where: {
-      fecha_d : {
-        [Op.lt] : new Date()
-      },
-      estado_f: 'vigente'
-    }
-  });
-  if (fichas.length > 0) {
-    for (var i = 0; i < fichas.length; i++) {
-      await Fichas.update({
-        estado_f: "vencido",
-      }, {
-        where: {
-          correo_f: fichas[i].correo_f
-        }
-      });
-    }
+  try {
+    const fichas = await Fichas.findAll({
+      where: {
+        estado_f: 'vigente'
       }
-      const fichasV = await Fichas.findAll({
-        where: {
-          estado_f: "vencido"
+    });
+    if (fichas.length > 0) {
+      for (var i = 0; i < fichas.length; i++) {
+         let fecha_d = fichas[i].fecha_d;
+        let dia = fecha_d.split('-')[2];
+        let mes = fecha_d.split('-')[1] - 1;
+        let año = fecha_d.split('-')[0];
+        let fecha_devo = new Date(año, mes, dia);
+        let resultado1 = fecha_devo < new Date();
+        let resultado2 = fecha_devo.getDate() === new Date().getDate();
+        
+        if (resultado1 && !resultado2) {
+        
+           await Fichas.update({
+          estado_f: "vencido",
+        }, {
+          where: {
+            cota_f: fichas[i].cota_f
+          }
+        });
         }
-      });
-      const fichasVigentes = await Fichas.findAll({
-        where: {
-          estado_f: "vigente"
-        }
-      });
+       
+      }
+    }
+   
+    
+  } catch (error) {
+    console.log(error);
+  }
+}; //Funcion que envia correo electrónicos a préstamos vigentes y vencidos
+module.exports.envioCorreo = async function (req, res, next) {
+  try {
+    const conf = await ConfDiasLibros.findOne();
+    const fichasV = await Fichas.findAll({
+      where: {
+        estado_f: "vencido"
+      }
+    });
+    const fichasVigentes = await Fichas.findAll({
+      where: {
+        estado_f: "vigente"
+      }
+    });
     if (fichasV.length > 0) {
       var transporter = nodemailer.createTransport({
-              host: 'smtp.gmail.com',
-              port: 465,
-              secure: true,
-              auth: {
-                user: 'unexpo.sbdip@gmail.com',
-                pass: 'unexpo.2021'
-              }
-      
-            });
-            for (var j = 0; j < fichasV.length; j++) {
-              var mailOptions = {
-                from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
-                to: fichasV[j].correo_f,
-                subject: 'Préstamo vencido',
-                html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
-        
-                <div style="height:50px;">
-                    <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
-                </div>
-                    <div class="row">
-                        <div class="col-6 col-md-3">Querido usuario: </div>
-                        <div class="col-6 col-md-3">${fichasV[j].correo_f} </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-12 col-md-8">Te recordamos que el préstamo del libro ya se encuentra vencido. Te agradecemos que lo regreses para que alguien más lo pueda utilizar. </div>
-                        
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-8">Recuerda que el libro que debes consignar es: </div>
-                            
-                            </div>
-                        <div class="row">
-                        <div class="col-6 col-sm-4">Cota: ${fichasV[j].cota_f}</div>
-                        </div>
-     </div>`
-              };
-        
-              transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log('mensaje enviado: ' + info.response);
-                  console.log(info);
-                }
-              });
-    }
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'unexpo.sbdip@gmail.com',
+          pass: 'unexpo.2021'
+        }
+
+      });
+      for (var j = 0; j < fichasV.length; j++) {
+        var mailOptions = {
+          from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+          to: fichasV[j].correo_f,
+          subject: 'Préstamo vencido',
+          html: `<html>
+          <head>
+            <title>Introducción formularios web</title>
+            <meta charset="utf-8"/>
+            <meta name="description" />
           
-} 
-if (fichasVigentes.length > 0) {
-  var transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: 'unexpo.sbdip@gmail.com',
-            pass: 'unexpo.2021'
+          </head>
+          <body>
+          
+          <form action="#" target="" method="get" name="formDatosPersonales" style ="width:300px;
+          padding:16px;
+          border-radius:10px;
+          margin:auto;
+          background-color:#ccc;">
+          <div style="height:50px;">
+                          <p style="text-align: center; font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+                      </div><br><br>
+                      <div class="row">
+                      <div class="col-6 col-md-3"style="width:72px;
+                      font-weight:bold;
+                      display:inline-block;">Querido usuario: </div>
+                      <div class="col-6 col-md-3"style="width:190px;
+                      font-weight:bold;
+                      display:inline-block;">${fichasV[j].correo_f} </div>
+                      <div class="col-6 col-md-3"style="width:270px;
+                      font-weight:bold;
+                      display:inline-block;">Tu préstamo se encuentra vencido, y a continuación la información pertinente:</div>
+                      
+                  </div>
+                  
+            <label  style="width:72px;
+            font-weight:bold;
+            display:inline-block;">Cota </label>
+            <input type="text" style="width:180px;
+            padding:3px 10px;
+            border:1px solid #f6f6f6;
+            border-radius:3px;
+            background-color:#f6f6f6;
+            margin:8px 0;
+            display:inline-block;" value="${fichasV[j].cota_f}"/>
+          
+            <label  style="width:72px;
+            font-weight:bold;
+            display:inline-block;">Fecha de emisión</label>
+            <input type="text" style="width:180px;
+            padding:3px 10px;
+            border:1px solid #f6f6f6;
+            border-radius:3px;
+            background-color:#f6f6f6;
+            margin:8px 0;
+            display:inline-block;" value="${fichasV[j].fecha_e}">
+          
+            <label  style="width:72px;
+            font-weight:bold;
+            display:inline-block;">Fecha de devolución</label>
+            <input  style="width:180px;
+            padding:3px 10px;
+            border:1px solid #f6f6f6;
+            border-radius:3px;
+            background-color:#f6f6f6;
+            margin:8px 0;
+            display:inline-block;" value="${fichasV[j].fecha_d}" />
+            
+            <label  style="width:72px;
+            font-weight:bold;
+            display:inline-block;">Multa</label>
+            <input  style="width:180px;
+            padding:3px 10px;
+            border:1px solid #f6f6f6;
+            border-radius:3px;
+            background-color:#f6f6f6;
+            margin:8px 0;
+            display:inline-block;" value="${fichasV[j].multa} ${conf.unidad}" />
+            
+          </form>
+          
+          </body>
+          </html>`
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('mensaje enviado: ' + info.response);
+            console.log(info);
           }
-  
         });
-        for (var k = 0; k < fichasVigentes.length; k++) {
-          var mailOptions = {
-            from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
-            to: fichasVigentes[k].correo_f,
-            subject: 'Préstamo por vencer',
-            html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
-    
-            <div style="height:50px;">
-                <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
-            </div>
-                <div class="row">
-                    <div class="col-6 col-md-3">Querido usuario: </div>
-                    <div class="col-6 col-md-3">${fichasVigentes[k].correo_f} </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-12 col-md-8">Te recordamos que debes entregar tu libro el día ${fichasVigentes[k].fecha_d}, sino debes atenerte a la suspención respectiva. </div>
-                    
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-md-8">Recuerda que el libro que debes consignar es: </div>
-                        
-                        </div>
-                    <div class="row">
-                    <div class="col-6 col-sm-4">Cota: ${fichasVigentes.cota_f}</div>
-                    </div>
- </div>`
-          };
-    
-          transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('mensaje enviado: ' + info.response);
-              console.log(info);
-            }
-          });
-}
-      
-}
-} catch (error) {
-  next(error);
-}
-};
-//listo elimina reservaciones y notifica que las ha reservado
-module.exports.actualizarR = async function(req, res, next) {
-try {
-  const reservaciones = await Fichas.findAll({
-    where: {
-      estado_f: "pendiente",
-      fecha_e: {
-        [Op.lt]: new Date()
       }
+
     }
-  });
-  if (reservaciones) {
-   const eliminadas = await Fichas.destroy({where: reservaciones});
-   if (eliminadas) {
-     await Libros.update({
-      estado_l: 'disponible',
-    } , {
-      where: reservaciones
-     })
-    var transporter = nodemailer.createTransport({
+    if (fichasVigentes.length > 0) {
+      var transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'unexpo.sbdip@gmail.com',
+          pass: 'unexpo.2021'
+        }
+
+      });
+      for (var k = 0; k < fichasVigentes.length; k++) {
+        var mailOptions = {
+          from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+          to: fichasVigentes[k].correo_f,
+          subject: 'Préstamo por vencer',
+          html: `
+ <html>
+<head>
+	<title>Introducción formularios web</title>
+	<meta charset="utf-8"/>
+	<meta name="description" />
+
+</head>
+<body>
+
+<form action="#" target="" method="get" name="formDatosPersonales" style ="width:300px;
+padding:16px;
+border-radius:10px;
+margin:auto;
+background-color:#ccc;">
+<div style="height:50px;">
+                <p style="text-align: center; font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+            </div><br><br>
+            <div class="row">
+            <div class="col-6 col-md-3"style="width:72px;
+            font-weight:bold;
+            display:inline-block;">Querido usuario: </div>
+            <div class="col-6 col-md-3"style="width:190px;
+            font-weight:bold;
+            display:inline-block;">${fichasVigentes[k].correo_f} </div>
+            <div class="col-6 col-md-3"style="width:270px;
+            font-weight:bold;
+            display:inline-block;">Te recordamos que debes entregar tu libro la fecha correspondiente para evitar una multa, a continuación la información de tu préstamo </div>
+            
+        </div>
+        
+	<label  style="width:72px;
+	font-weight:bold;
+	display:inline-block;">Cota </label>
+	<input type="text" style="width:180px;
+	padding:3px 10px;
+	border:1px solid #f6f6f6;
+	border-radius:3px;
+	background-color:#f6f6f6;
+	margin:8px 0;
+	display:inline-block;" value="${fichasVigentes[k].cota_f}"/>
+
+	<label  style="width:72px;
+	font-weight:bold;
+	display:inline-block;">Fecha de emisión</label>
+	<input type="text" style="width:180px;
+	padding:3px 10px;
+	border:1px solid #f6f6f6;
+	border-radius:3px;
+	background-color:#f6f6f6;
+	margin:8px 0;
+	display:inline-block;" value="${fichasVigentes[k].fecha_e}">
+
+	<label  style="width:72px;
+	font-weight:bold;
+	display:inline-block;">Fecha de devolución</label>
+	<input  style="width:180px;
+	padding:3px 10px;
+	border:1px solid #f6f6f6;
+	border-radius:3px;
+	background-color:#f6f6f6;
+	margin:8px 0;
+  display:inline-block;" value="${fichasVigentes[k].fecha_d}" />
+  
+  <label  style="width:72px;
+	font-weight:bold;
+	display:inline-block;">Multa</label>
+	<input  style="width:180px;
+	padding:3px 10px;
+	border:1px solid #f6f6f6;
+	border-radius:3px;
+	background-color:#f6f6f6;
+	margin:8px 0;
+	display:inline-block;" value="${fichasVigentes[k].multa} ${conf.unidad}" />
+	
+</form>
+
+</body>
+</html>`
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('mensaje enviado: ' + info.response);
+            console.log(info);
+          }
+        });
+      }
+
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+//listo elimina reservaciones y notifica que las ha reservado
+module.exports.actualizarR = async function (req, res, next) {
+  try {
+    const reservaciones = await Fichas.findAll({
+      where: {
+        estado_f: "pendiente"
+      }
+    });
+
+    for (var j = 0; j < reservaciones.length; j++) {
+      let fecha_e = reservaciones[j].fecha_e;
+        let dia = fecha_e.split('-')[2];
+        let mes = fecha_e.split('-')[1] - 1;
+        let año = fecha_e.split('-')[0];
+        let fecha_emi = new Date(año, mes, dia);
+let resultado1 = fecha_emi < new Date();
+let resultado2 = fecha_emi.getDate() === new Date().getDate();
+      if (resultado1 && !resultado2 ) {
+       
+        let eliminadas = await Fichas.destroy({
+          where: {
+            cota_f: reservaciones[j].cota_f
+          }
+        });
+        if (eliminadas) {
+          await Libros.update({
+            estado_l: 'disponible',
+          }, {
+            where: {
+              cota: reservaciones[j].cota_f
+            }
+          })
+          var transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             port: 465,
             secure: true,
@@ -617,114 +743,128 @@ try {
               user: 'unexpo.sbdip@gmail.com',
               pass: 'unexpo.2021'
             }
-    
+
           });
-          for (var j = 0; j < reservaciones.length; j++) {
-            var mailOptions = {
-              from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
-              to: reservaciones[j].correo_f,
-              subject: 'Reservación eliminada',
-              html: `<div class="container-fluid" style="border-color: teal; border-radius: 10px;">
-      
-              <div style="height:50px;">
-                  <p style="text-align: center;background-color: rgb(45, 101, 206); font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
-              </div>
-                  <div class="row">
-                      <div class="col-6 col-md-3">Querido usuario: </div>
-                      <div class="col-6 col-md-3">${reservaciones[j].correo_f} </div>
-                  </div>
-                  
-                  <div class="row">
-                      <div class="col-12 col-md-8">La fecha que habías selecionado para el retiro ya se venció. </div>
-                      
-                      </div>
-                      <div class="row">
-                          <div class="col-12 col-md-8">El libro que tenías reservado era: </div>
-                          
-                          </div>
-                      <div class="row">
-                      <div class="col-6 col-sm-4">Cota: ${reservaciones[j].cota_f}</div>
-                      </div>
-   </div>`
-            };
-      
-            transporter.sendMail(mailOptions, function (error, info) {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log('mensaje enviado: ' + info.response);
-                
-              }
-            });
-  }
-  next();       
-} 
-   
-  
-  }else{
-    next();
-  }
-    
- 
-} catch (error) {
-  next(error)
-}
-};
-module.exports.multas = async function (req, res, next) {
-  try {
-    const fichas = await Fichas.findAll({
-      where: {
-        estado_f: 'vencido'
-      }
-    });
-    const conf = await ConfDiasLibros.findOne();
-    if (fichas.length > 0) {
-      for (var i = 0; i < fichas.length; i++) {
-        let multaTotal = parseInt(fichas.multa)  + parseInt(conf.multa)
-        await Fichas.update({
-         multa: multaTotal,
-        }, {
-          where: {
-            correo_f: fichas[i].correo_f
-          }
-        });
-      }
+
+          var mailOptions = {
+            from: 'Biblioteca Unexpo <unexpo.sbdip@gmail.com',
+            to: reservaciones[j].correo_f,
+            subject: 'Reservación eliminada',
+            html: `<html>
+            <head>
+              <title>Introducción formularios web</title>
+              <meta charset="utf-8"/>
+              <meta name="description" />
+            
+            </head>
+            <body>
+            
+            <form action="#" target="" method="get" name="formDatosPersonales" style ="width:300px;
+            padding:16px;
+            border-radius:10px;
+            margin:auto;
+            background-color:#ccc;">
+            <div style="height:50px;">
+                            <p style="text-align: center; font-size: 20px; color:rgb(0,0,0)">Biblioteca UNEXPO Departamento de Investigacióon y Postgrado</p>
+                        </div><br><br>
+                        <div class="row">
+                        <div class="col-6 col-md-3"style="width:72px;
+                        font-weight:bold;
+                        display:inline-block;">Querido usuario: </div>
+                        <div class="col-6 col-md-3"style="width:190px;
+                        font-weight:bold;
+                        display:inline-block;">${reservaciones[j].correo_f} </div>
+                        <div class="col-6 col-md-3"style="width:270px;
+                        font-weight:bold;
+                        display:inline-block;">Te informamos que la reservación que se anexa fue eliminada por no ser concretada</div>
+                        
+                    </div>
+                    
+              <label  style="width:72px;
+              font-weight:bold;
+              display:inline-block;">Cota </label>
+              <input type="text" style="width:180px;
+              padding:3px 10px;
+              border:1px solid #f6f6f6;
+              border-radius:3px;
+              background-color:#f6f6f6;
+              margin:8px 0;
+              display:inline-block;" value="${reservaciones[j].cota_f}"/>
+            
+              <label  style="width:72px;
+              font-weight:bold;
+              display:inline-block;">Fecha de emisión</label>
+              <input type="text" style="width:180px;
+              padding:3px 10px;
+              border:1px solid #f6f6f6;
+              border-radius:3px;
+              background-color:#f6f6f6;
+              margin:8px 0;
+              display:inline-block;" value="${reservaciones[j].fecha_e}">
+            
+              <label  style="width:72px;
+              font-weight:bold;
+              display:inline-block;">Fecha de devolución</label>
+              <input  style="width:180px;
+              padding:3px 10px;
+              border:1px solid #f6f6f6;
+              border-radius:3px;
+              background-color:#f6f6f6;
+              margin:8px 0;
+              display:inline-block;" value="${reservaciones[j].fecha_d}" />
+              
+             
+            </form>
+            
+            </body>
+            </html>`
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('mensaje enviado: ' + info.response);
+
+            }
+          });
         }
-       
+      }
+    }
    
-  } catch (error) {
-    next(error);
-  }
+    } catch (error) {
+      console.log(error);
+    }
   };
-  
-  //funcion
-module.exports.verMulta = async function (req, res, next) {
-  const cota = req.query.cota
-
-  try {
-    const ficha = await Fichas.findOne({
-      where: {
-        cota_f: cota
-      }
-    });
-   
-    const conf = await ConfDiasLibros.findOne({
-      where: {
-        id_c: 1
-      }
-    });
-
-    if (ficha && conf) {
-      res.status(200).send({
-        ficha: ficha,
-        conf: conf
+  //Función que actualiza el estado de la multa
+  module.exports.multas = async function (req, res, next) {
+    try {
+      const fichasVencidas = await Fichas.findAll({
+        where: {
+          estado_f: 'vencido'
+        }
       });
-    } 
-  } catch (error) {
-   res.status(500);
-  }
-};
-  //
-  module.exports.pagarMulta = async function(req, res, next) {
+      const conf = await ConfDiasLibros.findOne();
+      
+      if (fichasVencidas.length > 0) {
+        for (var l = 0; l < fichasVencidas.length; l++) {
+         
+          let multaTotal = parseInt(fichasVencidas[l].multa) + parseInt(conf.multa);
+          console.log(multaTotal);
+          await Fichas.update({
+            multa: multaTotal,
+          }, {
+            where: {
+              correo_f: fichasVencidas[l].correo_f
+            }
+          });
+        }
+      }
+    
 
+    } catch (error) {
+    console.log(error);
+    }
   };
+
+ 

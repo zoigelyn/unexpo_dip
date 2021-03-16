@@ -133,7 +133,7 @@ module.exports.editarNoticia = async function (req, res, next) {//funcion asincr
     }
 
     if (nuevaNoticia && bandera == 1 && imagen.url_imagen != datosNoticia.destino || nuevaNoticia && bandera == 0 && imagen.url_imagen == datosNoticia.destino) {//Si se actualizo la noticia, y al actualizar se cambia la imagen y se elimina la imagen anterior ó se actualizo la noticia pero se mantuvo la misma imagen y no ocurrio la eliminacion
-      res.status(200).send('Creada con exito');
+      res.status(200).send('Actualizada con éxito');
     }
   } catch (error) {
     res.status(500).send({

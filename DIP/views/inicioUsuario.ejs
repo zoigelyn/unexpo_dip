@@ -4,15 +4,13 @@
 <script>
     
       //animacion para la seccion de noticias
-  $(document).ready(function () {
-    var first = 0;
+ 
+      var first = 0;
     var speed = 700;
-    var pause = 7500;
+
     function removeFirst() {
-      let elementos = $('div#cuadronot').find('li').length;
-      if (elementos <= 1) {
-        clearInterval(intervalId);
-      }
+   
+       
       first = $('div#cuadronot li:first').html();
       $('div#cuadronot li:first')
         .animate({ opacity: 0 }, speed)
@@ -24,17 +22,15 @@
 
     }
     function addLast(first) {
-
+     
       last = '<li style="display:none;">' + first + '</li>';
       $('div#cuadronot').append(last);
       $('div#cuadronot li:last')
         .animate({ opacity: 1 }, speed)
         .fadeIn('slow')
     }
-
-    intervalId = setInterval(removeFirst, pause);
-
-  });
+      
+      
 //manejo de errores para todas las solicitudes ajax
 function manejoErrores(error) {
     let message;
@@ -125,12 +121,11 @@ function verUnaNoticia(id) {
       });
   }
  
-     function min(indiceArray) {
+     function min() {
         let f = new Date();
 
         let d = f.getDay();
         let mes, dia;
-
         if (d == 6) {
             f.setDate(f.getDate() + 2);
             f = new Date(f);
@@ -140,14 +135,17 @@ function verUnaNoticia(id) {
             f = new Date(f);
 
         } else if (d == 5 && f.getHours() > 16) {
+           
             f.setDate(f.getDate() + 3);
             f = new Date(f);
 
         } else if (d != 5 && d != 6 && d != 0 && f.getHours() > 16) {
+            
             f.setDate(f.getDate() + 1);
             f = new Date(f);
 
         } else {
+           
             f = new Date(f);
         } 
         if ((f.getMonth() + 1) < 10) {
@@ -163,7 +161,6 @@ function verUnaNoticia(id) {
             dia = f.getDate();
         }
         return f.getFullYear() + "-" + mes + "-" + dia;
-
     };
 
     function sumarDias(fecha, dias) {
@@ -230,7 +227,7 @@ function verUnaNoticia(id) {
   <div class="form-group row">
   <label for="fecha_e" class="col-sm-2 col-form-label">Día de retiro</label>
   <div class="col-sm-10">
-    <input type="date" id="fecha_e"  class="fecha" onchange="validar(this)" name="fecha_e" required="">
+    <input type="date" id="fecha_e"  class="fecha"  name="fecha_e" required="">
   
   </div>
   </div>
@@ -384,7 +381,7 @@ function verUnaNoticia(id) {
     };
 //eliminar ficha reservada
 function eliminarFicha(input) {
-    let r = confirm('¿Estas seguro que deseas eliminar este libro?');
+    let r = confirm('¿Estas seguro que deseas eliminar esta reservación');
     if (r) {
       
                 let cota = input;
@@ -408,14 +405,14 @@ function eliminarFicha(input) {
                             let q = "#tab_" + cota;
                             $(q).remove();
                         }
-
+                        seccionMisR();
                     })
                     .fail(function (error) {
                        manejoErrores(error);
                     });
 }
 };
-    function sobresaltarFecha(res, i) {
+function sobresaltarFecha(res, i) {
 
         let fechaActual = new Date();
         let fecha_d = res.fichas[i].fecha_d;
@@ -436,8 +433,8 @@ function eliminarFicha(input) {
         $(tp).html(`${libro.tipo_l}`);
     };
 
-    // $(document).on('click', '.modal', function (e) {
-    $(function () {
+     $(function () {
+    
         seccionInicio();
  
         $("#myModal4").on('show.bs.modal', function (e) {
@@ -646,58 +643,77 @@ function eliminarFicha(input) {
 
  //solicitas y muestras las noticias
  function mostrarNoticias() {
-    $.ajax({
-      beforeSend: function () {
-        $("p#modal-p-center").html(
-          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
-        );
-        $("div#myModal").modal("show");
-      },
-      url: "/noticias",
-      type: "GET",
-    })
-      .done(function (noticias) {
-
-        $("div#cuadronot").html('');
-
-        if (noticias.length > 0) {
-          var j = 0;
-          for (var i = 0; i < noticias.length; i++) {
-
-            $('div#cuadronot').append(`
-<li>
- <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
- 
-   <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
-         
-         <img src="${noticias[i].url_imagen}" alt="">
-         <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
-         <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
-        </div>
-     </li>
-     `);
-
-
-          }
-
-
-        } else {
-          $("div#cuadronot").append(`
-                            <div class="container-fluid">
-                    <h3 class="text-center all-tittles">No hay noticias recientes </h3>
-                </div>
-          
-                            `);
-        }
-
-        $("div#myModal").modal("hide");
-      })
-      .fail(function (error) {
-        manejoErrores(error);
-      });
-
-  };
   
+  $.ajax({
+    beforeSend: function () {
+      $("p#modal-p-center").html(
+        '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+      );
+      $("div#myModal").modal("show");
+    },
+    url: "/noticias",
+    type: "GET",
+  })
+    .done(function (noticias) {
+
+      $("div#cuadronot").html('');
+
+      if (noticias.length > 0) {
+        
+        for (var i = 0; i < noticias.length; i++) {
+
+          $('div#cuadronot').append(`<li>
+<div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
+ <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
+       
+       <img src="${noticias[i].url_imagen}" alt="">
+       <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
+       <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
+      </div>
+   </li>
+   `);
+  }
+if (noticias.length == 1) {
+clearInterval(intervalId);
+$("div#myModal").modal("hide");
+   
+} else if (noticias.length > 1) {
+
+
+    $("div#myModal").modal("hide");
+    let bandera = 2;
+     $("div#myModal").on("hidden.bs.modal", function () {
+              if (bandera == 2) {
+               
+                bandera = 0;
+                intervalId = setInterval(removeFirst, 7500);
+              }
+            });
+  
+}
+        
+
+
+      } else {
+        $("div#cuadronot").append(`
+                          <div class="container-fluid">
+                  <h3 class="text-center all-tittles">No hay noticias recientes </h3>
+              </div>
+        
+                          `);
+                          clearInterval(intervalId);
+                           $("div#myModal").modal("hide");
+      }
+
+     
+     
+    })
+    .fail(function (error) {
+      manejoErrores(error);
+    });
+
+};
+
  //solicitas y muestras las noticias
  function mostrarPreguntas() {
     $.ajax({
@@ -991,6 +1007,7 @@ function eliminarFicha(input) {
             $("li#misP").removeClass("active");
         $("li#misR").addClass("active");
         $("li#rreservar").removeClass("active");
+        $("#container").show();
          
      
                 $("#myModal").modal("hide");
@@ -1041,7 +1058,7 @@ function eliminarFicha(input) {
                         </div>
                     </div>
                 </div> `);
-                        sobresaltarFecha(res, i);
+                        
 
                     }
                 } else {
@@ -1105,6 +1122,7 @@ function eliminarFicha(input) {
         $("li#misR").removeClass("active");
         $("li#rreservar").removeClass("active");
 $("#enlaces").show();
+$("#container").show();
 
                 $("#myModal").modal("hide");
                 if (res.fichas.length > 0) {
@@ -1152,7 +1170,10 @@ $("#enlaces").show();
                 </div>
             </div>
         </div> `);
-                        sobresaltarFecha(res, i);
+        if ( res.fichas[i].fecha_d > new Date()) {
+             sobresaltarFecha(res, i);
+        }
+                       
                     }
                 } else {
                     $("div#container").html(`
@@ -1483,7 +1504,6 @@ $("#enlaces").show();
     }
 
 </script>
-
 <body>
     <div id="myModal" class="modal fade">
         <div class="modal-dialog modal-sm">
@@ -1687,7 +1707,7 @@ $("#enlaces").show();
                 <div class="row justify-content-md-center">
                     <div class="col-sm-4 col-md-2">
                         <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"
-                        placeholder="Cota"  maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top"
+                        placeholder="Cota"  maxlength="25" pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top"
                         title="Ej. cota_1, cota 1">
                         <label >Cota</label>
                     </div>

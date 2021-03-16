@@ -172,10 +172,8 @@ module.exports.vistaR = function (req, res, next) {
         correo_r: req.session.passport.user//La autentificación me brinda un objeto en el que se almacena el correo del usuario debido a que es este el que se encuentra configurado en el middleware de autentificación
       },
     });
-    if (respuestas.length < 10 && respuestas.length > 0){//Si existen entre una y 9 preguntas configuradas
-      res.redirect('/respuesta');
-    }
-    else if (respuestas.length == 0) {// Si no existe ninguna pregunta configurada
+   
+     if (respuestas.length == 0) {// Si no existe ninguna pregunta configurada
       res.redirect('/seguridad');
     }
     else if (respuestas.length == 10) {//Si se encuentran todas las preguntas configuradas

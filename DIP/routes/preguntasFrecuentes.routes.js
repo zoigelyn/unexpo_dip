@@ -3,7 +3,7 @@ const router = express.Router();
 var path = require('path');
 const { insertarPregunta, mostrarPreguntasF, eliminarUnaPregunta, unaPregunta, actualizarPregunta} = require('../controllers/preguntasFrecuentes.controller.js');
 
-const { isAuthenticated, isAuthenticatedAjax, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
+const { isAuthenticatedAjax, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
 router.post('/bibliotecario/nueva-p-f', isAuthenticatedAjax, insertarPregunta);
 //ruta que consulta las preguntas almacenadas en preguntas frecuentes para ser mostradas a todos los roles

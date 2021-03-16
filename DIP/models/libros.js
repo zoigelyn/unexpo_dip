@@ -40,7 +40,8 @@ const Libros = sequelize.define('libros', {
     },
     volumen:{
         type: Sequelize.INTEGER,
-        allowNull:false
+        allowNull:false,
+        defaultValue: 1
     },
     ejemplar:{
         type: Sequelize.INTEGER,

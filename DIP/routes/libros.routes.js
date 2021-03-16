@@ -3,9 +3,9 @@ const router = express.Router();
 
 
 
-const { insertarLibro, busquedaLibros, busquedaEspecifica, eliminarLibro, actualizarLibro, actualizarUnLibro, busquedaGeneral, totalLibros, upload, generateUUID, libros, existeCota, todosLibros, verLibro, bs, trabajo, revista} = require('../controllers/libros.controller');
+const { insertarLibro, eliminarLibro,  actualizarUnLibro, upload,  libros, existeCota, todosLibros, verLibro, bs, trabajo, revista} = require('../controllers/libros.controller');
 
-const { isAuthenticated, isAuthenticatedAjax,isAuthenticatedB, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
+const {  isAuthenticatedAjax, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
 // son rutas que consultan libros, revistas y trabajos de grado y pueden ser accedidas incluso por lector
 router.get('/libros', libros);

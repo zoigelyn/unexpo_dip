@@ -4,15 +4,13 @@
     <script>
      
              //animacion para la seccion de noticias
-  $(document).ready(function () {
-    var first = 0;
+  
+             var first = 0;
     var speed = 700;
-    var pause = 7500;
+
     function removeFirst() {
-      let elementos = $('div#cuadronot').find('li').length;
-      if (elementos <= 1) {
-        clearInterval(intervalId);
-      }
+   
+       
       first = $('div#cuadronot li:first').html();
       $('div#cuadronot li:first')
         .animate({ opacity: 0 }, speed)
@@ -24,18 +22,15 @@
 
     }
     function addLast(first) {
-
+     
       last = '<li style="display:none;">' + first + '</li>';
       $('div#cuadronot').append(last);
       $('div#cuadronot li:last')
         .animate({ opacity: 1 }, speed)
         .fadeIn('slow')
     }
-
-    intervalId = setInterval(removeFirst, pause);
-
-  });
-//manejo de errores para todas las solicitudes ajax
+      
+      //manejo de errores para todas las solicitudes ajax
 function manejoErrores(error) {
     let message;
     if (error.responseJSON) {
@@ -213,59 +208,79 @@ function verPDF(input) {
   
 
          //solicitas y muestras las noticias
- function mostrarNoticias() {
-    $.ajax({
-      beforeSend: function () {
-        $("p#modal-p-center").html(
-          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
-        );
-        $("div#myModal").modal("show");
-      },
-      url: "/noticias",
-      type: "GET",
-    })
-      .done(function (noticias) {
-
-        $("div#cuadronot").html('');
-
-        if (noticias.length > 0) {
-          var j = 0;
-          for (var i = 0; i < noticias.length; i++) {
-
-            $('div#cuadronot').append(`
-<li>
- <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
- 
-   <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
-         
-         <img src="${noticias[i].url_imagen}" alt="">
-         <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
-         <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
-        </div>
-     </li>
-     `);
-
-
-          }
-
-
-        } else {
-          $("div#cuadronot").append(`
-                            <div class="container-fluid">
-                    <h3 class="text-center all-tittles">No hay noticias recientes </h3>
-                </div>
-          
-                            `);
-        }
-
-        $("div#myModal").modal("hide");
-      })
-      .fail(function (error) {
-        manejoErrores(error);
-      });
-
-  };
+         function mostrarNoticias() {
   
+  $.ajax({
+    beforeSend: function () {
+      $("p#modal-p-center").html(
+        '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+      );
+      $("div#myModal").modal("show");
+    },
+    url: "/noticias",
+    type: "GET",
+  })
+    .done(function (noticias) {
+
+      $("div#cuadronot").html('');
+
+      if (noticias.length > 0) {
+        
+        for (var i = 0; i < noticias.length; i++) {
+
+          $('div#cuadronot').append(`<li>
+<div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
+
+ <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
+       
+       <img src="${noticias[i].url_imagen}" alt="">
+       <a class="news-title" href="#">${noticias[i].titulo_noticia}</a>
+       <span class="news-text text-center">${noticias[i].text_noticia}</span> </div>
+      </div>
+   </li>
+   `);
+  }
+if (noticias.length == 1) {
+clearInterval(intervalId);
+$("div#myModal").modal("hide");
+   
+} else if (noticias.length > 1) {
+
+
+    $("div#myModal").modal("hide");
+    let bandera = 2;
+     $("div#myModal").on("hidden.bs.modal", function () {
+              if (bandera == 2) {
+               
+                bandera = 0;
+                intervalId = setInterval(removeFirst, 7500);
+              }
+            });
+  
+}
+        
+
+
+      } else {
+        $("div#cuadronot").append(`
+                          <div class="container-fluid">
+                  <h3 class="text-center all-tittles">No hay noticias recientes </h3>
+              </div>
+        
+                          `);
+                          clearInterval(intervalId);
+                           $("div#myModal").modal("hide");
+      }
+
+     
+     
+    })
+    .fail(function (error) {
+      manejoErrores(error);
+    });
+
+};
+
  //solicitas y muestras las noticias
  function mostrarPreguntas() {
     $.ajax({
@@ -971,7 +986,7 @@ function verPDF(input) {
                 <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea-dos" autocomplete="off">
                     <div class="row justify-content-md-center" >
                         <div class="col-sm-4 col-md-2" >
-                            <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"   maxlength="25" pattern="^([a-zA-Zá-ú0-9 ]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" 
+                            <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"   maxlength="25" pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" 
                             placeholder="Cota"  data-toggle="tooltip" data-placement="top"
                             title="Ej. cota_1, cota 2">
                             <label>Cota</label>

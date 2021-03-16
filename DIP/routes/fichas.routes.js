@@ -2,17 +2,13 @@
 const express = require('express');
 const router = express.Router();
 
-const { insertarFicha, busquedaGeneral, busquedaEspecifica, eliminacionFicha, actualizarFicha, actualizarUnaFicha, fichasPendientes, satisfactorio, entregarFicha, FichasEntregadas, eliminarReserva, eliminarFichaE, fichasReservadas, aprobarFicha, vencimiento, reservarLibro, misReservas, prestamosVV, existeConfigDias, prestamos, prestamosP, recibirLibro, prestamosVVAjax, prestamosAjax, prestamosPAjax, misPrestamos, miFicha, miFichaE, verMulta, pagarMulta } = require('../controllers/fichas.controller');
+const { eliminarReserva, eliminarFichaE,  aprobarFicha, reservarLibro, misReservas, existeConfigDias, recibirLibro, prestamosVVAjax, prestamosAjax, prestamosPAjax, misPrestamos, miFicha, miFichaE} = require('../controllers/fichas.controller');
 
-const { isAuthenticated, isAuthenticatedAjax, isAuthenticatedB, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
+const { isAuthenticatedAjax, isAuthenticatedB, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
 const {vistaDiasPrestamo, guardarConfDias} = require('../controllers/configuracion.controller');
 
-//ruta que consulta si existe multa relaconada con el libro
-router.post('/bibliotecario/multa-ficha?', verMulta);
 
-//ruta para pagar multa
-router.put('/bibliotecario/multa-paga', pagarMulta);
 
 //ruta que consulta los prestamos entregados
 router.get('/bibliotecario/prestamosAjax', isAuthenticatedBAjax, existeConfigDias, prestamosAjax);

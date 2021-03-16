@@ -37,8 +37,8 @@ const Fichas = sequelize.define('fichas', {
         allowNull: false
         },
     multa: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
+        type: Sequelize.STRING,
+        defaultValue: '0'
     },
     createdAt:{
         type: Sequelize.DATE,

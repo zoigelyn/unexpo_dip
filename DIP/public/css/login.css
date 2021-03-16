@@ -287,7 +287,7 @@ input.material-login-control:focus~.bar-login:after {
     box-shadow: none;
 }
 
-label {
+.label {
     font-style: normal;
     font-weight: normal;
     font-size: 16px;

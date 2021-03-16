@@ -3,7 +3,7 @@ const router = express.Router();//Se requiere el método router de express.js
 const passport = require('passport');//Se requiere el middleware passport.js
 
 
-const {existeP, ingresoPreguntas, mostrarPreguntas, isAuthenticatedAdmin,isNotAuthenticatedAdmin, eliminarPregunta, unaPregunta, vistaRegistroB, vistaRegistroP, vistaIngresoB, vistaPreguntaUnica, vistaTareaCompleta, guardarConf, vistaConfDias, crearEstadoL, crearTipoL, crearTipoU, crearEstadoP} = require('../controllers/configuracion.controller');
+const {existeP, ingresoPreguntas, mostrarPreguntas, isAuthenticatedAdmin,isNotAuthenticatedAdmin, eliminarPregunta, unaPregunta, vistaRegistroB, vistaRegistroP, vistaIngresoB, vistaPreguntaUnica, vistaTareaCompleta, guardarConf, vistaConfDias, crearEstadoL, crearTipoL, crearTipoU, crearEstadoP, existeBibliotecario} = require('../controllers/configuracion.controller');
 
 
 //Ruta delete en la que se elimina una pregunta en la plantilla preguntasCreadas.ejs
@@ -11,7 +11,7 @@ router.delete('/preguntas?', isAuthenticatedAdmin, eliminarPregunta);
 //Se registran las preguntas y se muentran en la plantilla preguntasCreadas.ejs
 router.post('/preguntas', isAuthenticatedAdmin, ingresoPreguntas, mostrarPreguntas);
 //Si no se esta autentificado con esta ruta se accede al formulario de registro del bibliotecario, unicamente para el registro del bibliotecario
-router.get('/e-b-245-43',isNotAuthenticatedAdmin, crearEstadoL, crearEstadoP, crearTipoL, crearTipoU, vistaRegistroB);
+router.get('/e-b-245-43',isNotAuthenticatedAdmin, crearEstadoL, crearEstadoP, crearTipoL, crearTipoU, existeBibliotecario, vistaRegistroB);
 //Vista del login unicamnete para ingreso del bibliotecario
 router.get('/loginConfig', isNotAuthenticatedAdmin, vistaIngresoB);
 //Estrategia creada con el middleware passport.js en el que si es exitosa la autentificación se redirecciona a "/existenP" sino se redirecciona a "/loginConfig" y se accede al objeto req desde la función Callback
