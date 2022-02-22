@@ -3,14 +3,14 @@ const router = express.Router();
 
 
 
-const { insertarLibro, eliminarLibro,  actualizarUnLibro, upload,  libros, existeCota, todosLibros, verLibro, bs, trabajo, revista} = require('../controllers/libros.controller');
+const { insertarLibro, eliminarLibro,  actualizarUnLibro, upload,  premium, existeCota, todosLibros, verLibro, bs,estandar, basico} = require('../controllers/libros.controller');
 
 const {  isAuthenticatedAjax, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
 // son rutas que consultan libros, revistas y trabajos de grado y pueden ser accedidas incluso por lector
-router.get('/libros', libros);
-router.get('/trabajo', trabajo);
-router.get('/revista', revista);
+router.get('/premium', premium);
+router.get('/estandar', estandar);
+router.get('/basico', basico);
 
   //ruta que se accede tanto el bibliotecario como el usuario para realizar una busqueda especifica de un o unos libros. ruta de acceso por todos
 router.post('/busqueda-especifica', bs);

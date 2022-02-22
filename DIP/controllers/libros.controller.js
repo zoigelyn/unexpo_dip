@@ -48,23 +48,57 @@ const upload = multer({
 module.exports.upload = upload;
     
 //función con la que insertan uno o varios libros
-module.exports.insertarLibro = async function insertar(req, res, next) {
+module.exports.insertarLibro = async function (req, res, next) {
 const datosLibro = req.body;
-
-if (datosLibro.autor && datosLibro.autor != '' ){
- datosLibro.autor = datosLibro.autor.toLowerCase();
+if (datosLibro.creator){
+ datosLibro.creator = datosLibro.creator.toLowerCase();
 }
-if (datosLibro.tutor && datosLibro.tutor != '' ) {
- datosLibro.tutor = datosLibro.tutor.toLowerCase();
+if (datosLibro.contributor) {
+ datosLibro.contributor = datosLibro.contributor.toLowerCase();
 }
 
-if (datosLibro.editorial && datosLibro.editorial != ''){
-  datosLibro.editorial = datosLibro.editorial.toLowerCase();
+if (datosLibro.publisher){
+  datosLibro.publisher = datosLibro.publisher.toLowerCase();
 }
 if (req.file){
  let nombre = req.file.filename;
   let ruta = "/uploads/pdfs/"+nombre;
-  datosLibro.destino = ruta;
+  datosLibro.url = ruta;
+  datosLibro.identifier = req.file.destination;
+  datosLibro.format = "pdf"
+} 
+if (datosLibro.title) {
+  datosLibro.title = datosLibro.title.toLowerCase();
+}
+if (datosLibro.subject) {
+  datosLibro.subject = datosLibro.subject.toLowerCase();
+}
+if (datosLibro.description) {
+  datosLibro.description = datosLibro.description.toLowerCase();
+}
+if (datosLibro.relation) {
+  datosLibro.relation = datosLibro.relation.toLowerCase();
+} 
+if (datosLibro.coverage) {
+  datosLibro.coverage = datosLibro.coverage.toLowerCase();
+}
+if (datosLibro.rights) {
+  datosLibro.rights = datosLibro.rights.toLowerCase();
+}
+if (datosLibro.type) {
+  datosLibro.type = datosLibro.type.toLowerCase();
+}
+if (datosLibro.source) {
+  datosLibro.source = datosLibro.source.toLowerCase();
+}
+if (datosLibro.language) {
+  datosLibro.language = datosLibro.language.toLowerCase();
+}
+if (datosLibro.core) {
+  datosLibro.core = datosLibro.core.toLowerCase();
+}
+if (datosLibro.suscription) {
+  datosLibro.suscription = datosLibro.suscription.toLowerCase();
 }
 function cotas(i){
      let varia = "datosLibro.cota_"+i;
@@ -86,17 +120,26 @@ let coma = '';
         }
         cota = cotas(i);
        crear.push( {
-          tipo_l:  datosLibro.tipo_l.toLowerCase(),
-          cota: cota.toLowerCase(),
-          autor:datosLibro.autor,
-          titulo:datosLibro.titulo.toLowerCase(),
-          año: datosLibro.año,
-          volumen:datosLibro.volumen,
-          tutor:datosLibro.tutor,
-          editorial: datosLibro.editorial,
-          destino:datosLibro.destino,
-          estado_l: 'disponible', 
-          ejemplar: i
+          cota: cota,
+          title: datosLibro.title,
+          contributor: datosLibro.contributor,
+          subject: datosLibro.subject,
+          creator: datosLibro.creator,
+          description: datosLibro.description,
+          publisher: datosLibro.publisher,
+          date: datosLibro.date,
+          format: datosLibro.format,
+          identifier:datosLibro.identifier,
+          relation: datosLibro.relation,
+          coverage: datosLibro.coverage,
+          rights: datosLibro.rights,
+          type: datosLibro.type,
+          statusBook: 'disponible',
+          source: datosLibro.source,
+          language: datosLibro.language,
+          url: datosLibro.url,
+          core: datosLibro.core,
+          tipo_s: datosLibro.suscription
         });
        
        
@@ -107,17 +150,26 @@ let coma = '';
 
     }else{
        nLibro = await Libros.create({
-      cota: datosLibro.cota_1.toLowerCase(),
-      tipo_l: datosLibro.tipo_l.toLowerCase(),
-      autor: datosLibro.autor,
-      titulo: datosLibro.titulo.toLowerCase(),
-      año: datosLibro.año,
-      volumen: datosLibro.volumen,
-      tutor: datosLibro.tutor,
-      editorial: datosLibro.editorial,
-      destino: datosLibro.destino,
-      estado_l: 'disponible',
-      ejemplar: 1
+        cota: datosLibro.cota_1,
+        title: datosLibro.title,
+        contributor: datosLibro.contributor,
+        subject: datosLibro.subject,
+        creator: datosLibro.creator,
+        description: datosLibro.description,
+        publisher: datosLibro.publisher,
+        date: datosLibro.date,
+        format: datosLibro.format,
+        identifier:datosLibro.identifier,
+        relation: datosLibro.relation,
+        coverage: datosLibro.coverage,
+        rights: datosLibro.rights,
+        type: datosLibro.type,
+        statusBook: 'disponible',
+        source: datosLibro.source,
+        language: datosLibro.language,
+        url: datosLibro.url,
+        core: datosLibro.core,
+        tipo_s: datosLibro.suscription
     });
     }
     
@@ -131,6 +183,7 @@ let coma = '';
     }
     
   } catch (error) {
+    console.log(error);
       res.status(500).json({
         message: 'ha ocurrido un error',
         data: {},
@@ -149,7 +202,7 @@ const libro = await Libros.findOne({
 });
 if (libro){
   res.send('La cota debe ser única');
-  console.log(libro);
+
 }else if(cota == ' '){
 
   res.send('La cota no debe ser nula');
@@ -160,12 +213,12 @@ if (libro){
  res.status(500);
 }
 };
-//consulta de libros
-module.exports.libros = async function (req, res, next) {
+//consulta de libros premium
+module.exports.premium = async function (req, res, next) {
   try {
     const libros = await Libros.findAll({
       where: {
-        tipo_l: 'libro'
+        tipo_s: 'premium'
       }
     });
     if (libros) {
@@ -179,12 +232,12 @@ module.exports.libros = async function (req, res, next) {
   }
 };
 
-//consulta de trabajos de grado
-module.exports.trabajo = async function (req, res, next) {
+//consulta de libros estandar
+module.exports.estandar = async function (req, res, next) {
   try {
     const libros = await Libros.findAll({
       where: {
-        tipo_l: 'trabajo de grado'
+        tipo_s: 'estandar'
       }
     });
     if (libros) {
@@ -197,12 +250,12 @@ module.exports.trabajo = async function (req, res, next) {
     });
   }
 };
-//revista
-module.exports.revista = async function (req, res, next) {
+//libros basicos
+module.exports.basico = async function (req, res, next) {
   try {
     const libros = await Libros.findAll({
       where: {
-        tipo_l: 'revista'
+        tipo_s: 'basica'
       }
     });
     if (libros) {
@@ -220,13 +273,23 @@ module.exports.revista = async function (req, res, next) {
 module.exports.todosLibros = async function (req, res, next) {
   try {
     const libros = await Libros.findAll();
-    if (libros) {
+   
+   /* var librosJson = JSON.stringify(libros);
+    
+   var json2xml = require('json2xml');
 
+    var librosXml = json2xml(JSON.parse(librosJson) , { header: true });
+    console.log(librosXml);
+*/
+    
+    if (libros) {
+      
       res.status(200).json({
         libros
       });
   }
   } catch (error) {
+    console.log(error);
    res.status(500);
   }
 };
@@ -245,7 +308,8 @@ module.exports.verLibro = async function (req,res, next) {
       
     });
     res.status(200).json({
-      libro
+      libro: libro,
+      usuarioL: req.session.usuarioL
     });
   } catch (error) {
     res.status(500);
@@ -258,7 +322,7 @@ module.exports.verLibro = async function (req,res, next) {
 module.exports.bs = async function (req, res, next) {
   try {
     const b = req.body;
- let q1 = 'SELECT cota, titulo, tipo_l, autor, año, volumen, estado_l, destino FROM libros WHERE ';
+ let q1 = 'SELECT cota, title, contributor, subject, creator, description, publisher, date, format, identifier, relation, coverage, rights, type, source, language, url, core, tipo_s FROM libros WHERE ';
  let q = '';
   if (b.cota) {
    let cota = '%' + b.cota + '%';
@@ -268,80 +332,143 @@ module.exports.bs = async function (req, res, next) {
     q = q + `AND cota ILIKE '${cota}'`;
    }
   }
-  if (b.titulo) {
-    let titulo = '%' + b.titulo + '%';
+  if (b.title) {
+    let title = '%' + b.title + '%';
     if ( q === '') {
-      q = q1 + `titulo ILIKE '${titulo}'`;
+      q = q1 + `title ILIKE '${title}'`;
     } else {
-     q = q + `AND titulo ILIKE '${titulo}'`;
+     q = q + `AND title ILIKE '${title}'`;
     }
    }
-   if (b.autor) {
-    let autor = '%' + b.autor + '%';
+   if (b.creator) {
+    let creator = '%' + b.creator + '%';
     if ( q === '') {
-      q = q1 + `autor ILIKE '${autor}'`;
+      q = q1 + `creator ILIKE '${creator}'`;
     } else {
-     q = q + `AND autor ILIKE '${autor}'`;
+     q = q + `AND creator ILIKE '${creator}'`;
     }
    }
-   if (b.tipo_l) {
-    let tipo_l = '%' + b.tipo_l + '%';
+   if (b.type) {
+    let type = '%' + b.type + '%';
     if ( q === '') {
-      q = q1 + `tipo_l ILIKE '${tipo_l}'`;
+      q = q1 + `type ILIKE '${type}'`;
     } else {
-     q = q + `AND tipo_l ILIKE '${tipo_l}'`;
+     q = q + `AND type ILIKE '${type}'`;
     }
    }
-   if (b.tutor) {
-    let tutor = '%' + b.tutor + '%';
+   if (b.contributor) {
+    let contributor = '%' + b.contributor + '%';
     if ( q === '') {
-      q = q1 + `tutor ILIKE '${tutor}'`;
+      q = q1 + `contributor ILIKE '${contributor}'`;
     } else {
-     q = q + `AND tutor ILIKE '${tutor}'`;
+     q = q + `AND contributor ILIKE '${contributor}'`;
     }
    }
-   if (b.año) {
-    let año = '%' + b.año + '%';
+   //comparar fechas en sql
+   if (b.date) {
+    let date = b.date;
     if ( q === '') {
-      q = q1 + `TO_CHAR(año,'9999999999') ILIKE '${año}'`;
+      q = q1 + `date='${date}'`;
     } else {
      q = q + `AND TO_CHAR(año,'9999999999') ILIKE '${año}'`;
     }
    }
-   if (b.volumen) {
-    let volumen = '%' + b.volumen + '%';
+   if (b.suscription) {
+    let suscription = '%' + b.suscription + '%';
     if ( q === '') {
-      q = q1 + `TO_CHAR(volumen, '9999999999') ILIKE '${volumen}'`;
+      q = q1 + `tipo_s ILIKE '${suscription}'`;
     } else {
-     q = q + `AND TO_CHAR(volumen, '9999999999') ILIKE '${volumen}'`;
+     q = q + `AND tipo_s ILIKE '${suscription}'`;
     }
    }
-   if (b.editorial) {
-    let editorial = '%' + b.editorial + '%';
+   if (b.description) {
+    let description = '%' + b.description + '%';
     if ( q === '') {
-      q = q1 + `editorial ILIKE '${editorial}'`;
+      q = q1 + `description ILIKE '${description}'`;
     } else {
-     q = q + `AND editorial ILIKE '${editorial}'`;
+     q = q + `AND description ILIKE '${description}'`;
     }
    }
    
-   if (b.ejemplar) {
-    let ejemplar = '%' + b.ejemplar + '%';
+   if (b.publisher) {
+    let publisher = '%' + b.publisher + '%';
     if ( q === '') {
-      q = q1 + `TO_CHAR(ejemplar, '9999999999') ILIKE '${ejemplar}'`;
+      q = q1 + `publisher ILIKE '${publisher}'`;
     } else {
-     q = q + `AND TO_CHAR(ejemplar, '9999999999') ILIKE '${ejemplar}'`;
+     q = q + `AND publisher ILIKE '${publisher}'`;
     }
    }
-  
- 
+   if (b.format) {
+    let format = '%' + b.format + '%';
+    if ( q === '') {
+      q = q1 + `format ILIKE '${format}'`;
+    } else {
+     q = q + `AND format ILIKE '${format}'`;
+    }
+   }
+   if (b.relation) {
+    let relation = '%' + b.relation + '%';
+    if ( q === '') {
+      q = q1 + `relation ILIKE '${relation}'`;
+    } else {
+     q = q + `AND relation ILIKE '${relation}'`;
+    }
+   }
+   if (b.coverage) {
+    let coverage = '%' + b.coverage + '%';
+    if ( q === '') {
+      q = q1 + `coverage ILIKE '${coverage}'`;
+    } else {
+     q = q + `AND coverage ILIKE '${coverage}'`;
+    }
+   }
+   if (b.rights) {
+    let rights = '%' + b.rights + '%';
+    if ( q === '') {
+      q = q1 + `rights ILIKE '${rights}'`;
+    } else {
+     q = q + `AND rights ILIKE '${rights}'`;
+    }
+   }
+   if (b.source) {
+    let source = '%' + b.source + '%';
+    if ( q === '') {
+      q = q1 + `source ILIKE '${source}'`;
+    } else {
+     q = q + `AND source ILIKE '${source}'`;
+    }
+   }
+   if (b.language) {
+    let language = '%' + b.language + '%';
+    if ( q === '') {
+      q = q1 + `language ILIKE '${language}'`;
+    } else {
+     q = q + `AND language ILIKE '${language}'`;
+    }
+   }
+   if (b.core) {
+    let core = '%' + b.core + '%';
+    if ( q === '') {
+      q = q1 + `core ILIKE '${core}'`;
+    } else {
+     q = q + `AND core ILIKE '${core}'`;
+    }
+   }
+   if (b.subject) {
+    let subject = '%' + b.subject + '%';
+    if ( q === '') {
+      q = q1 + `subject ILIKE '${subject}'`;
+    } else {
+     q = q + `AND subject ILIKE '${subject}'`;
+    }
+   }
 
   let libros =  await sequelize.query(q);
   
 res.status(200).json({
- libros
+  libros
 });
-  } catch (error) {
+  } catch (error) { 
     res.status(500);
   }
 };
@@ -362,16 +489,16 @@ module.exports.eliminarLibro = async function (req, res, next) {
       },
     });
     
-    if(librosEliminados && libro.destino !== 'no aplica'){
+    if(librosEliminados && libro.format === 'pdf'){
       const otrosLibros = await Libros.findAll({
         where:{
-          destino: libro.destino
+          url: libro.url
         },
       });
       if(otrosLibros.length >= 1){
         res.json({librosEliminados});
       }else if(otrosLibros.length == 0){
-        let nombre = libro.destino.split("/").pop();
+        let nombre = libro.url.split("/").pop();
         let filePath =  path.join(__dirname, "..\\public\\uploads\\pdfs\\", nombre);
        
         fs.unlinkSync(filePath);
@@ -394,44 +521,85 @@ module.exports.eliminarLibro = async function (req, res, next) {
 //Actualiza una libro, solo bibliotecario
 module.exports.actualizarUnLibro = async function(req, res, next) {
 
-  const { editorial, titulo, autor, tutor, año, volumen, tipo_l, cota, estado_l} = req.body;
-  
+  const {  cota,
+    title,
+    contributor,
+    subject,
+    creator,
+    description,
+    publisher,
+    date,
+    relation,
+    coverage,
+    rights,
+    type,
+    source,
+    language,
+    core,
+    statusBook,
+    tipo_s } = req.body;
+  console.log(req.body);
 let libro = {};
-if (editorial){
-  libro.editorial = editorial.toLowerCase();
+if (title){
+  libro.title = title.toLowerCase();
 }
 if (cota){
   libro.cota = cota.toLowerCase();
 }
-if (estado_l){
-  libro.estado_l = estado_l.toLowerCase();
+if (contributor){
+  libro.contributor = contributor.toLowerCase();
 }
-if (titulo){
-  libro.titulo = titulo.toLowerCase();
+if (subject){
+  libro.subject = subject.toLowerCase();
 }
-if (autor){
-  libro.autor = autor.toLowerCase();
+if (creator){
+  libro.creator = creator.toLowerCase();
 }
-if (tutor){
-  libro.tutor = tutor.toLowerCase();
+if (description){
+  libro.description = description.toLowerCase();
 }
-if (año){
-  libro.año = año;
-}
-
-if (volumen){
-  libro.volumen = volumen;
+if (date){
+  libro.date = date;
 }
 
-if (tipo_l){
-  libro.tipo_l = tipo_l.toLowerCase();
+if (publisher){
+  libro.publisher = publisher.toLowerCase();
+}
+
+if (tipo_s){
+  libro.tipo_s = tipo_s.toLowerCase();
 }
 if (req.file){
   let nombre = req.file.filename;
    let ruta = "/uploads/pdfs/"+nombre;
-   libro.destino = ruta;
-}
-      
+   libro.url = ruta;
+   libro.identifier = req.file.destination;
+   libro.format = "pdf"
+ }
+ if (relation) {
+libro.relation = relation.toLowerCase();
+ }    
+ if (coverage) {
+   libro.coverage = coverage.toLowerCase();
+ }
+ if (rights) {
+   libro.rights = rights.toLowerCase();
+ }
+ if (type) {
+   libro.type = type.toLowerCase();
+ }
+ if (source) {
+   libro.source = source.toLowerCase();
+ }
+ if (language) {
+   libro.language = language.toLowerCase();
+ }
+ if (core) {
+   libro.core= core.toLowerCase()
+ }
+ if (statusBook) {
+   libro.statusBook= statusBook.toLowerCase();
+ }
   try {
     let otrosLibros = '';
     const viejoLibro = await Libros.findOne({
@@ -441,16 +609,23 @@ if (req.file){
     });
     const nuevoLibro = await Libros.update({
 
-          editorial: libro.editorial,
-          titulo: libro.titulo,
-          tutor: libro.tutor,
-          autor: libro.autor,
-          año: libro.año,
-          volumen: libro.volumen,
-          tipo_l: libro.tipo_l,
-          destino: libro.destino,
-          ejemplar: libro.ejemplar,
-          estado_l: libro.estado_l
+         core:libro.core ,
+         tipo_s:libro.tipo_s,
+         identifier: libro.identifier,
+         publisher: libro.publisher,
+         title: libro.title,
+         contributor: libro.contributor,
+         subject: libro.subject,
+         creator: libro.creator,
+         description: libro.description,
+         date: libro.date,
+         relation: libro.relation,
+         coverage: libro.coverage,
+         rights: libro.rights,
+         type: libro.type,
+         source: libro.source,
+         language: libro.language,
+         statusBook: libro.statusBook
 
           
         },{
@@ -480,6 +655,7 @@ if(otrosLibros.length === 0){
       }
     
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "ha ocurrido un error",
       data: {},

@@ -1,6 +1,7 @@
 const Usuarios = require('../models/usuarios');
 const Preguntas = require('../models/preguntas');
 const Respuestas = require('../models/respuestas');
+const { Op } = require("sequelize");
 //funcion con la que se realiza una consulta al momento del usuario ingresar el correo electronico, esto con el fin de consultar si existe en la base de datos
 module.exports.existeCorreo = async function (req, res, next){
  
@@ -33,7 +34,7 @@ if (usuarioLogeado.tipo_u == 'lector' || usuarioLogeado.tipo_u == 'estudiante' |
 { 
   res.redirect('/usuario');
 }
-else if (usuarioLogeado.tipo_u == 'bibliotecario'){//Si el usuario es tipo de usuario "bibliotecario"
+else if (usuarioLogeado.tipo_u == 'bibliotecario' || usuarioLogeado.tipo_u == 'administrador'){//Si el usuario es tipo de usuario "bibliotecario"
    
   res.redirect('/bibliotecario');
   
@@ -45,7 +46,7 @@ else if (usuarioLogeado.tipo_u == 'bibliotecario'){//Si el usuario es tipo de us
 //función que renderiza la ruta a la plantillas admin.ejs
 module.exports.vistaB = function (req, res, next) {
  try {
-  if (req.session.usuarioL.tipo_u === 'bibliotecario') {//Si el tipo de usuario es "bibliotecario"
+  if (req.session.usuarioL.tipo_u === 'bibliotecario' || req.session.usuarioL.tipo_u === 'administrador') {//Si el tipo de usuario es "bibliotecario"
   res.render('admin', {//nombre de la plantilla, estoy usando el motor de plantilla
       titulo: 'Inicio',
       usuarioL: req.session.usuarioL
@@ -84,8 +85,14 @@ module.exports.isAuthenticatedB = async function(req, res, next) {
   if (req.isAuthenticated()) {//Método que me proporciona el middleware passport.js para validar si un usuario está ó no autenticado
     let bibliotecario = await Usuarios.findOne({
       where: {
-        correo_u: req.session.passport.user,
-        tipo_u: 'bibliotecario'
+        [Op.or]: [
+          {correo_u: req.session.passport.user,
+            tipo_u: 'bibliotecario'
+          },
+          {correo_u: req.session.passport.user,
+            tipo_u: 'administrador'
+          }
+        ]
       }
     });
     if (bibliotecario){//Si esta autenticado y tiene como tipo de usuario "bibliotecario", entonces procede
@@ -107,8 +114,14 @@ module.exports.isAuthenticatedBAjax = async function(req, res, next) {
   if (req.isAuthenticated()) {
      bibliotecario = await Usuarios.findOne({
       where: {
-        correo_u: req.session.passport.user,
-        tipo_u: 'bibliotecario'
+        [Op.or]: [
+          {correo_u: req.session.passport.user,
+            tipo_u: 'bibliotecario'
+          },
+          {correo_u: req.session.passport.user,
+            tipo_u: 'administrador'
+          }
+        ]
       }
     });
   }
@@ -116,7 +129,7 @@ module.exports.isAuthenticatedBAjax = async function(req, res, next) {
       return next();
     } else if (req.isAuthenticated() && !bibliotecario) {
       res.status(401).send({
-        message: "Solo tiene acceso el bibliotecario."
+        message: "Solo tiene acceso el bibliotecario/administrador."
       });
     } else {
       res.status(403).send({

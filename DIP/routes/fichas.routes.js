@@ -7,6 +7,7 @@ const { eliminarReserva, eliminarFichaE,  aprobarFicha, reservarLibro, misReserv
 const { isAuthenticatedAjax, isAuthenticatedB, isAuthenticatedBAjax} = require('../controllers/usuarios.controllers');
 
 const {vistaDiasPrestamo, guardarConfDias} = require('../controllers/configuracion.controller');
+const { upload } = require('../controllers/noticias.controller');
 
 
 
@@ -23,7 +24,7 @@ router.get('/bibliotecario/prestamosVVAjax', isAuthenticatedBAjax, existeConfigD
 router.get('/bibliotecario/conf-dias', isAuthenticatedB, vistaDiasPrestamo);
 
 //Guarda configuración de días de préstamos y limite de libros
-router.post('/bibliotecario/conf-dias', isAuthenticatedBAjax, guardarConfDias);
+router.post('/bibliotecario/conf-dias', isAuthenticatedBAjax, upload.single('img'), guardarConfDias);
 
 //eliminación de una ficha reservada
 router.delete('/usuario/eliminarFicha?', isAuthenticatedAjax, eliminarReserva);

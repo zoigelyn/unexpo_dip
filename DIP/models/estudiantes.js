@@ -3,51 +3,72 @@ var sequelize = require ('../database/database');
 
 const Estudiantes = sequelize.define('estudiantes', {
     
-    cedula_e: {
-        type: Sequelize.STRING(10),
+    idalumno: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        validate: {
-            is: /^([VE]-)[0-9]{1,8}$/i
-        }
-        
-
-        },
-    nombres_e: {
-        type: Sequelize.STRING(35),
-        allowNull: false,
-        validate: {
-            isAlpha: true,
-        max: 35
-        }
+        autoIncrement:true,
+        allowNull: false
     },
-    apellidos_e: {
-        type: Sequelize.STRING(35),
-        allowNull: false,
-       validate:{
-          isAlpha: true,
-        max: 35 
-       } 
+    cedula: {
+        type: Sequelize.STRING(11)
     },
-    especializacion:{
-      type: Sequelize.STRING(50),
-      allowNull: true,
-      validate: {
-          isAlpha: true,
-      max: 35
-      }
-      },
-    createdAt:{
-        type: Sequelize.DATE,
-        field: 'created_at'
+    pasaporte: {
+        type: Sequelize.STRING(10)
     },
-    updatedAt:{
-        type: Sequelize.DATE,
-        field: 'updated_at'
+    apellidos: {
+        type: Sequelize.TEXT
+    },
+    nombres: {
+        type: Sequelize.TEXT
+    },
+    nacionalidad: {
+        type: Sequelize.STRING(11)
+    },
+    fechanac: {
+        type: Sequelize.STRING(10)
+    },
+    estadonac: {
+        type: Sequelize.TEXT
+    },
+    ciudadnac: {
+        type: Sequelize.TEXT
+    },
+    sexo: {
+        type: Sequelize.STRING(11)
+    },
+    direccionhab: {
+        type: Sequelize.STRING(50)
+    },
+    telefonohab: {
+        type: Sequelize.STRING(11)
+    },
+    direccionlab: {
+        type: Sequelize.STRING(50)
+    },
+    telefonolab: {
+        type: Sequelize.STRING(11)
+    },
+    email: {
+        type: Sequelize.STRING(40)
+    },
+    movil: {
+        type: Sequelize.STRING(11)
+    },
+    nivelest: {
+        type: Sequelize.STRING(11)
+    },
+    titulo: {
+        type: Sequelize.TEXT
+    },
+    institucion: {
+        type: Sequelize.TEXT
+    },
+    fechaegrins: {
+        type: Sequelize.STRING(10)
     }
-    
 }, {
-        timestamps: true
-    });
+    timestamps: true
+});
 
 
 module.exports = Estudiantes;

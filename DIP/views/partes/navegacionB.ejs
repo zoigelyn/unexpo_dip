@@ -15,14 +15,15 @@
         
         <div class="full-reset nav-lateral-list-menu">
             <ul class="list-unstyled">
-                <li><a href="javascript:seccionInicio()"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Inicio</a></li>
+                <li><a href="javascript:seccionInicio()" class="opcion"><i class="zmdi zmdi-home zmdi-hc-fw"></i>&nbsp;&nbsp; Inicio</a></li>
                 
                 </li>
                 <li>
                     <div class="dropdown-menu-button"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp; Libros <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="javascript:añadirMaterial()"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp;Añadir material</a></li>
-                        <li><a href="javascript: editarLibro()"><i class="zmdi zmdi-edit zmdi-hc-fw"></i>&nbsp;&nbsp; Ver, editar y eliminar</a></li>
+                        <li><a href="javascript:añadirMaterial()" class="opcion"><i class="zmdi zmdi-book zmdi-hc-fw"></i>&nbsp;&nbsp;Añadir material</a></li>
+                        <li><a href="javascript: editarLibro()" class="opcion"><i class="zmdi zmdi-edit zmdi-hc-fw"></i>&nbsp;&nbsp; Ver, editar y eliminar</a></li>
+                        
                         
                         
                     </ul>
@@ -30,35 +31,84 @@
                 <li>
                     <div class="dropdown-menu-button"><i class="zmdi zmdi-alarm zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos y reservaciones <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="javascript:prestamosE()"><i class="zmdi zmdi-calendar zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos entregados</a></li>
-                        <li><a href="javascript:prestamosVV()"><i class="zmdi zmdi-time-restore zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos pendientes</a></li>
+                        <li><a href="javascript:prestamosE()" class="opcion"><i class="zmdi zmdi-calendar zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos entregados</a></li>
+                        <li><a href="javascript:prestamosVV()" class="opcion"><i class="zmdi zmdi-time-restore zmdi-hc-fw"></i>&nbsp;&nbsp; Préstamos pendientes</a></li>
                         <li>
-                            <a href="javascript:prestamosP()"><i class="zmdi zmdi-timer zmdi-hc-fw"></i>&nbsp;&nbsp; Reservaciones<span class="label label-danger pull-right label-mhover"></span></a>
+                            <a href="javascript:prestamosP()" class="opcion"><i class="zmdi zmdi-timer zmdi-hc-fw"></i>&nbsp;&nbsp; Reservaciones<span class="label label-danger pull-right label-mhover"></span></a>
                         </li>
+                        <% if (usuarioL.tipo_u == 'administrador') { %> 
                         <li>
-                            <a href="javascript:seccionConfDias()"><i class="zmdi zmdi-wrench zmdi-hc-fw"></i>&nbsp;&nbsp; Configuración<span class="label label-danger pull-right label-mhover"></span></a>
+                            <a href="javascript:seccionConfDias()" class="opcion"><i class="zmdi zmdi-wrench zmdi-hc-fw"></i>&nbsp;&nbsp; Configuración<span class="label label-danger pull-right label-mhover"></span></a>
                         </li>
+                        <% } %>
                     </ul>
                 </li>
-               
+                <li>
+                    <div class="dropdown-menu-button"><i class="zmdi zmdi-card-membership zmdi-hc-fw"></i>&nbsp;&nbsp; Suscripciones <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
+                    <ul class="list-unstyled">
+                        <li><a href="javascript:suscripcionesP()" class="opcion"><i class="zmdi zmdi-accounts-add zmdi-hc-fw"></i>&nbsp;&nbsp; Suscripciones pendientes</a></li>
+                        <li><a href="javascript:suscripcionesV()" class="opcion"><i class="zmdi zmdi-accounts-list-alt zmdi-hc-fw"></i>&nbsp;&nbsp; Suscripciones activas</a></li>
+                       
+                    </ul>
+                </li>
                 
                 
+            </li>
+                
+            <% if (usuarioL.tipo_u == 'administrador') { %> 
                
                 <li>
                     <div class="dropdown-menu-button"><i class="zmdi zmdi-male-female zmdi-hc-fw"></i>&nbsp;&nbsp; Actualizar la base de datos <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
                     <ul class="list-unstyled">
-                        <li><a href="javascript: actualizarBaseE()"><i class="zmdi zmdi-accounts zmdi-hc-fw"></i>&nbsp;&nbsp; Estudiantes</a></li>
+                        <li><a href="javascript: actualizarBaseE()" class="opcion"><i class="zmdi zmdi-accounts zmdi-hc-fw"></i>&nbsp;&nbsp; Estudiantes</a></li>
                         
                        
                         <li>
-                            <a href="javascript: actualizarBaseD()"><i class="zmdi zmdi-male-alt zmdi-hc-fw"></i>&nbsp;&nbsp; Docentes<span class="label label-danger pull-right label-mhover"></span></a>
+                            <a href="javascript: actualizarBaseD()" class="opcion"><i class="zmdi zmdi-male-alt zmdi-hc-fw"></i>&nbsp;&nbsp; Docentes<span class="label label-danger pull-right label-mhover"></span></a>
                         </li>
                     </ul>
                     
                 </li>
                 <li>
-                    <li><a href="javascript: seccionPreguntas()"><i class="zmdi zmdi-help-outline zmdi-hc-fw"></i>&nbsp;&nbsp; Preguntale al Bibliotecario</a></li>  
+                    <div class="dropdown-menu-button"><i class="zmdi zmdi-settings zmdi-hc-fw"></i>&nbsp;&nbsp; Configuración <i class="zmdi zmdi-chevron-down pull-right zmdi-hc-fw"></i></div>
+                    <ul class="list-unstyled">
+                       
+                        <li>
+                            <a href="javascript:añadirNucleos()" class="opcion"><i class="zmdi
+                                zmdi-file-plus zmdi-hc-fw"></i>&nbsp;&nbsp; Añadir núcleos<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:editarNucleos()" class="opcion"><i class="zmdi zmdi-border-color zmdi-hc-fw"></i>&nbsp;&nbsp; Edita o elimina núcleos<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:añadirCategorias()" class="opcion"><i class="zmdi zmdi-file-plus zmdi-hc-fw"></i>&nbsp;&nbsp; Añadir categorias<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:editarCategorias()" class="opcion"><i class="zmdi zmdi-border-color zmdi-hc-fw"></i>&nbsp;&nbsp; Edita o elimina categorias<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
+                        <li>
+                            <a href="javascript:editarSuscripiones()" class="opcion"><i class="zmdi zmdi-border-color zmdi-hc-fw"></i>&nbsp;&nbsp; Edita suscripciones<span class="label label-danger pull-right label-mhover"></span></a>
+                        </li>
+                        
+                        
+                    </ul>
+                    <li>
+                        <li><a href="javascript: seccionConfS()" class="opcion"><i class="zmdi zmdi-key zmdi-hc-fw"></i>&nbsp;&nbsp; Mi configuración de seguridad</a></li>  
+                     </li>
+                </li>
+                
+                <li>
+                    <li><a href="javascript: seccionPreguntas()" class="opcion"><i class="zmdi zmdi-help-outline zmdi-hc-fw"></i>&nbsp;&nbsp; Preguntale al Bibliotecario</a></li>  
                  </li>
+               <% } else if(usuarioL.tipo_u == 'bibliotecario') { %>
+                <li><a href="javascript: seccionConfS()" class="opcion"><i class="zmdi zmdi-key zmdi-hc-fw"></i>&nbsp;&nbsp; Mi configuración de seguridad</a></li> 
+                   <li><a href="javascript:seccionPreguntas2()" class="opcion"><i class="zmdi zmdi-help-outline zmdi-hc-fw"></i>&nbsp;&nbsp; Preguntale al Bibliotecario</a></li> 
+                
+                
+                      
+                     
+               <% } %>
+              
             </ul>
         </div>
     </div>

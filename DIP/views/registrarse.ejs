@@ -83,13 +83,13 @@ function comprobarContraseña(input) {
                 <div class="group-material">
                     <div class="div-table-row-list" >
                         <div class="div-table-cell" style="width: 6%;">
-                            <select name="nacionalidad" class="material-control-login" required="">
-                            <option value="" disabled="" selected="">Nacionalidad </option>
-                            <option >V</option>
-                            <option >E</option>
+                            <select name="tipoCarnet" class="material-control-login" required="">
+                            <option value="" disabled="" selected="">Tipo de identificación </option>
+                            <option >Carnet de identidad</option>
+                            <option >Pasaporte</option>
                         </select></div>
                         <div class="div-table-cell" style="width: 11%;">
-                            <input name="cedula" class="material-control material-control-login " placeholder="Cédula" required=""  maxlength="8" pattern="^([0-9]{1,8})$" data-toggle="tooltip"  data-placement="top" type="text">
+                            <input name="cedula" class="material-control material-control-login " placeholder="Cédula" required=""  maxlength="11" pattern="^([0-9]{1,11})$" data-toggle="tooltip"  data-placement="top" type="text">
                     <span class="highlight"></span>
                     <span class="bar"></span>
                     <label > </label>

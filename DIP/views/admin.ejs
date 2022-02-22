@@ -1,8 +1,206 @@
 <!DOCTYPE html>
 <html lang="es">
 <%- include ("partes/cabecera") %>
+
 <script>
-  //animacion para la seccion de noticias
+  function añadirNucleo(input) {
+      let inputEjemplar = $(input);
+    let id = inputEjemplar.attr('id');
+
+    let tb= "table#tb"+id;;
+      if (inputEjemplar.val() >= 1) {
+        $(tb).html("");
+        for (var i = 1; i <= inputEjemplar.val(); i++) {
+          $(tb).append(`
+          <tr>
+                        <td style="width: 30px; overflow: hidden; border: none;">
+                          <input id="${id+i}" name="${id+i}" type="number"  class="material-control material-control-login" 
+                            placeholder="${id}.${i}" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                             value="${i}" redonly>
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+                        </td>
+                        <td style="width: 150px; overflow: hidden; border: none;">
+                          <input id="${id}-${i}"  name="${id}_${i}" type="text"
+                          class="material-control material-control-login" onkeyup="comp(this)" placeholder="Escribe aquí el ${id}"
+                            required="" maxlength="100"
+                            pattern="(^([a-zA-Zá-ú]{1,})$)"
+                            data-toggle="tooltip" data-placement="top" >
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+    
+                        </td>
+                        <td id="imgs-${id}${i}" style="width: 20px; overflow: hidden; border: none;">
+                          <div  class="limpiar" id="img-${id}-${i}"></div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 30px; overflow: hidden; border: none;"></td>
+                        <td id="mensaje-${id}${i}" style="width: 150px; border: none; overflow: hidden;">
+                          <div class="limpiar" id="${id}-unica-${i}"></div>
+                        </td>
+                        <td style="width: 20px; border: none; overflow: hidden;"></td>
+                      </tr>
+                                
+                    `);
+          
+        }
+      } else {
+        $(tb).html("");
+        $(tb).append(`
+        <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;">
+                          <input id="${id}1" name="${id}1" type="number"  class="material-control material-control-login" 
+                            placeholder="${id}.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                             value="1">
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+                        </td>
+                        <td style="width: 150px; overflow: hidden; border: none;">
+                          <input id="${id}-1"  name="${id}_1" type="text"
+                          class="material-control material-control-login"  placeholder="Escribe aquí el ${id}" onkeyup="comp(this)"
+                            required="" maxlength="100"
+                            pattern="(^([a-zA-Zá-ú]{1,})$)"
+                            data-toggle="tooltip" data-placement="top" >
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+    
+                        </td>
+                        <td id="imgs-${id}" style="width: 20px; overflow: hidden; border: none;">
+                          <div  class="limpiar" id="img-${id}-1"></div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;"></td>
+                        <td id="mensaje-${id}" style="width: 150px; border: none; overflow: hidden;">
+                          <div class="limpiar" id="${id}-unica-1"></div>
+                        </td>
+                        <td style="width: 20px; border: none; overflow: hidden;"></td>
+                      </tr>
+    
+                                
+                    `);
+      }
+  }; 
+  
+      //funcion que comprueba que cada cota sea unica
+  
+  //comparar
+  function comp(input) {
+  let id=$(input).attr('id').split("-")[0];
+    if ($(input).val()) {
+      
+      var cota1, cota2, cota, i, m;
+      let bandera = 1;
+     
+      var elementos = document.getElementsByTagName('input');
+  
+      var tamaño = elementos.length;
+    
+      
+      var elemento1;
+      var matrizElementos = new Array();
+  
+      var matrizIndice = new Array();
+  
+      
+      for (var j = 0; j < tamaño; j++) {
+  
+       cota1 = elementos[j].value.toLowerCase();
+        cota2 = $(input).val().toLowerCase();
+     
+        let resl = elementos[j].getAttribute('id');
+  
+        if (resl) {
+          elemento1 = elementos[j].getAttribute('id').charAt(0);
+        
+      
+            if (elemento1 === 'n' && id==='nucleo') {
+            
+                 matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
+            matrizElementos.push(elementos[j].value);
+  
+              } else if (elemento1 === 'c' && id==='categoria') {
+       
+                matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
+            matrizElementos.push(elementos[j].value);
+              }
+           
+  
+            if (cota1 === cota2) {
+              i = elementos[j].getAttribute('id').split('-').pop();
+               cota = cota2;
+
+            
+             
+  
+            }
+          
+        }
+      }
+  
+      var tamañoM = matrizElementos.length;
+      for (var f = 0; f <= tamañoM; f++) {
+        if (cota === matrizElementos[f] && i !== matrizIndice[f]) {
+          bandera = 0;
+        
+          $(`div#img-${id}-${i}`).html(`<br>
+               <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">
+               <br>
+               <br>`);
+          $(`div#${id}-unica-${i}`).html(`Repetido con ${id} ${matrizIndice[f]}`);
+    
+        } 
+      }
+
+      if (bandera === 1) {
+
+$.ajax({
+
+  url: `/bibliotecario/${id}`,
+  type: 'POST',
+  data: { dato: cota2 }
+
+})
+  .done(function (res) {
+
+    if (res === '') {
+
+      $(`div#${id}-unica-${i}`).html('');
+      $(`div#img-${id}-${i}`).html(`
+    <img src="/assets/img/satisfactorio.png" width= "20" height= "20">
+    `);
+    } else {
+      $(`div#${id}-unica-${i}`).html(`<p>${res}</p>`);
+      $(`div#img-${id}-${i}`).html(`
+    <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`);
+ 
+  }
+
+  })
+  .fail(function (error) {
+    manejoErrores(error);
+  });
+};
+  
+   
+    } else {
+      let i =$(input).attr('id').split('-').pop();
+      
+      $(`div#img-${id}-${i}`).html('');
+          $(`div#${id}-unica-${i}`).html('');
+    }
+    };
+ 
+  </script>
+  
+<script>
+var intervalId = false;
+//animacion para la seccion de noticias
 
   var first = 0;
   var speed = 700;
@@ -11,6 +209,7 @@
 
 
     first = $('div#cuadronot li:first').html();
+    console.log(first)
     $('div#cuadronot li:first')
       .animate({ opacity: 0 }, speed)
       .fadeOut('slow', function () {
@@ -84,13 +283,116 @@
                        Recurso no encontrado  (Error: 404) </p>`);
     }
     $("div#myModal").modal("hide");
-    $("div#myModalError").modal("show");
+    $("div#myModalError").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+    });
 
   };
 
 
 </script>
+          
 <script>
+  
+ 
+    function verPDF(input) {
+      
+    let ext = $(input).attr("data_url").split(".").pop();
+    let url2 = $(input).attr("data_url");
+   
+    if (ext === 'pdf') {
+       let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
+    let titulo = $(input).attr("data_titulo");
+    $('#myModalLabel').text(titulo);
+    $('#pdfdoc').attr('src', url);
+    $('#myModal5').modal("show");
+    } else {
+     
+     $("#myModal4").modal("hide");
+    $("#imagenC").attr('src', url2);
+    $("#imagenC").attr('data-original', url2);
+    $("#myModal8").modal("show");
+    }
+   
+  };
+
+
+  //funcion consulta de nucleos
+  function nucleos(input) {
+    let id=`#${input} option`;
+    let id2=`#${input}`;
+    let contenido = $(id).length;
+   
+           if (contenido<=1) {
+ $.ajax({
+          beforeSend: function () {
+           $("#img-cargando2").attr("src", "/assets/gif/loading-22.gif");
+           $("#img-cargando2").attr("width", 20);
+           $("#imga-cargando2").attr("height", 20);
+         
+           
+          },
+          url: "/bibliotecario/nucleos",
+          type: "GET",
+        })
+          .done(function (nucleos) {
+            $("#img-cargando2").attr("src", "");
+           $("#img-cargando2").attr("width", "");
+           $("#imga-cargando2").attr("height", "");
+           $(id2).html('');
+           $(id2).append('<option disabled="" selected="">Selecciona un núcleo</option>');
+           for (var i=0; i<nucleos.nucleos.length; i++) {
+              $(id2).append(`<option>${nucleos.nucleos[i].nucleo}</option>`);
+           }
+          
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+    
+
+           }
+   
+  }
+
+  //funcion para la consulta de categorias
+  function categorias(input) {
+    let id=`#${input} option`;
+    let id2=`#${input}`;
+    let contenido = $(id).length;
+    if (contenido<=1 ) {
+       $.ajax({
+          beforeSend: function () {
+           $("#img-cargando").attr("src", "/assets/gif/loading-22.gif");
+           $("#img-cargando").attr("width", 20);
+           $("#imga-cargando").attr("height", 20);
+         
+           
+          },
+          url: "/categorias",
+          type: "GET",
+        })
+          .done(function (categorias) {
+            $("#img-cargando").attr("src", "");
+           $("#img-cargando").attr("width", "");
+           $("#imga-cargando").attr("height", "");
+           $(id2).html('');
+           $(id2).append('<option disabled="" selected="">Selecciona una categoría</option>');
+           for (var i=0; i<categorias.categorias.length; i++) {
+              $(id2).append(`<option>${categorias.categorias[i].categoria}</option>`);
+           }
+          
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+    
+    }
+   
+
+  }
   function formatoC(id1, id2) {
     $(id1).html("");
     $(id2).html(
@@ -169,16 +471,13 @@
     let fecha_devolucion = new Date(año, mes, dia);
  
     let resultado = fechaActual.getTime() > fecha_devolucion.getTime();
-let r = fechaActual.getDay() === fecha_devolucion.getDay();
+    let r = fechaActual.getDay() === fecha_devolucion.getDay();
 
     if (resultado && !r) {
       let q = "#fecha-d" + res.fichas[i].cota_f;
       $(q).css({ 'color': 'red' });
     }
   };
-
-
-
 
   function mostrarCampo(check) {
     if (check.checked) {
@@ -205,8 +504,6 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
 
     }
   }
-
-
 
   function añadirC(campo, divImg) {
     $("div#pdfs").append(campo);
@@ -259,7 +556,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                                 
                                  </td>
                                  <td style="width: 200px; overflow: hidden;">
-                                  <input  id="cota-${i}" onchange="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$|([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                  <input  id="cota-${i}" onkeyup="añadirCampoPdf(this)"  name="cota_${i}" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$|([a-zA-Zá-ú0-9]{1,})$" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                   <span class="highlight"></span>
                                   <span class="bar"></span>
                                   <label>Cota</label>
@@ -330,6 +627,44 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
   function CloseModal() {
     document.getElementById('openModal').style.display = 'none';
   };
+  function min(f) {
+
+        let mes, dia;
+      f = new Date(f);
+        if ((f.getMonth() + 1) < 10) {
+            let  m = f.getMonth() + 1;
+             mes = "0" + m ;
+        } else if ((f.getMonth() + 1) >= 10) {
+            mes = f.getMonth() + 1; 
+        }
+        if (f.getDate() < 10) {
+            let d = f.getDate();
+             dia = "0" + d;
+        } else if (f.getDate() >= 10) {
+            dia = f.getDate();
+        }
+        return f.getFullYear() + "-" + mes + "-" + dia;
+    };
+
+function maxima() {
+
+let mes, dia;
+f = new Date();
+if ((f.getMonth() + 1) < 10) {
+    let  m = f.getMonth() + 1;
+     mes = "0" + m ;
+} else if ((f.getMonth() + 1) >= 10) {
+    mes = f.getMonth() + 1; 
+}
+if (f.getDate() < 10) {
+    let d = f.getDate();
+     dia = "0" + d;
+} else if (f.getDate() >= 10) {
+    dia = f.getDate();
+}
+return f.getFullYear() + "-" + mes + "-" + dia;
+};
+
 
   function resetear() {
 
@@ -357,7 +692,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                                   
                                    </td>
                                    <td style="width: 200px; overflow: hidden;">
-                                    <input  id="cota-1" onchange="añadirCampoPdf(this)"  name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
+                                    <input  id="cota-1"   name="cota_1" type="text" class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota del libro">
                                     <span class="highlight"></span>
                                     <span class="bar"></span>
                                     <label>Cota</label>
@@ -376,7 +711,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                     `);
 
 
-    document.getElementById("tipo_l").focus({ preventScroll: true });
+    document.getElementById("suscription").focus({ preventScroll: true });
     document.getElementById("reset").click();
 
     let isChecked = document.getElementById("mostrar_1").checked;
@@ -404,6 +739,21 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
       if (isChecked && data.has("pdf")) {
         data.delete("pdf");
       }
+      if (data.date) {
+        var date = min(data.date);
+        data.delete("date");
+        data.push(date);
+      }
+    /*  
+      var metadata=$(this).serializeArray()
+    .reduce(function(a, z) { a[z.name] = z.value;
+       return a;
+       }, {});
+      
+     var dataJson={metadata};  
+     var dataXml = json2xml(dataJson);
+     console.log(dataXml);
+    */
 
       $.ajax({
         beforeSend: function () {
@@ -483,7 +833,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
              <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">
              <br>
              <br>`);
-        $(`div#cota-unica-${i}`).html(`<br>Cota repetida con el ejemplar ${matrizIndice[f]}`);
+        $(`div#cota-unica-${i}`).html(`Cota repetida con el ejemplar ${matrizIndice[f]}`);
       }
     }
 
@@ -520,14 +870,6 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
   function añadirAtt(query) {
     $(query).attr("disabled", true);
   };
-  function verPDF(input) {
-    let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
-    let titulo = $(input).attr("data_titulo");
-    $('#myModalLabel').text(titulo);
-    $('#pdfdoc').attr('src', url);
-    $('#myModal5').modal("show");
-  };
-
 
   function ver(input) {
 
@@ -559,80 +901,175 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                                  
                                   <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                                       <legend><strong>Información básica</strong></legend><br>
-              
-                                      <div  class="group-material" >
-                                          <span>Categoría</span>
-                                          <select  onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l"  required="" class="tooltips-general material-control" data-toggle="tooltip" data-placement="top" title="Categoria del libro">
-                                              <option selected="selected"  >${libro.libro[0].tipo_l}</option>
-                                              <option>Libro</option>
-                                              <option>Revista</option>
-                                              <option>Trabajo de grado</option>
-                          
-                                          </select>
-                                      </div>
-                                     
-                                      
-                           <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tb">
-                            <tr>
-                                     <td  style="width: 30%; overflow: hidden; border: none;">
-                                      <input  id="ejemplar" name="ejemplar" type="number" class="tooltips-general material-control" placeholder="Ej.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top" title="Numero de ejemplar" value="${libro.libro[0].ejemplar}">
-                                      <span class="highlight"></span>
-                                      <span class="bar"></span>
-                                      <label>ejemplar</label>
-                                    
-                                     </td>
-                                     <td style="width: 80%; overflow: hidden; border: none;">
-                                        <input  id="cota"   name="cota" type="text" class="tooltips-general material-control" value="${libro.libro[0].cota}" pattern="^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$" placeholder="solo se acepta _ sin espacios" required="" maxlength="25" data-toggle="tooltip" data-placement="top" title="La cota no la puedes modificar" readonly>
-                            <span class="highlight"></span>
-                            <span class="bar"></span>
-                            <label>Cota</label>
-                                     </td>
-                                     
-                                  </tr>
-                                  
-                              
-                              </table>
-                       
-                                      <div  class="group-material">
-                                          <input id="titulo" name="titulo" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el título o nombre del libro" pattern="[a-zA-Zá-ú ]{1,200}" required=""  maxlength="200" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].titulo}"title="Título del libro">
-                            <span class="highlight"></span>
-                            <span class="bar"></span>
-                            <label>Título</label>
-                                      </div>
-                                      <div  class="group-material" id="autorD">
-                                          <input id="autor" name="autor" type="text" class="tooltips-general material-control" placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}" maxlength="100" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].autor}"title="Autor del libro">
-                                          <span class="highlight"></span>
-                                          <span class="bar"></span>
-                                          <label>Autor</label>
-                                      </div>
-                                      <div class="group-material" id="tutorD">
-                                        
-                                      </div>
-                                      <div class="group-material" id="volumenD">
-                                          <input id="volumen" name="volumen" type="number" class="tooltips-general material-control" placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" value="${libro.libro[0].volumen}" pattern="^[0-9]+" min="1"  data-toggle="tooltip" data-placement="top" title="Volumen del libro">
-                                          <span class="highlight"></span>
-                                          <span class="bar"></span>
-                                          <label>Volumen</label>
-                                      </div>
-              
-                                      <div  class="group-material">
-                                          <input id="año" name="año" type="text" class="material-control tooltips-general" placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4" minlength="4"data-toggle="tooltip" data-placement="top" value="${libro.libro[0].año}" title="Año del libro">
-                                          <span class="highlight"></span>
-                                          <span class="bar"></span>
-                                          <label>Año</label>
-                                      </div>
-                                      <div  class="group-material" id="editorialD">
-                                          <input id="editorial" name="editorial" type="text" class="material-control tooltips-general" placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"maxlength="100" value="${libro.libro[0].editorial}" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
-                                          <span class="highlight"></span>
-                                          <span class="bar"></span>
-                                          <label>Editorial</label>
-                                      </div>
-                                      <div  class="group-material">
-                                          <input name="estado_l" type="text" class="tooltips-general material-control" placeholder="Estado del libro" required="" pattern="[a-zA-Zá-ú ]{1,20}" maxlength="20" data-toggle="tooltip" data-placement="top" value="${libro.libro[0].estado_l}"title="Estado del libro" disabled>
-                            
-                                      </div>
-                                      
-                                      <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="a${libro.libro[0].cota}" data_url="${libro.libro[0].destino}" data_titulo=${libro.libro[0].titulo}">Ver Pdf del libro </a></p>
+                                      <div class="group-material">
+                  <span>Categoría de suscripción</span>
+                  <select name="suscription" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Categoría del libro">
+                    <option disabled=""  selected="">${libro.libro[0].tipo_s}</option>
+                    <option>Basica</option>
+                    <option>Estandar</option>
+                    <option>Premium</option>
+
+                  </select>
+                </div> 
+               
+                <div class="group-material">
+                 
+                  <span>Categoría del contenido</span><img id="img-cargando"  >
+                  <select  id="type2" onclick="categorias('type2')" name="type" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige la categoria">
+                    <option disabled="" selected="">${libro.libro[0].type}</option>
+
+                  </select>
+             
+                </div>
+                <div class="group-material">
+                  <span>Núcleo al que pertenece</span><img id="img-cargando2" >
+                  <select  id="core2" onclick="nucleos('core2')" name="core" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige el nucleo">
+                    <option disabled="" selected="">${libro.libro[0].core}</option>
+
+                  </select>
+                </div>
+                <div class="group-material">
+                  <span>Cota</span>
+                      <input id="cota" onchange="añadirCampoPdf(this)" name="cota" type="text"
+                        class="tooltips-general material-control" placeholder="Cota del libro"
+                        required="" maxlength="25"
+                        value="${libro.libro[0].cota}"
+                        data-toggle="tooltip" data-placement="top" readonly>
+                      <span class="highlight"></span>
+                      <span class="bar"></span>
+                      <label>Cota</label>
+                  </div>
+                   
+
+                <div class="group-material">
+                  <span>Título</span>
+                  <input id="title" name="title" type="text" class="tooltips-general material-control"
+                    placeholder="Título" required="" pattern="[a-zA-Zá-ú ]{1,200}" value="${libro.libro[0].title}"
+                    maxlength="200" data-toggle="tooltip" data-placement="top"
+                    title="Título">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Título</label>
+                </div>
+                <div class="group-material" id="autorD">
+                  <span>Autor</span>
+                  <input name="creator" type="text" id="creator" class="tooltips-general material-control"
+                    placeholder="Autor" required="" pattern="[a-zA-Zá-ú ]{1,100}" value="${libro.libro[0].creator}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top"
+                    title="Autor">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Autor</label>
+                </div>
+                <div  class="group-material">
+                  <span>Colaboradores</span>
+                  <input name="contributor" type="text" id="contributor" class="tooltips-general material-control"
+                  placeholder="Escribe aquí el nombre de colaboradores" required="" pattern="[a-zA-Zá-ú ]{1,100}" value="${libro.libro[0].contributor}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top"
+                  title="Colaboradores">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Colaborador</label>
+                </div>
+                
+                <div class="group-material">
+                  <span>Fecha de publicación</span>
+                  <input id="date" name="date" type="date" value="${libro.libro[0].date}"class="material-control tooltips-general"
+                     required=""   data-toggle="tooltip" data-placement="top" title="Fecha de publicación" >
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Fecha</label>
+                </div>
+                <div class="group-material" id="editorialD">
+                  <span>Editorial</span>
+                  <input id="publisher" name="publisher" type="text" class="material-control tooltips-general" value="${libro.libro[0].publisher}"
+                    placeholder="Editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Editorial</label>
+                </div>
+                <div class="group-material" >
+                  <span>Fuente del material</span>
+                  <input id="source" name="source" type="text" class="material-control tooltips-general" value="${libro.libro[0].source}"
+                    placeholder="Fuente del material" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Fuente del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Fuente</label>
+                </div>
+                <div class="group-material" >
+                  <span>Lenguaje</span>
+                  <input id="language" name="language" type="text" class="material-control tooltips-general" value="${libro.libro[0].language}"
+                    placeholder="Lenguaje del material" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Lenguaje del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Lenguaje</label>
+                </div>
+                <div class="group-material" >
+                  <span>Ámbito del contenido</span>
+                  <input id="coverage" name="coverage" type="text" class="material-control tooltips-general" value="${libro.libro[0].coverage}"
+                    placeholder="Ámbito del contenido" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Ámbito del contenido">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Ámbito del contenido</label>
+                </div>
+                <div class="group-material" >
+                  <span>Recurso relacionado</span>
+                  <input id="relation" name="relation" type="text" class="material-control tooltips-general" value="${libro.libro[0].relation}"
+                    placeholder="Referencia a un recurso relacionado" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Referencia a otro recurso">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Referencia</label>
+                </div>
+                <div class="group-material" >
+                  <span>Palabras relacionadas</span>
+                  <input id="subject" name="subject" type="text" class="material-control tooltips-general" value="${libro.libro[0].subject}"
+                    placeholder="Palabras relaionadas" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Palabras relacionadas">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Palabras relacionadas</label>
+                </div>
+                <div class="group-material" >
+                  <span>Descripción</span>
+                  <textarea id="description" name="description" type="text" class="tooltips-general material-control form-control rounded-0" 
+                  placeholder="Descripción del recurso" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top" title="Descripción del material"
+                  style="border-color: rgb(0, 0, 255);"  min="20"  cols="86" rows="3" wrap="hard" spellcheck="true">${libro.libro[0].description}</textarea>                
+                   <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Descripción del material</label>
+                </div> 
+                <div class="group-material" >
+                  <span>Derechos del material</span>
+                  <input id="rights" name="rights" type="text" class="material-control tooltips-general"
+                    placeholder="Derechos" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" value="${libro.libro[0].rights}" data-placement="top" title="Derechos del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Derechos del material</label>
+                </div>
+                <div class="group-material" >
+                  <span>Derechos del material</span>
+                  <input id="statusBook" name="statusBook" type="text" class="material-control tooltips-general"
+                    placeholder="Derechos" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" value="${libro.libro[0].statusBook}" data-placement="top" title="Disponiobilidad" readonly>
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Derechos del material</label>
+                </div>
+                                                
+                                      <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="a${libro.libro[0].cota}" data_url="${libro.libro[0].url}" data_titulo=${libro.libro[0].title}">Ver Pdf del libro </a></p>
                            
                        <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf" >      
                  <tr id="tr-pdf-1" style="border: none;">
@@ -655,7 +1092,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                       </table>
                    
                                   <div  class="group-material" >
-                                     <p class="text-center"> <input onchange="mostrarCampo2(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">Mantener archivo PDF</p>
+                                     <p class="text-center"> <input onchange="mostrarCampo2(this)" id="mostrar" name="mostrar" type="checkbox"  value="1" class="tooltips-general" title="Incluye PDF">Mantener archivo ${libro.libro[0].format}</p>
                                   </div>
                                       
                                       <p class="text-center">
@@ -674,7 +1111,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                       
         `);
 
-        if (libro.libro[0].destino === 'no aplica') {
+        if (libro.libro[0].format !== 'pdf') {
 
           let q = "a#a" + libro.libro[0].cota;
           añadirAtt(q);
@@ -715,19 +1152,26 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
 
         },
         url: `/bibliotecario/eliminar_libro?cota=${cota}`,
         type: 'DELETE'
       })
         .done(function (librosEliminados) {
-          $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">Se ha eliminado ${librosEliminados.librosEliminados} libros </p>`);
+          $("#myModal").modal("hide");
+          $("#modal-body-3").html(`<p class="text-center">Se ha eliminado ${librosEliminados.librosEliminados} libros</p>`);
+          $("#myModal3").modal("show");
+          
           $("div#cargando").html('');
           removerCampo(c);
           $("div#cargando").html(`<h3 class="text-center">Se ha eliminado ${librosEliminados.librosEliminados} libro</h>`);
           let j = $("#container button").size();
-          $("div#myModal").on("hidden.bs.modal", function () {
+          $("div#myModal3").on("hidden.bs.modal", function () {
 
             if (j === 0) {
               $("div#container").html('');
@@ -754,6 +1198,32 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
 
     }
   };
+ 
+ //funcion conversion de xml a json
+function parseXml(xml) {
+   var dom = null;
+   if (window.DOMParser) {
+      try { 
+         dom = (new DOMParser()).parseFromString(xml, "text/xml"); 
+      } 
+      catch (e) { dom = null; }
+   }
+   else if (window.ActiveXObject) {
+      try {
+         dom = new ActiveXObject('Microsoft.XMLDOM');
+         dom.async = false;
+         if (!dom.loadXML(xml)) // parse error ..
+
+            window.alert(dom.parseError.reason + dom.parseError.srcText);
+      } 
+      catch (e) { dom = null; }
+   }
+   else
+      alert("cannot parse xml string!");
+   return dom;
+}
+ //
+ 
   //Realiza una consulta completa de todos los libros
   function ocultarCampos(check) {
     var limpiarButton = document.getElementById("limpiarButton");
@@ -771,67 +1241,72 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         url: '/todos-libros',
         type: 'POST'
       })
-        .done(function (libros) {
+      .done(function (libros) {
+          limpiarButton.click();
           let resultados = libros.libros.length;
-          $("div#myModal").modal("hide");
           if (resultados > 0) {
-            $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
-            $("div#container").html(` <div class="container-fluid" >
-            <h2 class="text-center all-tittles">Resultados</h2>
-            <div class="table-responsive">
-                <div class="div-table" style="margin:0 !important;">
-                    <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+            cargando.innerHTML = `<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`;
+            container.innerHTML = ` 
+              <h2 class="text-center all-tittles">Resultados</h2>
+              <div class="table-responsive">
+                  <div class="div-table" style="margin:0 !important;">
+                      <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
                         <div class="div-table-cell" style="width: 6%;">#</div>
                         <div class="div-table-cell" style="width: 10%;">Cota</div>
-                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        
                         <div class="div-table-cell" style="width: 8%;">Titulo</div>
                         
                         <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
                         <div class="div-table-cell" style="width: 6%;"> 
                         Eliminar</div>
-                    </div>
-            </div>
-        <div id="libros"> </div>
-        </div>`);
+                      </div>
+              </div>`;
+
+
             for (var i = 0; i < libros.libros.length; i++) {
 
-              $("div#container").append(`
-        <div class="table-responsive" id="${libros.libros[i].cota}0">
-                <div class="div-table" style="margin:0 !important;">
-                    <div class="div-table-row div-table-row-list">
-                        <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
-                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
-                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
-                        
-                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
-                        
-                       
-                        <div class="div-table-cell" style="width: 6%;">
-                            
-                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
-                        
-                    </div>
-                        <div class="div-table-cell" style="width: 6%;">
-                            
-                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
-                            
-                            </div>
-                    </div>
-                </div>
-            </div>`);
+              container.insertAdjacentHTML('beforeend', `
+          <div class="table-responsive" id="${libros.libros[i].cota}0">
+                  <div class="div-table" style="margin:0 !important;">
+                      <div class="div-table-row div-table-row-list">
+                          <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
+                          <div  class="div-table-cell" id="${libros.libros[i].cota}_cota" style="width: 10%;">${libros.libros[i].cota}</div>
+                         
+                          
+                          <div class="div-table-cell" id="${libros.libros[i].cota}_titulo" style="width: 8%;">${libros.libros[i].title}</div>
+                          
+                         
+                          <div class="div-table-cell" style="width: 6%;">
+                              
+                              <button class="btn btn-info"  id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                          
+                          </div>
+                          <div class="div-table-cell" style="width: 6%;">
+                              
+                            <button class="btn btn-danger" id="${libros.libros[i].cota}" onclick="javascript:eliminarLibro(this)"><i class="zmdi zmdi-delete"></i></button>
+  
+                           
+                          </div>
+                      </div>
+                  </div>
+              </div>`);
+
+
             }
 
             document.getElementsByTagName("button")[1].focus({ preventScroll: true });
           } else {
-            $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
+            cargando.innerHTML = '<h3 class="text-center">No se obtuvieron resultados</h3>';
+            container.innerHTML = '';
+
+
           }
         })
         .fail(function (error) {
-          $("div#cargando").html(
-            `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
-          );
+          limpiarButton.click();
+          cargando.innerHTML = '<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">';
         });
-
+  
 
     } else {
 
@@ -840,11 +1315,13 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
       $("div#cargando").html('');
     }
   };
-  function actualizarFormato(t, tp, libro) {
-    $(t).html(`${libro.titulo}`);
-    $(tp).html(`${libro.tipo_l}`);
+  function actualizarFormato(t, libro) {
+    $(t).html(`${libro.title}`);
   }
   $(function () {
+    
+   
+
     $(document).on('click', '.modal', function () {
       $("button#login").on("click", function (e) {
         e.preventDefault();
@@ -867,7 +1344,11 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
               '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
             );
             $("div#myModal2").modal("hide");
-            $("div#myModal").modal("show");
+            $("div#myModal").modal({
+             backdrop: 'static',
+             keyboard: false,
+             show:true
+            });
           },
           url: "/bibliotecario/editar-noticia",
           type: "POST",
@@ -876,11 +1357,13 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
           contentType: false,
         })
           .done(function (res) {
+            $("#myModal").modal("hide");
             if (res !== '') {
               limpiarButton.click();
-              $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
-              let bandera = 2;
-              $("div#myModal").on("hidden.bs.modal", function () {
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+       let bandera = 2;
+              $("div#myModal3").on("hidden.bs.modal", function () {
                 if (bandera == 2) {
                   bandera = 0;
                   mostrarNoticias();
@@ -909,18 +1392,25 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
               '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
             );
             $("div#myModal2").modal("hide");
-            $("div#myModal").modal("show");
+            $("div#myModal").modal({
+             backdrop: 'static',
+             keyboard: false,
+             show:true
+            });
           },
           url: "/bibliotecario/editar-pregunta",
           type: "PUT",
           data: data,
         })
           .done(function (res) {
+            $("#myModal").modal("hide");
             if (res !== '') {
               limpiarButton.click();
-              $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;"> ${res} </p>`);
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+      
               let bandera = 1;
-              $("div#myModal").on("hidden.bs.modal", function () {
+              $("div#myModal3").on("hidden.bs.modal", function () {
                 if (bandera == 1) {
                   bandera = 0;
                   mostrarPreguntas();
@@ -948,6 +1438,11 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         if (isChecked && data.has("pdf")) {
           data.delete("pdf");
         }
+        if (data.date) {
+        var date = min(data.date);
+        data.delete("date");
+        data.push(date);
+      }
         $.ajax({
           beforeSend: function () {
 
@@ -967,8 +1462,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
             $("div#mensaje").html(`<p class="text-center">${res.mensaje}</p>`);
             $("p#boton").html("Se ha actualizado");
             let titulo = `div#${res.libro.cota}_titulo`;
-            let tipo = `div#${res.libro.cota}_tipo`;
-            actualizarFormato(titulo, tipo, res.libro);
+            actualizarFormato(titulo,  res.libro);
 
             $("p#mensaje-final").html(`${res.mensaje}`);
             if (res.mensaje == "Actualizado con éxito") {
@@ -994,9 +1488,111 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
           });
 
       });
+      $("form#editarC").on('submit', function (e) {
+        e.preventDefault();
+       let data = $(this).serialize();
 
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal4").modal("hide");
+            $("div#myModal").modal({
+             backdrop: 'static',
+             keyboard: false,
+             show:true
+            });
+          },
+          url: "/bibliotecario/actualizarCategoria",
+          type: "PUT",
+          data: data,
+        })
+          .done(function (res) {
+            $("div#myModal").modal("hide");
+            if (res === 'Actualizada con éxito') {
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          editarCategorias();
+            }
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+      })
+    $("form#editarN").on('submit', function (e) {
+        e.preventDefault();
+       let data = $(this).serialize();
 
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal4").modal("hide");
+            $("div#myModal").modal({
+             backdrop: 'static',
+             keyboard: false,
+             show:true
+            });
+          },
+          url: "/bibliotecario/actualizarNucleo",
+          type: "PUT",
+          data: data,
+        })
+          .done(function (res) {
+            $("div#myModal").modal("hide");
+            if (res === 'Actualizada con éxito') {
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          editarNucleos();
+            }
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+      });
+      $("form#editarS").on('submit', function (e) {
+        e.preventDefault();
+       let data = $(this).serialize();
+
+        $.ajax({
+          beforeSend: function () {
+            $("p#modal-p-center").html(
+              '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+            );
+            $("div#myModal4").modal("hide");
+            $("div#myModal").modal({
+             backdrop: 'static',
+             keyboard: false,
+             show:true
+            });
+          },
+          url: "/bibliotecario/actualizarSus",
+          type: "PUT",
+          data: data,
+        })
+          .done(function (res) {
+            $("div#myModal").modal("hide");
+            if (res === 'Actualizada con éxito') {
+              $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          editarSuscripiones();
+            }
+          })
+          .fail(function (error) {
+            manejoErrores(error);
+          });
+      })
+  
+      $("#type2").on("click", function (e) {
+      categorias('type2');
     });
+    $("#core2").on("click", function(e) {
+      nucleos('core2');
+     });
+    });
+    
 
 
     $('form#formato-enlinea').on("submit", function (e) {
@@ -1027,7 +1623,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                       <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
                         <div class="div-table-cell" style="width: 6%;">#</div>
                         <div class="div-table-cell" style="width: 10%;">Cota</div>
-                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        
                         <div class="div-table-cell" style="width: 8%;">Titulo</div>
                         
                         <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
@@ -1045,9 +1641,9 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
                       <div class="div-table-row div-table-row-list">
                           <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
                           <div  class="div-table-cell" id="${libros.libros[0][i].cota}_cota" style="width: 10%;">${libros.libros[0][i].cota}</div>
-                          <div  class="div-table-cell" id="${libros.libros[0][i].cota}_tipo" style="width: 10%;">${libros.libros[0][i].tipo_l}</div>
+                         
                           
-                          <div class="div-table-cell" id="${libros.libros[0][i].cota}_titulo" style="width: 8%;">${libros.libros[0][i].titulo}</div>
+                          <div class="div-table-cell" id="${libros.libros[0][i].cota}_titulo" style="width: 8%;">${libros.libros[0][i].title}</div>
                           
                          
                           <div class="div-table-cell" style="width: 6%;">
@@ -1081,8 +1677,6 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
           cargando.innerHTML = '<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">';
         });
     });
-
-
 
   });
 </script>
@@ -1125,16 +1719,22 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: `/bibliotecario/eliminar?id_n=${id_n}`,
       type: "POST",
     })
       .done(function (res) {
+        $("#myModal").modal("hide");
         if (res == 'ok') {
           let msj = 'noticia eliminada'
-          $("p#modal-p-center").html(`<p style="background-color: cornsilk;">Eliminado con exito</p>`);
-          $("div#myModal").on('hidden.bs.modal', function (e) {
+          $("#modal-body-3").html(`<p class="text-center">Eliminado con exito</p>`);
+          $("#myModal3").modal("show");
+          $("div#myModal3").on('hidden.bs.modal', function (e) {
             if (msj === 'noticia eliminada') {
               msj = '';
               mostrarNoticias();
@@ -1157,7 +1757,11 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: `/noticia?id_n=${id_n}`,
       type: "POST",
@@ -1165,7 +1769,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
       .done(function (noticia) {
         $("div#modal-body-2").html(`
          <div id="cuadro">
-  <div class="container-fluid" >
+   <div class="container-fluid" >
   
           <img src="${noticia.url_imagen}" alt="">
           <a class="news-title" href="#">${noticia.titulo_noticia}</a>
@@ -1188,23 +1792,26 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/noticias",
       type: "GET",
     })
       .done(function (noticias) {
-
+        $("div#accordion").html('');
         $("div#cuadronot").html('');
-
         if (noticias.length > 0) {
 
           for (var i = 0; i < noticias.length; i++) {
 
             $('div#cuadronot').append(`<li>
- <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
+   <div class="container-fluid" style="background-color: rgb(223, 231, 253);"   >
  
-  <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
+   <p style="text-align: right;"> <button class="btn btn-circle btn-sm btn-danger" onclick="javascript: eliminarUnaNoticia('${noticias[i].id_n}')">X</button>&nbsp;<button class="btn btn-circle btn-sm btn-info" onclick="javascript: editarUnaNoticia('${noticias[i].id_n}')"><i class="zmdi zmdi-edit"></i></button></p>
    <div onclick="javascript: verUnaNoticia('${noticias[i].id_n}')">   
          
          <img src="${noticias[i].url_imagen}" alt="">
@@ -1215,9 +1822,14 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
      `);
           }
           if (noticias.length == 1) {
-            clearInterval(intervalId);
-            $("div#myModal").modal("hide");
+            if (!intervalId) {
 
+         $("div#myModal").modal("hide");
+     } else {
+        clearInterval(intervalId)
+        intervalId = false;
+   $("div#myModal").modal("hide"); 
+     } 
           } else if (noticias.length > 1) {
 
 
@@ -1227,6 +1839,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
               if (bandera == 2) {
 
                 bandera = 0;
+                intervalId = true;
                 intervalId = setInterval(removeFirst, 7500);
               }
             });
@@ -1236,14 +1849,21 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
 
 
         } else {
-          $("div#cuadronot").append(`
+         
+           $("div#cuadronot").html(`
                             <div class="container-fluid">
                     <h3 class="text-center all-tittles">No hay noticias recientes </h3>
                 </div>
           
                             `);
-          clearInterval(intervalId);
-          $("div#myModal").modal("hide");
+                            if (!intervalId) {
+
+         $("div#myModal").modal("hide");
+     } else {
+        clearInterval(intervalId)
+        intervalId = false;
+   $("div#myModal").modal("hide"); 
+     } 
         }
 
 
@@ -1262,9 +1882,13 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
-      url: `/bibliotecario/noticia?id_n=${data}`,
+      url: `/noticia?id_n=${data}`,
       type: "POST",
     })
       .done(function (noticia) {
@@ -1354,6 +1978,7 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         }
         //  let msj = 'actualizar';
         $("div#myModal").modal("hide");
+        
         $("div#myModal2").modal("show");
         
       })
@@ -1441,7 +2066,11 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
 
       },
       url: `/bibliotecario/eliminarFichaEntregada?cota=${cota}`,
@@ -1466,7 +2095,11 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
 
       },
       url: `/ver_ficha_e?cota=${cota}`,
@@ -1531,14 +2164,18 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
       });
   }
   //ver una ficha
-  function verFicha(input) {
+  function verFicha(input) { 
     let cota = input;
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
 
       },
       url: `/ver_ficha?cota=${cota}`,
@@ -1613,14 +2250,14 @@ let r = fechaActual.getDay() === fecha_devolucion.getDay();
              </form>
    
            `);
-if (res.ficha.multa > 0) {
+   if (res.ficha.multa > 0) {
       $('#id6').css({ 'color': 'red' });
 }
         $("div#myModal4").modal('show');
-      })
-      .fail(function (error) {
-        manejoErrores(error);
-      });
+        })
+       .fail(function (error) {
+         manejoErrores(error);
+       });
   }
    //se aprueba una reserva
   function aprobar(c,f) {
@@ -1640,7 +2277,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/aprobar",
       type: "POST",
@@ -1687,7 +2328,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/recibir",
       type: "POST",
@@ -1723,7 +2368,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/eliminar",
       type: "delete",
@@ -1764,7 +2413,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/preguntas-frecuentes",
       type: "GET",
@@ -1842,16 +2495,23 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: `/bibliotecario/eliminar/p_f?id_pf=${id_pf}`,
       type: "DELETE",
     })
       .done(function (res) {
+        $("#myModal").modal("hide");
         if (res == 'ok') {
           let msj = 'pregunta eliminada'
-          $("p#modal-p-center").html(`<p style="background-color: cornsilk;">Eliminado con exito</p>`);
-          $("div#myModal").on('hidden.bs.modal', function (e) {
+          $("#modal-body-3").html(`<p class="text-center">Eliminado con éxito</p>`);
+          $("#myModal3").modal("show");
+      
+          $("div#myModal3").on('hidden.bs.modal', function (e) {
             if (msj === 'pregunta eliminada') {
               msj = '';
               mostrarPreguntas();
@@ -1875,7 +2535,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: `/pregunta?id_pf=${data}`,
       type: "POST",
@@ -1983,8 +2647,1192 @@ if (res.ficha.multa > 0) {
     }
   }
   ///
+//seccion configuracion de seguridad
+function seccionConfS() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/mis-preguntas",
+      type: "GET",
+    })
+      .done(function (obj) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("div#editarLibro").hide();
+        $("div#enlaces").hide();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Mi configuración</small></h1>
+               </div>`);
+       $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/candado.png" alt="seguridad" class="img-responsive center-box"
+                        style="max-width: 130px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todas tus preguntas y respuestas de seguridad, solo podrás verlas. No podrás editarlas o eliminarlas.
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (obj.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Listado de núcleos</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Pregunta</div>
+                           
+                            <div class="div-table-cell" style="width: 15%;">Respuesta</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < obj.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${obj[i].pregunta
+              }</div>
+                            
+                                <div class="div-table-cell" style="width: 15%;">${obj[i].respuesta}    
+                            </div>
+                                                    </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay preguntas registradas </h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+
+
+  //seccion editar categorias
+function editarCategorias() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/categorias",
+      type: "GET",
+    })
+      .done(function (categorias) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("div#editarLibro").hide();
+        $("div#enlaces").hide();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+        $("form#conf-categorias").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Categorías</small></h1>
+               </div>`);
+       $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/carpeta-azul.png" alt="categoria" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todas las categorías anteriormente registrados
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (categorias.categorias.length > 0) {
+          $("div#container").append(`
+                <h2 class="text-center all-tittles">Listado de categorías</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Categorías</div>
+                           
+                            <div class="div-table-cell" style="width: 8%;">Editar</div>
+                            <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < categorias.categorias.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='c_${categorias.categorias[i].categoria}'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${categorias.categorias[i].categoria
+              }</div>
+                            
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="editarUnaCategoria('${categorias.categorias[i].categoria}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                            <div class="div-table-cell"  style="width: 8%;">
+                            <button onclick="eliminarCategoria('${categorias.categorias[i].categoria}')" class="btn btn-danger"><i
+                                    class="zmdi zmdi-delete"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay categorías registradas </h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  };
+
+   //seccion editar suscripciones
+function editarSuscripiones() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/suscripciones",
+      type: "GET",
+    })
+      .done(function (suscripciones) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("div#editarLibro").hide();
+        $("div#enlaces").hide();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+        $("form#conf-categorias").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Suscripciones</small></h1>
+               </div>`);
+       $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/identificacion.png" alt="suscripcion" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todas las suscripciones.
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (suscripciones.suscripciones.length > 0) {
+          $("div#container").append(`
+                <h2 class="text-center all-tittles">Listado de categorías</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Suscripción</div>
+                            <div class="div-table-cell" style="width: 15%;">Costo</div>
+                            <div class="div-table-cell" style="width: 15%;">Vigencia en días</div>
+                           
+                            <div class="div-table-cell" style="width: 8%;">Editar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < suscripciones.suscripciones.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='n_${suscripciones.suscripciones[i].tipo_ts}'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].tipo_ts}</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].costo}</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].vigencia}</div>
+                            
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="editarUnaSus('${suscripciones.suscripciones[i].tipo_ts}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay suscripciones registrados </h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  };
+
+
+
+//seccion editar nucleos
+function editarNucleos() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/bibliotecario/nucleos",
+      type: "GET",
+    })
+      .done(function (nucleos) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("div#editarLibro").hide();
+        $("div#enlaces").hide();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Núcleos</small></h1>
+               </div>`);
+       $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/institucion.png" alt="institucion" class="img-responsive center-box"
+                        style="max-width: 130px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todos los núcleos anteriormente registrados
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (nucleos.nucleos.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Listado de núcleos</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Núcleo</div>
+                           
+                            <div class="div-table-cell" style="width: 8%;">Editar</div>
+                            <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < nucleos.nucleos.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='n_${nucleos.nucleos[i].nucleo}'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${nucleos.nucleos[i].nucleo
+              }</div>
+                            
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="editarUnNucleo('${nucleos.nucleos[i].nucleo}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                            <div class="div-table-cell"  style="width: 8%;">
+                            <button onclick="eliminarNucleo('${nucleos.nucleos[i].nucleo}')" class="btn btn-danger"><i
+                                    class="zmdi zmdi-delete"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay núcleos registrados </h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+//eliminacion de un categoria
+function eliminarCategoria(input) {
+  
+  let categoria= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/eliminarCategoria?c=${categoria}`,
+      type: 'delete'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          $("#myModal3").on("hidden.bs.modal", function () {
+          editarCategorias();
+          
+        });
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+}
+//editar una categoria
+function editarUnaCategoria(input) {
+  let categoria= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/editarCategoria?c=${categoria}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide"); 
+        if (res!=='ok') {
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+         
+        }else {
+           $("#myLabel").html('');
+        $("#modal-body-4").html(`
+  
+        <form  method="post" id="editarC" autocomplete="off">
+      <div class="container-flat-form">
+        <div class="title-flat-form title-flat-blue">Nueva configuración</div>
+        <div class="row">
+  
+          <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+  
+          
+            <h4 class="text-center all-tittles" style="margin-bottom: 10px;">Configuración de categorías</h4>
+  <br>
+                  
+  <input id="viejaCategoria"  name="categoriaV" type="text"
+                  class="material-control material-control-login"  placeholder="Escribe aquí la categoría"
+                   maxlength="100"
+                    pattern="(^([a-zA-Zá-ú]{1,})$)" value="${categoria}"
+                    data-toggle="tooltip" data-placement="top" readonly>
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>            Nombre actual</label>
+
+                  <input id="categoria-1"  onkeyup="comp(this)" name="categoria" type="text"
+                  class="material-control material-control-login"  placeholder="Escribe aquí la categoría con los cambios"
+                    required="" maxlength="100"
+                    pattern="(^([a-zA-Zá-ú]{1,})$)"
+                    data-toggle="tooltip" data-placement="top" >
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label></label>
+  
+              
+           <p class="text-center">
+             <button type="reset" id="resetCategoria" class="btn btn-info">Limpiar</button>
+             <button type="submit" class="btn btn-primary">Configurar</button>
+             
+           </p>
+           
+          </div>
+        </div>   
+      </div>        
+       </form> 
+  `);
+        $("#myModal4").modal("show");
+        }
+       
+       
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+       
+
+   
+
+
+}
+//editar una categoria
+function editarUnaSus(input) {
+  let suscripcion= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/editarSuscripcion?s=${suscripcion}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide"); 
+        if (res) {
+           $("#myLabel").html('');
+        $("#modal-body-4").html(`
+  
+        <form  method="post" id="editarS" autocomplete="off">
+      <div class="container-flat-form">
+        <div class="title-flat-form title-flat-blue">Nueva configuración</div>
+        <div class="row">
+  
+          <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+  
+          
+            <h4 class="text-center all-tittles" style="margin-bottom: 10px;">Configuración de suscripciones</h4>
+  <br>
+                  
+  
+
+                  <input id="suscripcion"   name="suscripcion" type="text"
+                  class="material-control material-control-login"  
+                    required="" maxlength="100"
+                    pattern="(^([a-zA-Zá-ú]{1,})$)" value="${res.tipo_ts}"
+                    data-toggle="tooltip" data-placement="top" readonly>
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label></label>
+
+                  <input id="costo"   name="costo" type="number"
+                  class="material-control material-control-login"  placeholder="Escribe aquí el costo de la suscripción"
+                    required="" maxlength="100" min="0" value="${res.costo}"
+                    data-toggle="tooltip" data-placement="top">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label></label>
+
+                  <input id="vigencia"   name="vigencia" type="number"
+                  class="material-control material-control-login"  placeholder="Escribe aquí la vigencia en días" value="${res.vigencia}" min="1"
+                    required="" maxlength="100"
+                    data-toggle="tooltip" data-placement="top">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label></label>
+  
+              
+           <p class="text-center">
+             <button type="reset" id="resetSus" class="btn btn-info">Limpiar</button>
+             <button type="submit" class="btn btn-primary">Configurar</button>
+             
+           </p>
+           
+          </div>
+        </div>   
+      </div>        
+       </form> 
+  `);
+        $("#myModal4").modal("show");
+        }
+       
+       
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+
+}
+
+
+//eliminacion de un nucleo
+//editar una categoria
+function editarUnNucleo(input) {
+  let nucleo= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/editarNucleo?n=${nucleo}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide"); 
+        if (res!=='ok') {
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+         
+        }else {
+           $("#myLabel").html('');
+        $("#modal-body-4").html(`
+  
+        <form  method="post" id="editarN" autocomplete="off">
+      <div class="container-flat-form">
+        <div class="title-flat-form title-flat-blue">Configuración de núcleos</div>
+        <div class="row">
+  
+          <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+  
+          
+                  
+  <input id="viejoNucleo"  name="nucleoV" type="text"
+                  class="material-control material-control-login"  placeholder="Escribe aquí la categoría"
+                   maxlength="100"
+                    pattern="(^([a-zA-Zá-ú]{1,})$)" value="${nucleo}"
+                    data-toggle="tooltip" data-placement="top" readonly>
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>            Nombre actual</label>
+
+                  <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tbnucleo">
+            <tr>
+              <td style="width: 40px; overflow: hidden; border: none;">
+                <input id="nucleo1" name="nucleo1" type="number"  class="material-control material-control-login" 
+                  placeholder="Núcleo.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                   value="1">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Núcleo</label>
+              </td>
+              <td style="width: 150px; overflow: hidden; border: none;">
+                <input id="nucleo-1"  name="nucleo_1" type="text"
+                class="material-control material-control-login"  placeholder="Escribe aquí el núcleo"
+                  required="" maxlength="100" onkeyup="comp(this)"
+                  pattern="(^([a-zA-Zá-ú]{1,})$)"
+                  data-toggle="tooltip" data-placement="top" >
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label></label>
+
+              </td>
+              <td id="imgs-nucleo" style="width: 20px; overflow: hidden; border: none;">
+                <div  class="limpiar" id="img-nucleo-1"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 30px; overflow: hidden; border: none;"></td>
+              <td id="mensaje-nucleo" style="width: 200px; border: none; overflow: hidden;">
+                <div class="limpiar" id="nucleo-unica-1"></div>
+              </td>
+              <td style="width: 20px; border: none; overflow: hidden;"></td>
+            </tr>
+
+          </table>
+              
+           <p class="text-center">
+             <button type="reset" id="resetNucleo" class="btn btn-info">Limpiar</button>
+             <button type="submit" class="btn btn-primary">Configurar</button>
+             
+           </p>
+           
+          </div>
+        </div>   
+      </div>        
+       </form> 
+  `);
+        $("#myModal4").modal("show");
+        }
+       
+       
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+    };
+     //eliminacion de un nucleo
+function eliminarNucleo(input) {
+  
+  let nucleo= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/eliminarNucleo?n=${nucleo}`,
+      type: 'delete'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          $("#myModal3").on("hidden.bs.modal", function () {
+          editarNucleos();
+          
+        });
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  
+} 
+//ver informacion de la suscripcion
+function verInf(input) { 
+    let id = input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/ver_inf?id=${id}`,
+      type: 'post'
+    })
+      .done(function (suscripciones) {
+        $("#myModal").modal("hide");
+
+        $("div#modal-body-4").html('');
+        $("div#tutor").html('');
+        $("#myLabel").html('Información de la suscripción');
+        $("div#modal-body-4").html(`
+           <form>
+             <div style="height:50px;">
+              <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Tipo</label>
+             <div class="col-sm-10">
+             <input value="${suscripciones.suscripciones.tipo}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id1" class="col-sm-2 col-form-label">Correo electrónico</label>
+             <div class="col-sm-10">
+             <input value="${suscripciones.suscripciones.correo_s}"  type="text" class="tooltips-general material-control"  class="form-control " id="id1" readonly>
+             </div>
+             </div>
+             <div class="form-group row">
+             <label for="id2" class="col-sm-2 col-form-label">Fecha de vencimiento</label>
+             <div class="col-sm-10">
+             <input value="${suscripciones.suscripciones.fecha_c}" type="text" class="tooltips-general material-control" class="form-control" id="id2" readonly>
+             </div>
+             </div>
+             
+             <p class="text-center"> <a onclick="verPDF(this)" role="button" class="btn btn-large btn-primary"  style="background:rgb(45, 101, 206);" id="comprobante${suscripciones.suscripciones.id}" data_url="${suscripciones.suscripciones.comprobante}" data_titulo=${suscripciones.suscripciones.tipo}">Ver comprobante </a></p>
+           </div>
+           <br>
+           <br>
+           <br>
+         
+             
+             </form>
+   
+           `);
+   
+        $("div#myModal4").modal('show');
+        })
+       .fail(function (error) {
+         manejoErrores(error);
+       });
+  }
+   //se aprueba una reserva
+ //funcion para eliminar una suscripcion
+ function eliminarSolicitud(input) {
+  
+  let id= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/eliminarSus?id=${id}`,
+      type: 'delete'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          if (res === 'Eliminada con éxito') {
+         $("#myModal3").on("hidden.bs.modal", function () {
+          suscripcionesV();
+          
+         });
+          } 
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  
+} 
+
+///función para aprobar una suscripción
+function aprobarS(input) {
+  
+  let id= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/aprobarS?id=${id}`,
+      type: 'post'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          if (res === 'Se ha aprobado con éxito') {
+         $("#myModal3").on("hidden.bs.modal", function () {
+          suscripcionesP();
+          
+         });
+          } 
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  
+} 
+
+
+
+///
+function eliminarSolicitudP(input) {
+  
+  let id= input;
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+
+      },
+      url: `/bibliotecario/eliminarSusP?id=${id}`,
+      type: 'delete'
+    })
+      .done(function (res) {
+        $("#myModal").modal("hide");
+        $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          if (res === 'Eliminada con éxito') {
+         $("#myModal3").on("hidden.bs.modal", function () {
+          suscripcionesP();
+          
+         });
+          } 
+          
+        
+      })
+      .fail(function (error) {
+        manejoErrores(error);
+      });
+  
+} 
+
+
+
+//suscripciones pendientes
+function suscripcionesP() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/bibliotecario/suscripcionesP",
+      type: "GET",
+    })
+      .done(function (suscripciones) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+
+        $("div#editarLibro").hide();
+        $("div#enlaces").show();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Suscripciones pendientes</small></h1>
+               </div>`);
+        $("div#enlaces").html(`
+            <ul class="nav nav-tabs nav-justified" style="font-size: 17px;">
+                <li id="susP" class="active"><a href="javascript:suscripcionesP()">Suscripciones pendientes</a></li>
+                <li id="susA"><a href="javascript:suscripcionesV()">Suscripciones vigentes</a></li>
+            </ul>`);
+        $("li#susA").removeClass("active");
+        $("li#susP").addClass("active");
+        $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                  <img src="/assets/img/calendar_book.png" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí deberás revisar cada solicitud de suscripción para posteriormente ser aprobada.
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (suscripciones.suscripciones.length > 0) {
+          $("div#container").append(`
+                 
+                <h2 class="text-center all-tittles">Suscripciones pendientes</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Suscripción</div>
+                            <div class="div-table-cell" style="width: 22%;">Correo</div>
+    
+                            <div class="div-table-cell" style="width: 8%;">Ver info.</div>
+                            <div class="div-table-cell" style="width: 8%;">Aprobar</div>
+                            <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < suscripciones.suscripciones.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='s_${suscripciones.suscripciones[i].id
+              }'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].tipo
+              }</div>
+                            <div class="div-table-cell" style="width: 22%;">${suscripciones.suscripciones[i].correo_s
+              }</div>
+                            <div class="div-table-cell" style="width: 8%;"><button onclick="verInf('${suscripciones.suscripciones[i].id}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button></div>
+                            
+                            
+    
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="aprobarS('${suscripciones.suscripciones[i].id}')" class="btn btn-success" ><i class="zmdi zmdi-time-restore"></i></button>
+
+    
+                            </div>
+                            <div class="div-table-cell"  style="width: 8%;">
+                            <button onclick="eliminarSolicitudP('${suscripciones.suscripciones[i].id
+              }')" class="btn btn-danger"><i
+                                    class="zmdi zmdi-delete"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay solicitudes pendientes</h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+
+//suscripciones activas
+
+function suscripcionesV() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/bibliotecario/suscripcionesV",
+      type: "GET",
+    })
+      .done(function (suscripciones) {
+        let container = document.getElementById("container");
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+
+        $("div#editarLibro").hide();
+        $("div#enlaces").show();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Suscripciones vigentes</small></h1>
+               </div>`);
+        $("div#enlaces").html(`
+            <ul class="nav nav-tabs nav-justified" style="font-size: 17px;">
+                <li id="susP" class="active"><a href="javascript:suscripcionesP()">Suscripciones pendientes</a></li>
+                <li id="susA"><a href="javascript:suscripcionesV()">Suscripciones vigentes</a></li>
+            </ul>`);
+        $("li#susP").removeClass("active");
+        $("li#susA").addClass("active");
+        $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                  <img src="/assets/img/calendar_book.png" alt="calendar" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se encuentran las suscripciones actualmente vigentes.
+                </div>
+          </div>`);
+        container.innerHTML = '';
+        if (suscripciones.suscripciones.length > 0) {
+          container.innerHTML = `
+                 
+                <h2 class="text-center all-tittles">Suscripciones vigentes</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Suscripción</div>
+                            <div class="div-table-cell" style="width: 22%;">F. Vencimiento</div>
+                           
+    
+                            <div class="div-table-cell" style="width: 8%;">Ver info.</div>
+                            <div class="div-table-cell" style="width: 8%;">Eliminar</div>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+          for (var i = 0; i < suscripciones.suscripciones.length; i++) {
+            $("#container").append(`
+                        <div class="table-responsive" id='s_${suscripciones.suscripciones[i].id
+              }'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].tipo
+              }</div>
+                            <div class="div-table-cell" style="width: 22%;">${suscripciones.suscripciones[i].fecha_c
+              }</div>
+                           
+              
+    
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="verInf('${suscripciones.suscripciones[i].id}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                            <div class="div-table-cell"  style="width: 8%;">
+                            <button onclick="eliminarSolicitud('${suscripciones.suscripciones[i].id
+              }')" class="btn btn-danger"><i
+                                    class="zmdi zmdi-delete"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay solicitudes pendientes</h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
+  }
+
+
 
   function seccionInicio() {
+   
     var seccion = document.getElementById("seccion");
     var explicacion = document.getElementById("explicacion");
     var enlaces = document.getElementById("enlaces");
@@ -2002,6 +3850,9 @@ if (res.ficha.multa > 0) {
     $("form#nuevaBaseE").hide();
     $("form#nuevaBaseD").hide();
     $("button#opcion2").hide();
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
     seccion.innerHTML = ` <div class="page-header">
                 <h1 class="all-tittles">
                     UNEXPO SBDIP <small>Inicio</small>
@@ -2030,7 +3881,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/prestamosVVAjax",
       type: "GET",
@@ -2044,6 +3899,9 @@ if (res.ficha.multa > 0) {
         $("div#enlaces").show();
         $("div#explicacion").show();
         $("form#nuevaBaseE").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
         $("form#nuevaBaseD").hide();
         $("div#inicio").hide();
         $("div#cargando").html('');
@@ -2157,7 +4015,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/prestamosAjax",
       type: "GET",
@@ -2173,6 +4035,9 @@ if (res.ficha.multa > 0) {
         $("div#editarLibro").hide();
         $("div#enlaces").show();
         $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
         $("div#inicio").hide();
         $("div#cargando").html('');
         $("form#ingresarLibro").hide();
@@ -2281,7 +4146,11 @@ if (res.ficha.multa > 0) {
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/prestamosPAjax",
       type: "GET",
@@ -2289,6 +4158,9 @@ if (res.ficha.multa > 0) {
       .done(function (fichas) {
         $("div#confDias").hide();
         $("form#nuevaBaseE").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
         $("form#nuevaBaseD").hide();
         $("div#preguntasF").hide();
         $("div#editarLibro").hide();
@@ -2404,7 +4276,11 @@ if (res.ficha.multa > 0) {
     $.ajax({
       beforeSend: function () {
         $("p#modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/bibliotecario/conf-dias",
       type: "GET",
@@ -2413,6 +4289,9 @@ if (res.ficha.multa > 0) {
         $("div#myModal").modal("hide");
         $("form#nuevaBaseE").hide();
         $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
         $("#container").html('');
 
         $("div#explicacion").show();
@@ -2429,7 +4308,7 @@ if (res.ficha.multa > 0) {
                      <img src="/assets/icons/libro-lomo.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
                  </div>
                  <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
-                     Bienvenido en esta sección podrás configurar el límite para la cantidad de libros a retirar y días del préstamo. Si existen valores guardados actualmente, se mostrarán por defecto.
+                     Bienvenido en esta sección podrás configurar el límite para la cantidad de libros a retirar, días del préstamo y vigencia de cada suscripción en días. Si existen valores guardados actualmente, se mostrarán por defecto.
                  </div>
              </div>`);
         $("div#inicio").hide();
@@ -2442,6 +4321,7 @@ if (res.ficha.multa > 0) {
           $("input#input-dias").attr("value", res.objeto.dias_prestamo);
           $("input#input-multa").attr("value", res.objeto.multa);
           $("input#input-unidad").attr("value", res.objeto.unidad);
+          $("input#input-tiempo").attr("value", res.objeto.tiempo);
         }
         $("div#confDias").show();
         $("form#Dias").show();
@@ -2450,11 +4330,90 @@ if (res.ficha.multa > 0) {
         manejoErrores(error)
       })
   }
+ 
+  function añadirCategorias() {
+
+    $("div#myModal").modal("hide");
+    
+    $("form#nuevaBaseE").hide();
+    $("form#nuevaBaseD").hide();
+    $("#container").html('');
+
+    $("div#explicacion").show();
+    $("div#preguntasF").hide();
+
+    $("div#seccion").html(`<div class="page-header">
+            <h1  class="all-tittles">UNEXPO SBDIP <small>Opciones</small></h1>
+        </div>`);
+    $("div#enlaces").hide();
+    $("div#cargando").html('');
+    $("div#explicacion").html(`<div class="row">
+             
+             <div class="col-xs-12 col-sm-4 col-md-3">
+                 <img src="/assets/icons/libro-lomo.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+             </div>
+             <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
+                 Bienvenido, en esta sección podrás añadir nuevas categorías para material bibliográfico, una vez creadas estan no son editables ni eliminables.
+             </div>
+         </div>`);
+    $("div#inicio").hide();
+    $("div#cargando").html('');
+    $("form#formato").hide();
+    $("div#container").hide();;
+    $("div#editarLibro").hide();
+  
+    $("div#confDias").hide();
+    $("form#Dias").hide();
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").show();
+  
+}
+function añadirNucleos() {
+
+$("div#myModal").modal("hide");
+
+$("form#nuevaBaseE").hide();
+$("form#nuevaBaseD").hide();
+$("#container").html('');
+
+$("div#explicacion").show();
+$("div#preguntasF").hide();
+
+$("div#seccion").html(`<div class="page-header">
+        <h1  class="all-tittles">UNEXPO SBDIP <small>Opciones</small></h1>
+    </div>`);
+$("div#enlaces").hide();
+$("div#cargando").html('');
+$("div#explicacion").html(`<div class="row">
+         
+         <div class="col-xs-12 col-sm-4 col-md-3">
+             <img src="/assets/icons/libro-lomo.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+         </div>
+         <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead" >
+             Bienvenido en esta sección podrás añadir nuevos núcleos, los nucleos que existen no son eliminables ni editables.
+         </div>
+     </div>`);
+$("div#inicio").hide();
+$("div#cargando").html('');
+$("form#formato").hide();
+$("div#container").hide();;
+$("div#editarLibro").hide();
+
+$("div#confDias").hide();
+$("form#Dias").hide();
+$("form#conf-nucleos").show();
+$("form#conf-categorias").hide();
+
+}
+
   function añadirMaterial() {
     var formato = document.getElementById("formato");
     formato.style.display = 'block';
     resetear();
     $("div#confDias").hide();
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+   
     $("form#nuevaBaseE").hide();
     $("form#nuevaBaseD").hide();
     $("#enlaces").hide();
@@ -2515,6 +4474,9 @@ if (res.ficha.multa > 0) {
   }
   function seccionPreguntas() {
     $("form#formato").hide();
+    
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
     $("form#nuevaBaseE").hide();
     $("form#nuevaBaseD").hide();
     $("div#confDias").hide();
@@ -2538,8 +4500,39 @@ if (res.ficha.multa > 0) {
     mostrarPreguntas();
 
   }
+  function seccionPreguntas2() {
+    $("form#formato").hide();
+    
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
+    $("form#nuevaBaseE").hide();
+    $("form#nuevaBaseD").hide();
+    $("div#confDias").hide();
+    $("div#inicio").hide();
+    $("button#opcion2").hide();
+    $("form#preguntasFrecuentes").hide();
+    $("div#cargando").html('');
+    $("div#enlaces").html('');
+    $("div#seccion").html(` 
+            <div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Preguntas frecuentes</small></h1>
+      </div>`);
+    $("div#explicacion").hide();
+    $("form#formato-enlinea").hide();
+    $("div#busquedaC").hide();
+    $("div#editarLibro").hide();
+    $("div#accordion").show();
+    $("div#container").html('');
+    $("div#preguntasF").show();
+
+    mostrarPreguntas();
+
+  }
   function actualizarBaseE() {
     $("form#formato").hide();
+    
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
     $("form#nuevaBaseE").show();
     $("div#accordion").html('');
 
@@ -2563,7 +4556,7 @@ if (res.ficha.multa > 0) {
                         style="max-width: 110px;">
                 </div>
                 <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
-                    Bienvenido, en esta sección podrás actualizar la base de datos de los estudiantes o docentes. Recuerda que la cedula de identidad debe tener el formato ej. v-99999999 ó e-99999999, y debe ser la primera columna, seguido por la columna nombres, apellidos y especializacion respectivamente. No hay distinción entre mayúsculas y minúsculas.
+                    Bienvenido, en esta sección podrás actualizar la base de datos de los estudiantes. Recuerda que el sistema está diseñado para registrar las columnas en el orden en que se encuntran en la base de datos.
                 </div>
           </div>`);
     $("form#formato-enlinea").hide();
@@ -2576,6 +4569,8 @@ if (res.ficha.multa > 0) {
   function actualizarBaseD() {
     $("form#formato").hide();
     $("form#nuevaBaseD").show();
+    $("form#conf-nucleos").hide();
+    $("form#conf-categorias").hide();
 
     $("div#accordion").html('');
     $("form#nuevaBaseE").hide();
@@ -2597,7 +4592,7 @@ if (res.ficha.multa > 0) {
                         style="max-width: 110px;">
                 </div>
                 <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
-                    Bienvenido, en esta sección podrás actualizar la base de datos de los estudiantes o docentes. Recuerda que la cedula de identidad debe tener el formato ej. v-99999999 ó e-99999999, y debe ser la primera columna, seguido por la columna nombres, apellidos y materia respectivamente. No hay distinción entre mayúsculas y minúsculas.
+                    Bienvenido, en esta sección podrás actualizar la base de datos de los docentes. Recuerda que el sistema está diseñado para registrar las columnas en el orden en que se encuntran en la base de datos.
                 </div>
           </div>`);
 
@@ -2614,6 +4609,92 @@ if (res.ficha.multa > 0) {
 
   $(function () {
     seccionInicio();
+    $("#resetNucleo").on('click', function () {
+      $(".limpiar").html('');
+          let id ='nucleo';
+      let tb = `table#tb${id}`;
+      $(tb).html("");
+        $(tb).append(`
+        <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;">
+                          <input id="${id}1" name="${id}1" type="number"  class="material-control material-control-login" 
+                            placeholder="${id}.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                             value="1">
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+                        </td>
+                        <td style="width: 150px; overflow: hidden; border: none;">
+                          <input id="${id}-1"  name="${id}_1" type="text"
+                          class="material-control material-control-login"  placeholder="Escribe aquí el ${id}" onkeyup="comp(this)"
+                            required="" maxlength="100"
+                            pattern="(^([a-zA-Zá-ú]{1,})$)"
+                            data-toggle="tooltip" data-placement="top" >
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+    
+                        </td>
+                        <td id="imgs-${id}" style="width: 20px; overflow: hidden; border: none;">
+                          <div  class="limpiar" id="img-${id}-1"></div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;"></td>
+                        <td id="mensaje-${id}" style="width: 150px; border: none; overflow: hidden;">
+                          <div class="limpiar" id="${id}-unica-1"></div>
+                        </td>
+                        <td style="width: 20px; border: none; overflow: hidden;"></td>
+                      </tr>
+    
+                                
+                    `);
+     
+    });
+    $("#resetCategoria").on('click', function () {
+      $(".limpiar").html('');
+      let id='categoria';
+      let tb = `table#tb${id}`
+      $(tb).html("");
+        $(tb).append(`
+        <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;">
+                          <input id="${id}1" name="${id}1" type="number"  class="material-control material-control-login" 
+                            placeholder="${id}.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                             value="1">
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+                        </td>
+                        <td style="width: 150px; overflow: hidden; border: none;">
+                          <input id="${id}-1"  name="${id}_1" type="text"
+                          class="material-control material-control-login"  placeholder="Escribe aquí el ${id}" onkeyup="comp(this)"
+                            required="" maxlength="100"
+                            pattern="(^([a-zA-Zá-ú]{1,})$)"
+                            data-toggle="tooltip" data-placement="top" >
+                          <span class="highlight"></span>
+                          <span class="bar"></span>
+                          <label> </label>
+    
+                        </td>
+                        <td id="imgs-${id}" style="width: 20px; overflow: hidden; border: none;">
+                          <div  class="limpiar" id="img-${id}-1"></div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 40px; overflow: hidden; border: none;"></td>
+                        <td id="mensaje-${id}" style="width: 150px; border: none; overflow: hidden;">
+                          <div class="limpiar" id="${id}-unica-1"></div>
+                        </td>
+                        <td style="width: 20px; border: none; overflow: hidden;"></td>
+                      </tr>
+    
+                                
+                    `);
+     
+    });
+    $("input#date").attr("max", maxima());
+    $("input#date_unico").attr("max", maxima());
     $("form#formDias").on('change', function () {
       $("div#cargando").html('');
     });
@@ -2627,7 +4708,11 @@ if (res.ficha.multa > 0) {
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");//Se abre ventana modal
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });//Se abre ventana modal
         },
         url: "/bibliotecario/nuevaBaseE",//url
         type: "POST",//tipo de ruta
@@ -2636,9 +4721,11 @@ if (res.ficha.multa > 0) {
         contentType: false,
       })
         .done(function (res) {
+          $("#myModal").modal("hide");
           if (res.message == 'Actualizada con éxito') {//mensaje de respuesta
-            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res.message}</p>`);
-            $("#reset3").click();//limpieza del formulario
+            $("#modal-body-3").html(`<p class="text-center">${res.message}</p>`);
+          $("#myModal3").modal("show");
+       $("#reset3").click();//limpieza del formulario
           }
         })
         .fail(function (error) {
@@ -2656,7 +4743,11 @@ if (res.ficha.multa > 0) {
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");//se abre ventana modal
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });//se abre ventana modal
         },
         url: "/bibliotecario/nuevaBaseD",//url
         type: "POST",//tipo de ruta
@@ -2665,9 +4756,11 @@ if (res.ficha.multa > 0) {
         contentType: false,
       })
         .done(function (res) {
+          $("#myModal").modal("hide");
           if (res.message == 'Actualizada con éxito') {//respuesta
-            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res.message}</p>`);
-            $("#reset4").click();//se limpia el formulario
+            $("#modal-body-3").html(`<p class="text-center">${res.message}</p>`);
+          $("#myModal3").modal("show");
+         $("#reset4").click();//se limpia el formulario
           }
 
 
@@ -2681,7 +4774,7 @@ if (res.ficha.multa > 0) {
 
     $("form#formDias").on('submit', function (e) {
       e.preventDefault();
-      let data = $(this).serialize();
+      let data = new FormData(this);
 
       $.ajax({
         beforeSend: function () {
@@ -2691,11 +4784,17 @@ if (res.ficha.multa > 0) {
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");//se abre ventana modal
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });//se abre ventana modal
         },
         url: "/bibliotecario/conf-dias",
         type: "POST",
-        data: data
+        data: data,
+        processData: false,
+        contentType: false,
       })
         .done(function (res) {
           $("div#myModal").modal("hide");
@@ -2723,7 +4822,11 @@ if (res.ficha.multa > 0) {
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
         },
         url: "/bibliotecario/nuevaNoticia",
         type: "POST",
@@ -2732,15 +4835,17 @@ if (res.ficha.multa > 0) {
         contentType: false,
       })
         .done(function (res) {
+          $("#myModal").modal("hide");
           if (res != '') {
-            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
+            $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          
             $("#reset1").click();
           } else if (res == '') {
-            $("p#modal-p-center").html(
-              '<img src="/assets/icons/notificacion-error.ico" width= "100" height= "100">'
-            );
+            $("#modal-body-3").html(`<p class="text-center"><img src="/assets/icons/notificacion-error.ico" width= "100" height= "100"></p>`);
+          $("#myModal3").modal("show");
           }
-          $("div#myModal").on('hidden.bs.modal', function () {
+          $("div#myModal3").on('hidden.bs.modal', function () {
             $('button#reset1').click;
             // $('button#opcion1').click;
           });
@@ -2760,22 +4865,28 @@ if (res.ficha.multa > 0) {
           $("p#modal-p-center").html(
             '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
           );
-          $("div#myModal").modal("show");
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
         },
         url: "/bibliotecario/nueva-p-f",
         type: "POST",
         data: data,
       })
         .done(function (res) {
+          $("#myModal").modal("hide");
           if (res != '') {
-            $("p#modal-p-center").html(`<p style="background-color: cornsilk; font-size: 24px; font-weight: 600;">${res}</p>`);
+            $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+      
             $("#reset2").click();
           } else if (res == '') {
-            $("p#modal-p-center").html(
-              '<img src="/assets/icons/notificacion-error.ico" width= "100" height= "100">'
-            );
+            $("#modal-body-3").html(`<p class="text-center"><img src="/assets/icons/notificacion-error.ico" width= "100" height= "100"></p>`);
+            $("#myModal3").modal("show");
           }
-          $("div#myModal").on('hidden.bs.modal', function () {
+          $("div#myModal3").on('hidden.bs.modal', function () {
             $('button#reset2').click;
             $('button#opcion2').click;
           });
@@ -2786,17 +4897,89 @@ if (res.ficha.multa > 0) {
 
         });
     })
+    $("form#conf-nucleos").on('submit', function (e) {
+      e.preventDefault();
+      let data = $(this).serialize();
+
+      $.ajax({
+        beforeSend: function () {
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+        },
+        url: "/conf-nuevos",
+        type: "POST",
+        data: data,
+      })
+        .done(function (res) {
+          if (res==='Carga satisfactoria') {
+            $("#myModal").modal("hide");
+            $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          $("#myModal3").on("hidden.bs.modal", function () {
+            $("#resetNucleo").click();
+          
+        });
+
+      }
+        })
+        .fail(function (error) {
+          manejoErrores(error);
+
+        });
+    })
+    $("form#conf-categorias").on('submit', function (e) {
+      e.preventDefault();
+      let data = $(this).serialize();
+
+      $.ajax({
+        beforeSend: function () {
+          $("p#modal-p-center").html(
+            '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+          );
+          $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+        },
+        url: "/conf-categorias",
+        type: "POST",
+        data: data,
+      })
+        .done(function (res) {
+          if (res==='Carga satisfactoria') {
+            $("#myModal").modal("hide");
+            $("#modal-body-3").html(`<p class="text-center">${res}</p>`);
+          $("#myModal3").modal("show");
+          $("#myModal3").on("hidden.bs.modal", function () {
+          $("#resetCategoria").click();
+          
+        });
+
+      }
+        })
+        .fail(function (error) {
+          manejoErrores(error);
+
+        });
+});
 
   });
 </script>
 
 
 <body>
-  <div id="myModal" class="modal fade">
-    <div class="modal-dialog modal-sm">
+  <div id="myModal" class="modal fade"  >
+    <div class="modal-dialog modal-sm modal-recarga">
       <div class="modal-content" style="background-color: transparent">
         <div id="modal-contenido">
-          <br />
+          <br>
           <p class="text-center" id="modal-p-center">
             <img src="/assets/gif/loading-22.gif" width="100" height="100" />
           </p>
@@ -2842,7 +5025,7 @@ if (res.ficha.multa > 0) {
             <h4 class="modal-title" id="myLabel"
               style="font-size: 25px; font-weight:900; text-align: center; color: white;">Modal title</h4>
           </div>
-          <div class="modal-body" id="modal-body-4">
+          <div class="modal-body" id="modal-body-4" >
 
 
 
@@ -2883,6 +5066,50 @@ if (res.ficha.multa > 0) {
     </div>
   </div>
 
+  
+
+  <div id="myModal8" class="modal fullscreen-modal fade">
+    <div class="modal-dialog">
+      <div class="container-fluid">
+        <div class="modal-content">
+          <div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+             </div>
+          <div class="modal-body">
+            <br>
+            <br>
+            <br>
+            <p class="text-center">Pulsa en la imagen para verla mejor</p>
+            <ul id="jqhtml" >
+            
+    <li><img id="imagenC" data-original="/assets/img/tibet-1.jpg" src="/assets/img/tibet-1.jpg" alt="Comprobante de pago"></li>
+  </ul>
+  <br>
+            <br>
+            <br><br>
+            <br>
+            <br><br>
+            <br>
+            <br><br>
+            <br>
+            <br>
+          </div>
+          
+ 
+          
+          
+          
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+  </div>
+
   <div id="myModalError" class="modal fade">
     <div class="modal-dialog">
       <div class="container-fluid">
@@ -2903,6 +5130,8 @@ if (res.ficha.multa > 0) {
       </div>
     </div>
   </div>
+
+
 
   <div id="openModal" class=" modalDialog">
     <div>
@@ -3019,7 +5248,7 @@ if (res.ficha.multa > 0) {
               <div class="form-group  mx-sm-3" id="dias">
                 <label for="dias">Días de préstamo</label>
                 <input type="number" required="" name="dias" id="input-dias" class="material-control" minlength="1"
-                  placeholder="Días de préstamos">
+                  placeholder="Días de préstamos" >
 
               </div>
               <div class="form-group mx-sm-3" id="libros">
@@ -3027,6 +5256,7 @@ if (res.ficha.multa > 0) {
                 <input type="number" required="" id="input-cantidad" class=" material-control" name="libros"
                   minlength="1" placeholder="Límite de libros">
               </div>
+              
               <div class="form-group mx-sm-3" id="multa">
                 <label for="multa">Multa por día vencido</label>
                 <input type="number" required="" id="input-multa" class=" material-control" name="multa" minlength="1"
@@ -3035,9 +5265,39 @@ if (res.ficha.multa > 0) {
               <div class="form-group mx-sm-3" id="unidad">
                 <label for="unidad">Unidad</label>
                 <input type="text" required="" id="input-unidad" class=" material-control" name="libros" minlength="1"
-                  pattern="[a-zA-Zá-ú]{1.20}" placeholder="Unidad">
+                pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" placeholder="Unidad">
               </div>
 
+              <div class="form-group mx-sm-3" id="datos">
+                <label for="unidad">Datos bancarios</label>
+                  <table class="table table-responsive " style="table-layout: fixed; border: none;">
+                <tr id="tr-img-1" style="border: none;">
+                  <td style="width: 200px;  border: none;">
+                    <input onchange="comprobarFI(this)" id="img-1" name="img" type="file" 
+                      class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                      title="Imagen">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Imagen</label>
+
+                  </td>
+                  <td style="width: 30px;  border: none;" id="ico-1">
+
+                  </td>
+                </tr>
+                <tr id="tr2-img-1">
+                  <td style="width: 200px; border: none;">
+                    <p class="text-center" id="formato-img-1"></p>
+
+                  </td>
+                  <td style="width: 30px;  border: none;">
+                  </td>
+                </tr>
+              </table>
+
+              </div>
+             
+           
 
               <div class="form-group mx-sm-3">
                 <button type="submit" class="btn btn-primary">Configurar</button>
@@ -3051,7 +5311,150 @@ if (res.ficha.multa > 0) {
         </div>
       </form>
 
-      <div class="container-fluid">
+  <form  id="conf-nucleos" autocomplete="off">
+    <div class="container-flat-form">
+      <div class="title-flat-form title-flat-blue">Nueva configuración</div>
+      <div class="row">
+
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+
+        
+          <h4 class="text-center all-tittles" style="margin-bottom: 10px;">Configuración de núcleos</h4>
+<br>
+          <div class="group-material">
+            <input  onchange="añadirNucleo(this)" id="nucleo" name="nucleos" type="number"
+            class="material-control material-control-login" placeholder="Escribe aquí el numero de nucleos"
+              required="" maxlength="4"  pattern="^[0-9]+" min="1" data-toggle="tooltip" data-placement="top" title="Sólo números">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Cantidad de núcleos</label>
+
+          </div>
+
+          
+          <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tbnucleo">
+            <tr>
+              <td style="width: 40px; overflow: hidden; border: none;">
+                <input id="nucleo1" name="nucleo1" type="number"  class="material-control material-control-login" 
+                  placeholder="Núcleo.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                   value="1">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Núcleo</label>
+              </td>
+              <td style="width: 150px; overflow: hidden; border: none;">
+                <input id="nucleo-1"  name="nucleo_1" type="text"
+                class="material-control material-control-login"  placeholder="Escribe aquí el núcleo"
+                  required="" maxlength="100" onkeyup="comp(this)"
+                  pattern="(^([a-zA-Zá-ú]{1,})$)"
+                  data-toggle="tooltip" data-placement="top" >
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label></label>
+
+              </td>
+              <td id="imgs-nucleo" style="width: 20px; overflow: hidden; border: none;">
+                <div  class="limpiar" id="img-nucleo-1"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: 30px; overflow: hidden; border: none;"></td>
+              <td id="mensaje-nucleo" style="width: 200px; border: none; overflow: hidden;">
+                <div class="limpiar" id="nucleo-unica-1"></div>
+              </td>
+              <td style="width: 20px; border: none; overflow: hidden;"></td>
+            </tr>
+
+          </table>
+          <p class="text-center">
+           <button type="reset" id="resetNucleo" class="btn btn-info">Limpiar</button>
+            <button type="submit" class="btn btn-primary">Configurar</button>
+            
+          </p>
+        </div>
+      </div>  
+    </div>         
+  </form> 
+  <form id="conf-categorias" autocomplete="off">
+      <div class="container-flat-form">
+        <div class="title-flat-form title-flat-blue">Nueva configuración</div>
+        <div class="row">
+  
+          <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+  
+          
+            <h4 class="text-center all-tittles" style="margin-bottom: 10px;">Configuración de categorías</h4>
+  <br>
+            <div class="group-material">
+              <input onchange="añadirNucleo(this)" id="categoria" type="number" name="categorias"
+              class="material-control material-control-login" placeholder="Escribe aquí el numero de categorías"
+                required="" maxlength="4"  pattern="^[0-9]+" min="1" data-toggle="tooltip" data-placement="top" title="Sólo números">
+              <span class="highlight"></span>
+              <span class="bar"></span>
+              <label>Cantidad de categorías</label>
+  
+            </div>
+  
+            
+            <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tbcategoria">
+              <tr>
+                <td style="width: 40px; overflow: hidden; border: none;">
+                  <input id="categoria1" name="categoria1" type="number"  class="material-control material-control-login" 
+                    placeholder="Categoria.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                     value="1">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Categoría</label>
+                </td>
+                <td style="width: 150px; overflow: hidden; border: none;">
+                  <input id="categoria-1"  onkeyup="comp(this)" name="categoria_1" type="text"
+                  class="material-control material-control-login"  placeholder="Escribe aquí la categoría"
+                    required="" maxlength="100"
+                    pattern="(^([a-zA-Zá-ú]{1,})$)"
+                    data-toggle="tooltip" data-placement="top" >
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label></label>
+  
+                </td>
+                <td id="imgs-categoria" style="width: 20px; overflow: hidden; border: none;">
+                 <div class="limpiar" id="img-categoria-1"></div>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 30px; overflow: hidden; border: none;"></td>
+                <td id="mensaje-categoria" style="width: 200px; border: none; overflow: hidden;">
+                  <div class="limpiar" id="categoria-unica-1"></div>
+                </td>
+                <td style="width: 20px; border: none; overflow: hidden;"></td>
+              </tr>
+  
+            </table>
+           <p class="text-center">
+             <button type="reset" id="resetCategoria" class="btn btn-info">Limpiar</button>
+             <button type="submit" class="btn btn-primary">Configurar</button>
+             
+           </p>
+           
+          </div>
+        </div>   
+      </div>        
+  </form> 
+
+  
+ 
+  <script src="/js/viewer.min.js"></script>
+  <script>
+  var viewer = new Viewer(document.getElementById('jqhtml'), {
+    url: 'data-original'
+  });
+ 
+ </script>
+ 
+
+
+  
+  <div class="container-fluid">
         <form autocomplete="off" enctype="multipart/form-data" id="formato">
 
           <div class="container-flat-form">
@@ -3063,18 +5466,38 @@ if (res.ficha.multa > 0) {
                 <legend><strong>Información básica</strong></legend><br>
 
                 <div class="group-material">
-                  <span>Categoría</span>
-                  <select onchange="tipoTrabajo(this)" id="tipo_l" name="tipo_l" required=""
+                  <span>Categoría de suscripción</span>
+                  <select  id="suscription" name="suscription" required=""
                     class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
                     title="Elige la categoría del libro">
                     <option disabled="" selected="">Selecciona una categoría</option>
-                    <option>Libro</option>
-                    <option>Revista</option>
-                    <option>Trabajo de grado</option>
+                    <option>Basica</option>
+                    <option>Estandar</option>
+                    <option>Premium</option>
+
+                  </select>
+                </div> 
+               
+                <div class="group-material">
+                 
+                  <span>Categoría del contenido</span><img id="img-cargando"  >
+                  <select onclick="categorias('type')" id="type" name="type" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige la categoría del libro">
+                    <option disabled="" selected="">Selecciona una categoría</option>
+
+                  </select>
+             
+                </div>
+                <div class="group-material">
+                  <span>Núcleo al que pertenece</span><img id="img-cargando2" >
+                  <select  id="core" onclick="nucleos('core')" name="core" required=""
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige el nucleo">
+                    <option disabled="" selected="">Selecciona un nucleo</option>
 
                   </select>
                 </div>
-
                 <div class="group-material">
                   <input id="ejemplar" onchange="ejemplares()" name="ejemplar" type="number"
                     class="tooltips-general material-control" placeholder="Escribe aquí el numero de ejemplares"
@@ -3096,9 +5519,9 @@ if (res.ficha.multa > 0) {
                       <label>ejemplar</label>
                     </td>
                     <td style="width: 200px; overflow: hidden; border: none;">
-                      <input id="cota-1" onchange="añadirCampoPdf(this)" name="cota_1" type="text"
+                      <input id="cota-1" onkeyup="añadirCampoPdf(this)" name="cota_1" type="text"
                         class="tooltips-general material-control" placeholder="Escribe aquí la cota del libro"
-                        required="" maxlength="25"
+                        required="" maxlength="25" 
                         pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$"
                         data-toggle="tooltip" data-placement="top" title="Ej. cota_1 sin espacios">
                       <span class="highlight"></span>
@@ -3121,7 +5544,7 @@ if (res.ficha.multa > 0) {
                 </table>
 
                 <div class="group-material">
-                  <input id="titulo" name="titulo" type="text" class="tooltips-general material-control"
+                  <input id="title" name="title" type="text" class="tooltips-general material-control"
                     placeholder="Escribe aquí el título o nombre del libro" required="" pattern="[a-zA-Zá-ú ]{1,200}"
                     maxlength="200" data-toggle="tooltip" data-placement="top"
                     title="Escribe el título o nombre del libro, sólo letras">
@@ -3130,7 +5553,7 @@ if (res.ficha.multa > 0) {
                   <label>Título</label>
                 </div>
                 <div class="group-material" id="autorD">
-                  <input name="autor" type="text" id="autor" class="tooltips-general material-control"
+                  <input name="creator" type="text" id="creator" class="tooltips-general material-control"
                     placeholder="Escribe aquí el autor del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
                     maxlength="100" data-toggle="tooltip" data-placement="top"
                     title="Escribe el nombre del autor del libro">
@@ -3138,33 +5561,88 @@ if (res.ficha.multa > 0) {
                   <span class="bar"></span>
                   <label>Autor</label>
                 </div>
-                <div name="tutor" class="group-material" id="tutorD">
-
+                <div  class="group-material">
+                  <input name="contributor" type="text" id="contributor" class="tooltips-general material-control"
+                  placeholder="Escribe aquí el nombre de colaboradores" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top"
+                  title="Escribe el nombre de los colaboradores">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Colaborador</label>
                 </div>
-                <div name="volumen" class="group-material" id="volumenD">
-                  <input id="volumen" name="volumen" type="number" class="tooltips-general material-control"
-                    placeholder="Escribe aquí el volumen del libro" required="" maxlength="50" pattern="^[0-9]+" min="1"
-                    data-toggle="tooltip" data-placement="top" title="Escribe el volumen del libro">
-                  <span class="highlight"></span>
-                  <span class="bar"></span>
-                  <label>Volumen</label>
-                </div>
-
+                
                 <div class="group-material">
-                  <input id="año" name="año" type="text" class="material-control tooltips-general"
-                    placeholder="Escribe aquí el año del libro" required="" pattern="[0-9]{4}" maxlength="4"
-                    minlength="4" data-toggle="tooltip" data-placement="top" title="En formato de 4 dígitos, Ej. 2010">
+                  <input id="date" name="date" type="date" class="material-control tooltips-general"
+                     required=""   data-toggle="tooltip" data-placement="top" title="Fecha de publicación"  placeholder="Escribe aquí la fecha relacionada" >
                   <span class="highlight"></span>
                   <span class="bar"></span>
-                  <label>Año</label>
+                  <label>Fecha</label>
                 </div>
                 <div class="group-material" id="editorialD">
-                  <input id="editorial" name="editorial" type="text" class="material-control tooltips-general"
+                  <input id="publisher" name="publisher" type="text" class="material-control tooltips-general"
                     placeholder="Escribe aquí la editorial del libro" required="" pattern="[a-zA-Zá-ú ]{1,100}"
                     maxlength="100" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
                   <span class="highlight"></span>
                   <span class="bar"></span>
                   <label>Editorial</label>
+                </div>
+                <div class="group-material" >
+                  <input id="source" name="source" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí la fuente del material" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Fuente del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Fuente</label>
+                </div>
+                <div class="group-material" >
+                  <input id="language" name="language" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí el lenguaje del material" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Lenguaje del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Lenguaje</label>
+                </div>
+                <div class="group-material" >
+                  <input id="coverage" name="coverage" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí el ámbito del contenido" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Ámbito del contenido">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Ámbito del contenido</label>
+                </div>
+                <div class="group-material" >
+                  <input id="relation" name="relation" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí la referencia a un recurso relacionado" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Referencia a otro recurso">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Referencia</label>
+                </div>
+                <div class="group-material" >
+                  <input id="subject" name="subject" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí palabras relaionadas" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Palabras relacionadas">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Palabras relacionadas</label>
+                </div>
+                <div class="group-material" >
+                 
+                  <textarea id="description" name="description" type="text" class="tooltips-general material-control form-control rounded-0"
+                  placeholder="Escribe aquí la descripción del recurso" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top" 
+                  style="border-color: rgb(0, 0, 255);"  min="20"  cols="86" rows="3" wrap="hard" spellcheck="true"></textarea>                
+                   <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label> </label>
+                </div> 
+                <div class="group-material" >
+                  <input id="rights" name="rights" type="text" class="material-control tooltips-general"
+                    placeholder="Escribe aquí los derechos" required="" pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Derechos del material">
+                  <span class="highlight"></span>
+                  <span class="bar"></span>
+                  <label>Derechos del material</label>
                 </div>
                 <table class="table table-responsive " style="table-layout: fixed; border: none;" id="table-pdf">
                   <tr id="tr-pdf-1" style="border: none;">
@@ -3227,76 +5705,153 @@ if (res.ficha.multa > 0) {
         <div class="container-fluid">
           <form class="form-inline" style="text-align:center; " id="formato-enlinea">
             <div class="row justify-content-md-center">
-              <div class="col-sm-4 col-md-2">
+              <div class="row">
+                            <div class="col-sm-4 col-md-3">
                 <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"
                   pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" placeholder="Cota"
                   maxlength="25" data-toggle="tooltip" data-placement="top" title="Ej. cota_1 Sin espacios">
                 <label>Cota</label>
               </div>
-              <div class="col-sm-4 col-md-2">
-                <select onchange="añadirTutor(this)" id="tipo_l_unico" name="tipo_l"
-                  class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
-                  title="Elige la categoría del libro">
-                  <option disabled="" selected="">Tipo de libro</option>
-                  <option>Libro</option>
-                  <option>Revista</option>
-                  <option>Trabajo de grado</option>
-
+              <div class="col-sm-4 col-md-3">
+                <select  id="suscription_unico" name="suscription"
+                class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                title="Elige la categoría del libro">
+                <option disabled="" selected="">Suscripción</option>
+                <option>Basica</option>
+                <option>Estandar</option>
+                <option>Premium</option>
                 </select>
               </div>
-              <div class="col-sm-4 col-md-2">
-                <input id="ejemplar_unico" name="ejemplar" type="number" class="tooltips-general material-control"
-                  placeholder="Ejemplar" maxlength="4" data-toggle="tooltip" pattern="^[0-9]+" min="1"
-                  data-placement="top" title="Numero de ejemplares">
-                <label>Ejemplar</label>
+              <div class="col-sm-4 col-md-3">
+                <select  id="type_unico"onclick="categorias('type_unico')" name="type"
+                class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                title="Elige la categoría del libro">
+                <option disabled="" selected="">Categoría</option>
+                
+                </select>
               </div>
-              <div class="col-sm-4 col-md-2">
-                <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
-                  placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,200}" maxlength="2000" data-toggle="tooltip"
-                  data-placement="top" title="Escribe el título o nombre del libro">
-                <label>Título</label>
+              <div class="col-sm-4 col-md-3">
+                <select  id="core_unico" name="core" 
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige el nucleo">
+                    <option disabled="" selected="">Núcleo</option>
+                    <option>charallave</option>
+                    <option>carora</option>
+                    <option>caracas</option>
+
+                  </select>
+              </div> 
               </div>
-              <div class="col-sm-4 col-md-2">
-                <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
-                  placeholder="Autor" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                  data-placement="top" title="Escribe el nombre del autor del libro"> <label>Autor</label>
+              <div class="row">
+                <div class="col-sm-4 col-md-3">
+                 <select  id="format_unico" name="format" 
+                    class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                    title="Elige el nucleo">
+                    <option disabled="" selected="">Formato</option>
+                    <option>PDF</option>
+                    <option>Solo en fisico</option>
+
+                  </select>
+              </div>
+              <div class="col-sm-4 col-md-3">
+                <input id="title_unico" name="title" type="text" class="tooltips-general material-control"
+                placeholder="Título" pattern="[a-zA-Zá-ú ]{1,200}"
+                maxlength="200" data-toggle="tooltip" data-placement="top"
+                title="Título del libro">
+              <label>Título</label>
               </div>
 
-              <div class="col-sm-4 col-md-2" id="div-contenedor">
-
-                <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
-                  placeholder="Tutor" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                  data-placement="top" title="Escribe el nombre del tutor del libro">
-                <label>Tutor</label>
+              <div class="col-sm-4 col-md-3">
+                <input name="creator" type="text" id="creator_unico" class="tooltips-general material-control"
+                placeholder="Autor" pattern="[a-zA-Zá-ú ]{1,100}"
+                maxlength="100" data-toggle="tooltip" data-placement="top"
+                title="Autor del libro">
+              <label>Autor</label>
+               
               </div>
 
-              <div class="col-sm-4 col-md-2">
-                <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
-                  placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
-                  data-placement="top" title="Escribe el volumen del libro">
-                <label>Volumen</label>
+              <div class="col-sm-4 col-md-3">
+                <input name="contributor" type="text" id="contributor_unico" class="tooltips-general material-control"
+                  placeholder="Colaboradores" pattern="[a-zA-Zá-ú ]{1,100}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top"
+                  title="Colaboradores">
+                <label>Colaborador</label>
               </div>
-              <div class="col-sm-4 col-md-2">
-                <input id="año_unico" name="año" type="text" class="material-control tooltips-general" placeholder="Año"
-                  pattern="[0-9]{4}" maxlength="4" data-toggle="tooltip" minlength="4" data-placement="top"
-                  title="Solamente números, sin espacios">
-                <label>Año</label>
               </div>
-              <div class="col-sm-4 col-md-2">
-                <input id="editorial_unico" name="editorial" type="text" class="material-control tooltips-general"
-                  placeholder="Editorial" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                  data-placement="top" title="Editorial del libro">
-                <label>Editorial</label>
+              <div class="row">
+                <div class="col-sm-4 col-md-3">
+                  <input id="rights_unico" name="rights" type="text" class="material-control tooltips-general"
+                  placeholder="Derechos" pattern="[a-zA-Zá-ú ]{1,100}"
+                  maxlength="100" data-toggle="tooltip" data-placement="top" title="Derechos del material">
+                <label>Derechos del material</label>
+                </div>
+                
+              <div class="col-sm-4 col-md-3">
+                <input id="publisher_unico" name="publisher" type="text" class="material-control tooltips-general"
+                    placeholder="Editorial"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Editorial">
+                  <label>Editorial</label>
               </div>
-              <div class="col-sm-4 col-md-2">
+              
+              <div class="col-sm-4 col-md-3">
+                <input id="source_unico" name="source" type="text" class="material-control tooltips-general"
+                    placeholder="Fuente"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Fuente del material">
+                  <label>Fuente</label>
+              </div>
+              <div class="col-sm-4 col-md-3">
+                <input id="language_unico" name="language" type="text" class="material-control tooltips-general"
+                    placeholder="Lenguaje"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Lenguaje del material">
+              
+                  <label>Lenguaje</label>
+              </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-4 col-md-3">
+                <input id="coverage_unico" name="coverage" type="text" class="material-control tooltips-general"
+                    placeholder="Ámbito"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Ámbito del contenido">
+                  <label>Ámbito del contenido</label>
+              </div>
+
+              <div class="col-sm-4 col-md-3">
+             <input id="relation_unico" name="relation" type="text" class="material-control tooltips-general"
+              placeholder="Recurso relacionado"  pattern="[a-zA-Zá-ú ]{1,100}"
+              maxlength="100" data-toggle="tooltip" data-placement="top" title="Referencia a otro recurso">
+            <label>Referencia</label>
+            </div>
+              <div class="col-sm-4 col-md-3">
+                <input id="subject_unico" name="subject" type="text" class="material-control tooltips-general"
+                    placeholder="Palabras relaionadas"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Palabras relacionadas">
+                  <label>Palabras relacionadas</label>
+              </div>
+              <div class="col-sm-4 col-md-3">
+                <input id="description_unico" name="description" type="text" class="material-control tooltips-general"
+                    placeholder="Descripción"  pattern="[a-zA-Zá-ú ]{1,100}"
+                    maxlength="100" data-toggle="tooltip" data-placement="top" title="Descripción">
+                  <label>Descripción</label>
+              </div> 
+              </div>
+             <div class="row">
+                
+              <div class="col-sm-4 col-md-3">
+                <input id="date_unico" name="date" type="date" class="material-control tooltips-general"
+                  data-toggle="tooltip" data-placement="top" title="Fecha de publicación"  placeholder="Fecha" >
+             <label>Fecha</label>
+              </div>
+              <div class="col-sm-4 col-md-3">
 
                 <button id="limpiarButton" style="margin-block: 10px;" type="reset"
                   class="btn btn-light">Limpiar</button>
               </div>
-              <div class="col-sm-4 col-md-2">
+              <div class="col-sm-4 col-md-3">
 
                 <button style="margin-block: 10px;" type="submit" class="btn btn-primary">Aplicar filtros</button>
               </div>
+             </div>
+             
             </div>
           </form>
         </div>
@@ -3315,7 +5870,7 @@ if (res.ficha.multa > 0) {
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                   <legend><strong>Información básica</strong></legend><br>
                   <div class="group-material">
-                    <input  name=" titulo" type="text" class="tooltips-general material-control"
+                    <input  name="titulo" type="text" class="tooltips-general material-control"
                       placeholder="Escribe la pregunta sin signos de interrogación" required="" data-toggle="tooltip"
                       pattern="[a-zA-Zá-ú ]{1,}"  minlength=" 1" data-placement="top" title="Título de la pregunta">
                     <span class="highlight"></span>
@@ -3350,9 +5905,6 @@ if (res.ficha.multa > 0) {
         </div>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true"></div>
       </div>
-
-
-
 
 
       <div class="container-fluid" id="divExcel">
@@ -3418,7 +5970,7 @@ if (res.ficha.multa > 0) {
                   <tr id="tr-excel-1" style="border: none;">
                     <td style="width: 200px;  border: none;">
                       <input onchange="comprobarFE(this)" id="excel-2" name="excel" type="file" required=""
-                        class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                        class="material-control tooltips-general"  data-toggle="tooltip" data-placement="top"
                         title="Excel">
                       <span class="highlight"></span>
                       <span class="bar"></span>

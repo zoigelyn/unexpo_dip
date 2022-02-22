@@ -4,7 +4,7 @@ const  PreguntasFrecuentes  = require('../models/preguntasFrecuentes');
   module.exports.insertarPregunta = async function (req, res, next) {
     const datosPregunta = req.body;
     datosPregunta.titulo = '¿' + datosPregunta.titulo + '?';
-
+  
    
     let nuevaPregunta = await PreguntasFrecuentes.create({
       titulo_pregunta: datosPregunta.titulo,

@@ -2,9 +2,8 @@
 <html lang="es">
     <%- include ("partes/cabecera") %>
     <script>
-     
-             //animacion para la seccion de noticias
-  
+        //animacion para la seccion de noticias
+        var intervalId = false;
              var first = 0;
     var speed = 700;
 
@@ -86,6 +85,7 @@ function manejoErrores(error) {
     $("div#myModalError").modal("show");
 
   };
+
   function ver(input) {
 
 let cota = input;
@@ -94,7 +94,11 @@ $.ajax({
         $("p#modal-p-center").html(
             ' <img src="/assets/gif/loading-22.gif" width="100" height="100" />'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
 
     },
     url: `/ver_libro?cota=${cota}`,
@@ -197,17 +201,76 @@ $.ajax({
        manejoErrores(error);
     });
 };
+//
+function verC() {
+  var viewer = new Viewer(document.getElementById('imgComprobante'), {
+                url: 'data-original'
+              });
+}
+         ////
+         
+         function seccionCatalogo() {
+        var seccion = document.getElementById("seccion");
+        var explicacion = document.getElementById("explicacion");
+        var inicio = document.getElementById("inicio");
+        var container = document.getElementById("container");
+        var cargando = document.getElementById("cargando");
+        var accordion = document.getElementById("accordion");
+        var formatoEnLineaDos = document.getElementById("formato-enlinea-dos");
+        $("#cuadronot").hide();
+    
+        $("#limpiarButton2").click();
+        formatoEnLineaDos.style.display = 'block';
+        
+        accordion.style.display = 'none';
+        
 
-function verPDF(input) {
-        let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
-        let titulo = $(input).attr("data_titulo");
-        $('#myModalLabel').text(titulo);
-        $('#pdfdoc').attr('src', url);
-        $('#myModal7').modal("show");
-    };
+        seccion.innerHTML = `<div class="page-header">
+        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo</small></h1>
+      </div>`;
+        explicacion.innerHTML = `
+        <div class="row">
+
+<div class="col-xs-12 col-sm-4 col-md-3">
+  <img src="/assets/icons/busqueda.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
+</div>
+<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+  Bienvenido en esta sección podrás ver y leer dependiendo del tipo de suscripción que tengas activa.
+</div>
+</div>`;
+        inicio.style.display = 'none';
+        cargando.innerHTML = '';
+        container.innerHTML = '';
+        explicacion.style.display = 'block';
+    
+       
+    }
   
 
-         //solicitas y muestras las noticias
+              //
+
+
+              function verPDF(input) {
+      
+      let ext = $(input).attr("data_url").split(".").pop();
+      let url2 = $(input).attr("data_url");
+      if (ext === 'pdf') {
+         let url = "/lib/web/viewer.html?file=" + $(input).attr("data_url") + "#zoom=50";
+      let titulo = $(input).attr("data_titulo");
+      $('#myModalLabel').text(titulo);
+      $('#pdfdoc').attr('src', url);
+      $('#myModal7').modal("show");
+      } else {
+       
+       $("#myModal4").modal("hide");
+      $("#imagenC").attr('src', url2);
+      $("#imagenC").attr('data-original', url2);
+      $("#myModal8").modal("show");
+      }
+     
+    };
+  
+           //solicitas y muestras las noticias
          function mostrarNoticias() {
   
   $.ajax({
@@ -215,7 +278,12 @@ function verPDF(input) {
       $("p#modal-p-center").html(
         '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
       );
-      $("div#myModal").modal("show");
+      $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+     
     },
     url: "/noticias",
     type: "GET",
@@ -241,7 +309,15 @@ function verPDF(input) {
    `);
   }
 if (noticias.length == 1) {
-clearInterval(intervalId);
+    if (!intervalId) {
+         $("div#myModal").modal("hide");
+     } else {
+        clearInterval(intervalId)
+        intervalId = false;
+ $("div#myModal").modal("hide"); 
+     }  
+    
+
 $("div#myModal").modal("hide");
    
 } else if (noticias.length > 1) {
@@ -253,6 +329,7 @@ $("div#myModal").modal("hide");
               if (bandera == 2) {
                
                 bandera = 0;
+                intervalId = true;
                 intervalId = setInterval(removeFirst, 7500);
               }
             });
@@ -265,11 +342,15 @@ $("div#myModal").modal("hide");
         $("div#cuadronot").append(`
                           <div class="container-fluid">
                   <h3 class="text-center all-tittles">No hay noticias recientes </h3>
-              </div>
-        
-                          `);
-                          clearInterval(intervalId);
-                           $("div#myModal").modal("hide");
+              </div>`);
+              if (!intervalId) {
+ 
+         $("div#myModal").modal("hide");
+     } else {
+        clearInterval(intervalId)
+        intervalId = false;
+ $("div#myModal").modal("hide"); 
+     }
       }
 
      
@@ -288,7 +369,11 @@ $("div#myModal").modal("hide");
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: "/preguntas-frecuentes",
       type: "GET",
@@ -347,7 +432,11 @@ $("div#myModal").modal("hide");
         $("p#modal-p-center").html(
           '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
         );
-        $("div#myModal").modal("show");
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
       },
       url: `/noticia?id_n=${id_n}`,
       type: "POST",
@@ -397,306 +486,124 @@ $("div#myModal").modal("hide");
     cargando.innerHTML = '';
     container.innerHTML = '';
     mostrarNoticias();
+    
 
+  };
+//
+
+
+///  solicitar una suscripcion
+function solicitarUnaSus(input) {
+  $("p#modal-p-center3").html('Debe registrarse para solicitar una suscripción');
+                            $("#myModal3").modal("show");
+};
+
+     //seccion para solicitar una suscripcion no registrado
+     function solicitarSuscripcionNoR() {
+    $.ajax({
+      beforeSend: function () {
+        $("p#modal-p-center").html(
+          '<img src="/assets/gif/loading-22.gif"width= "100" height= "100">'
+        );
+        $("div#myModal").modal({
+          backdrop: 'static',
+          keyboard: false,
+          show:true
+        });
+      },
+      url: "/suscripciones/no_registrado",
+      type: "GET",
+    })
+      .done(function (suscripciones) {
+        $("#myModal").modal("hide");
+        $("div#confDias").hide();
+        $("div#accordion").hide();
+        $("div#preguntasF").hide();
+        $("#container").show();
+        $("div#explicacion").show();
+        $("form#nuevaBaseE").hide();
+        $("div#editarLibro").hide();
+        $("div#enlaces").hide();
+        $("form#nuevaBaseD").hide();
+        $("form#conf-nucleos").hide();
+        $("form#conf-categorias").hide();
+        $("div#inicio").hide();
+        $("div#cargando").html('');
+        $("form#ingresarLibro").hide();
+        $("form#formato").hide();
+        $("form#formato-enlinea-dos").hide();
+        $("div#seccion").html(` 
+                <div class="page-header">
+                <h1 class="all-tittles">UNEXPO SBDIP <small>Suscripciones</small></h1>
+               </div>`);
+       $("div#explicacion").html(`
+          <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3">
+                    <img src="/assets/img/identificacion.png" alt="suscripcion" class="img-responsive center-box"
+                        style="max-width: 110px;">
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
+                    Bienvenido a esta sección, aquí se muestran todas las suscripciones disponibles. El costo esta expresado en dólares del BCV (tasa oficial).
+                </div>
+          </div>`);
+        $("div#container").html('');
+        if (suscripciones.suscripciones.length > 0) {
+          $("div#container").append(`
+                <h2 class="text-center all-tittles">Listado de categorías</h2>
+                <div class="table-responsive">
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                            <div class="div-table-cell" style="width: 3%;">#</div>
+                            <div class="div-table-cell" style="width: 15%;">Suscripción</div>
+                            <div class="div-table-cell" style="width: 15%;">Costo ($ BCV)</div>
+                            <div class="div-table-cell" style="width: 15%;">Vigencia en días</div>
+                           
+                            <div class="div-table-cell" style="width: 8%;">Solicitar</div>
+                        </div>
+                    </div>
+                </div>
+                `);
+
+          for (var i = 0; i < suscripciones.suscripciones.length; i++) {
+            $("div#container").append(`
+                        <div class="table-responsive" id='n_${suscripciones.suscripciones[i].tipo_ts}'>
+                    <div class="div-table" style="margin:0 !important;">
+                        <div class="div-table-row div-table-row-list">
+                            <div class="div-table-cell" style="width: 3%;">${1 + i
+              }</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].tipo_ts}</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].costo}</div>
+                            <div class="div-table-cell" style="width: 15%;">${suscripciones.suscripciones[i].vigencia}</div>
+                            
+                                <div class="div-table-cell" style="width: 8%;">
+                                <button onclick="solicitarUnaSus('${suscripciones.suscripciones[i].tipo_ts}')" class="btn btn-info"><i class="zmdi zmdi-file-text"></i></button>
+    
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            
+                        `);
+          }
+        } else {
+          $("div#container").append(`
+                            <div class="container-fluid">
+                    <h3 class="text-center all-tittles">No hay suscripciones registrados </h3>
+                </div>
+          
+                            `);
+
+        }
+
+        $("div#myModal").modal("hide");
+      })
+      .fail(function (error) {
+        manejoErrores(error)
+      });
   };
 
 
-         function seccionLibros() {
-        $.ajax({
-            beforeSend: function () {
-                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
-                $("#myModal").modal("show");
-            },
-            url: '/libros',
-            type: 'GET'
-        })
-            .done(function (res) {
-                $("div#cargando").html('');
-                $("div#myModal").modal('hide');
-                
-                $("div#container").show();
-                $("#accordion").hide();
-                $("div#enlaces").hide();
-                     $("div#seccion").html(` 
-            <div class="page-header">
-        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Libros</small></small></h1>
-      </div>`);
-                $("div#explicacion").html(`<div class="row">
-
-<div class="col-xs-12 col-sm-4 col-md-3">
-    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
-</div>
-<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
-    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
-</div>
-</div>`);
-               $("form#formato-enlinea").hide();
-               $("form#formato-enlinea-dos").show();
-               $("#limpiarButton2").click();
-               $("div#explicacion").show();
-                $("div#busquedaC").hide();
-                $("input#tipo_libro").attr("value", "Libro");
-                $("div#inicio").hide();
-                if (res.libros.length > 0) {
-                    $("div#container").html(`
-         
-        <h2 class="text-center all-tittles">Mis libros</h2>
-        <div class="table-responsive">
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
-                    <div class="div-table-cell" style="width: 3%;">#</div>
-                    <div class="div-table-cell" style="width: 15%;">Cota</div>
-                    <div class="div-table-cell" style="width: 8%;">Título</div>
-                    <div class="div-table-cell" style="width: 8%;">Autor</div>
-                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
-                    <div class="div-table-cell" style="width: 10%;">Año</div>
-                    
-                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
-                </div>
-            </div>
-        </div>
-        `);
-
-                    for (var i = 0; i < res.libros.length; i++) {
-                        var cota = res.libros[i].cota;
-                        $("div#container").append(`
-                <div class="table-responsive" >
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list">
-                    <div class="div-table-cell" style="width: 3%;">${1 + i
-                            }</div>
-                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
-                            }</div> 
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
-                            }</div>
-                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
-                            } </div>
-                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">
-                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
-                            }')"><i class="zmdi zmdi-file-text"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div> `);
-
-                    }
-                } else {
-                    $("div#container").html(`
-                    <div class="container-fluid">
-            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
-        </div>
-  
-                    `);
-                }
-            })
-            .fail(function (error) {
-                manejoErrores(error);
-
-            });
-
-
-    }
-    function seccionTrabajoG() {
-        $.ajax({
-            beforeSend: function () {
-                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
-                $("#myModal").modal("show");
-            },
-            url: '/trabajo',
-            type: 'GET'
-        })
-            .done(function (res) {
-                $("div#cargando").html('');
-                $("div#myModal").modal('hide');
-                $("#limpiarButton2").click();
-                
-                $("div#container").show();
-                  $("#accordion").hide();
-                $("div#enlaces").hide();
-                     $("div#seccion").html(` 
-            <div class="page-header">
-        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Trabajos de grado</small></small></h1>
-      </div>`);
-                $("div#explicacion").html(`<div class="row">
-
-<div class="col-xs-12 col-sm-4 col-md-3">
-    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
-</div>
-<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
-    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
-</div>
-</div>`);
-               $("form#formato-enlinea").hide();
-               $("form#formato-enlinea-dos").show();
-               $("div#explicacion").show();
-                $("div#busquedaC").hide();
-                $("input#tipo_libro").attr("value", "Trabajo de grado");
-                $("div#inicio").hide();
-                if (res.libros.length > 0) {
-                    $("div#container").html(`
-         
-        <h2 class="text-center all-tittles">Mis trabajos de grado</h2>
-        <div class="table-responsive">
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
-                    <div class="div-table-cell" style="width: 3%;">#</div>
-                    <div class="div-table-cell" style="width: 15%;">Cota</div>
-                    <div class="div-table-cell" style="width: 8%;">Título</div>
-                    <div class="div-table-cell" style="width: 8%;">Autor</div>
-                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
-                    <div class="div-table-cell" style="width: 10%;">Año</div>
-                    
-                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
-                </div>
-            </div>
-        </div>
-        `);
-
-                    for (var i = 0; i < res.libros.length; i++) {
-                        var cota = res.libros[i].cota;
-                        $("div#container").append(`
-                <div class="table-responsive" >
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list">
-                    <div class="div-table-cell" style="width: 3%;">${1 + i
-                            }</div>
-                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
-                            }</div> 
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
-                            }</div>
-                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
-                            } </div>
-                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">
-                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
-                            }')"><i class="zmdi zmdi-file-text"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div> `);
-
-                    }
-                } else {
-                    $("div#container").html(`
-                    <div class="container-fluid">
-            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
-        </div>
-  
-                    `);
-                }
-            })
-            .fail(function (error) {
-                manejoErrores(error);
-
-            });
-
-
-    }
-    function seccionRevista() {
-        $.ajax({
-            beforeSend: function () {
-                $("modal-p-center").html(` <img src="/assets/gif/loading-22.gif" width="100" height="100" />`);
-                $("#myModal").modal("show");
-            },
-            url: '/revista',
-            type: 'GET'
-        })
-            .done(function (res) {
-                $("div#cargando").html('');
-                $("div#myModal").modal('hide'); 
-                $("#limpiarButton2").click();
-                 $("#accordion").hide();
-                $("div#enlaces").hide();
-                     $("div#seccion").html(` 
-            <div class="page-header">
-        <h1 class="all-tittles">UNEXPO SBDIP <small>Catálogo <small>Revistas</small></small></h1>
-      </div>`);
-                $("div#explicacion").html(`<div class="row">
-
-<div class="col-xs-12 col-sm-4 col-md-3">
-    <img src="/assets/icons/libro_abierto.ico" alt="pdf" class="img-responsive center-box" style="max-width: 110px;">
-</div>
-<div class="col-xs-12 col-sm-8 col-md-8 text-justify lead">
-    Bienvenido en esta sección podrás ver todos los libros y también aplicar los filtros que requieras, en cuanto a cota, título, autor, tutor, volumén, año y editorial respectivamente.
-</div>
-</div>`);
-               $("form#formato-enlinea").hide();
-               $("form#formato-enlinea-dos").show();
-               $("div#explicacion").show();
-                $("div#busquedaC").hide();
-                $("input#tipo_libro").attr("value", "Revista");
-                $("div#inicio").hide();
-                $("div#container").show();
-                if (res.libros.length > 0) {
-                    $("div#container").html(`
-         
-        <h2 class="text-center all-tittles">Mis revistas</h2>
-        <div class="table-responsive">
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
-                    <div class="div-table-cell" style="width: 3%;">#</div>
-                    <div class="div-table-cell" style="width: 15%;">Cota</div>
-                    <div class="div-table-cell" style="width: 8%;">Título</div>
-                    <div class="div-table-cell" style="width: 8%;">Autor</div>
-                    <div class="div-table-cell" style="width: 10%;">Volumen</div>
-                    <div class="div-table-cell" style="width: 10%;">Año</div>
-                    
-                    <div class="div-table-cell" style="width: 8%;">Info. Libro</div>
-                </div>
-            </div>
-        </div>
-        `);
-
-                    for (var i = 0; i < res.libros.length; i++) {
-                        var cota = res.libros[i].cota;
-                        $("div#container").append(`
-                <div class="table-responsive" >
-            <div class="div-table" style="margin:0 !important;">
-                <div class="div-table-row div-table-row-list">
-                    <div class="div-table-cell" style="width: 3%;">${1 + i
-                            }</div>
-                    <div class="div-table-cell" style="width: 15%;">${res.libros[i].cota
-                            }</div> 
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].titulo
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">${res.libros[i].autor
-                            }</div>
-                             <div class="div-table-cell"  style="width: 10%;">${res.libros[i].volumen
-                            } </div>
-                    <div class="div-table-cell" style="width: 10%;">${res.libros[i].año
-                            }</div>
-                    <div class="div-table-cell" style="width: 8%;">
-                        <button class="btn btn-info" onclick="ver('${res.libros[i].cota
-                            }')"><i class="zmdi zmdi-file-text"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div> `);
-
-                    }
-                } else {
-                    $("div#container").html(`
-                    <div class="container-fluid">
-            <h3 class="text-center all-tittles">No se encontraron resultados </h3>
-        </div>
-  
-                    `);
-                }
-            })
-            .fail(function (error) {
-                manejoErrores(error);
-
-            });
-
-
-    }
    
     function seccionPreguntas() {
         $("div#cargando").html('');
@@ -715,7 +622,9 @@ $("div#myModal").modal("hide");
         mostrarPreguntas();
     }
     $(function () {
+        
         seccionInicio();
+       
         $('form#formato-enlinea-dos').on("keyup", function (e) {
             e.preventDefault();
             let data = $(this).serialize();
@@ -798,11 +707,125 @@ $("div#myModal").modal("hide");
  
     });
     </script>
+<script>
+     function parseXml(xml) {
+   var dom = null;
+   if (window.DOMParser) {
+      try { 
+         dom = (new DOMParser()).parseFromString(xml, "text/xml"); 
+      } 
+      catch (e) { dom = null; }
+   }
+   else if (window.ActiveXObject) {
+      try {
+         dom = new ActiveXObject('Microsoft.XMLDOM');
+         dom.async = false;
+         if (!dom.loadXML(xml)) // parse error ..
+
+            window.alert(dom.parseError.reason + dom.parseError.srcText);
+      } 
+      catch (e) { dom = null; }
+   }
+   else
+      alert("cannot parse xml string!");
+   return dom;
+}
+ //
+    function identify() {
+   $.ajax({
+        beforeSend: function () {
+          $("div#cargando").html(
+            '<p class="text-center"><img src="/assets/gif/loading-22.gif"width= "20" height= "20"></p>'
+          );
+
+        },
+        url: '/oai?verb=Identify',
+        type: 'Post'
+      })
+        .done(function (informacion) {
+          console.log(información);
+          var libro = '<?xml version="1.0" encoding="UTF-8"?><c><cota>dsadas</cota><tipo_l>libro</tipo_l><autor>sdasd</autor><tutor>no aplica</tutor><editorial>dfdsf</editorial><titulo>dsad</titulo><año>1423</año><volumen>1</volumen><ejemplar>1</ejemplar><destino>/uploads/pdfs/ffb758e40ba240e7880511fd4c598769.pdf</destino></c>';
+  var libroXml = parseXml(libro);
+  var li = xml2json(libroXml, "");
+  console.log(li);
+          let resultados = libros.libros.length;
+          $("div#myModal").modal("hide");
+          if (resultados > 0) {
+            $("div#cargando").html(`<h3 class="text-center">Se obtuvieron ${resultados} resultados de tu busqueda</h3>`);
+            $("div#container").html(` <div class="container-fluid" >
+            <h2 class="text-center all-tittles">Resultados</h2>
+            <div class="table-responsive">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list" style="background-color:#DFF0D8; font-weight:bold;">
+                        <div class="div-table-cell" style="width: 6%;">#</div>
+                        <div class="div-table-cell" style="width: 10%;">Cota</div>
+                        <div class="div-table-cell" style="width: 10%;">Tipo libro</div>
+                        <div class="div-table-cell" style="width: 8%;">Titulo</div>
+                        
+                        <div class="div-table-cell" style="width: 6%;">Ver/Editar</div>
+                        <div class="div-table-cell" style="width: 6%;"> 
+                        Eliminar</div>
+                    </div>
+            </div>
+        <div id="libros"> </div>
+        </div>`);
+            for (var i = 0; i < libros.libros.length; i++) {
+
+              $("div#container").append(`
+        <div class="table-responsive" id="${libros.libros[i].cota}0">
+                <div class="div-table" style="margin:0 !important;">
+                    <div class="div-table-row div-table-row-list">
+                        <div  class="div-table-cell" style="width: 6%;">${i + 1}</div>
+                        <div id="${libros.libros[i].cota}_cota" class="div-table-cell" style="width: 10%;">${libros.libros[i].cota}</div>
+                        <div id="${libros.libros[i].cota}_tipo" class="div-table-cell" style="width: 10%;">${libros.libros[i].tipo_l}</div>
+                        
+                        <div id="${libros.libros[i].cota}_titulo" class="div-table-cell" style="width: 8%;">${libros.libros[i].titulo}</div>
+                        
+                       
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button class="btn btn-info" id="id-${libros.libros[i].cota}" onclick="javascript:ver(this)" if ><i class="zmdi zmdi-file-text"></i></button>
+                        
+                    </div>
+                        <div class="div-table-cell" style="width: 6%;">
+                            
+                            <button   id="${libros.libros[i].cota}" onclick="eliminarLibro(this)" class="btn btn-danger"><i class="zmdi zmdi-delete"></i></button>
+                            
+                            </div>
+                    </div>
+                </div>
+            </div>`);
+            }
+
+            document.getElementsByTagName("button")[1].focus({ preventScroll: true });
+          } else {
+            $("div#cargando").html(`<h3 class="text-center">No se obtuvieron resultados</h3>`);
+          }
+        })
+        .fail(function (error) {
+          $("div#cargando").html(
+            `<img src="/assets/icons/notificacion-error.ico"width= "20" height= "20">`
+          );
+          console.log(error);
+        });
+
+ }
+ 
+</script>
+
+
+
 
     <body>
-        <div id="myModal" class="modal fade">
-            <div class="modal-dialog modal-sm">
+
+
+ 
+  
+        <div id="myModal" class="modal fade "  >
+            <div class="modal-dialog modal-sm modal-recarga">
               <div class="modal-content" style="background-color: transparent">
+                
+                
                 <div id="modal-contenido">
                   <br />
                   <p class="text-center" id="modal-p-center">
@@ -881,7 +904,7 @@ $("div#myModal").modal("hide");
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div>
-                            <p class="text-center">Has llegado al límite de libros permitidos para reservar</p>
+                            <p id="modal-p-center3" class="text-center">Has llegado al límite de libros permitidos para reservar</p>
     
     
     
@@ -956,19 +979,19 @@ $("div#myModal").modal("hide");
             <%- include ("partes/navegacionSuperiorInicio") %>
     
             <div class="container" id="seccion" style="margin: 0%;">
-                <div class="page-header">
-                    <h1 class="all-tittles">
-                        UNEXPO SBDIP <small>Inicio</small>
-                    </h1>
-                </div>
-            </div>
+              <div class="page-header">
+                  <h1 class="all-tittles">
+                      UNEXPO DIP <small>Inicio</small>
+                  </h1>
+              </div>
+          </div>
             <div class="container-fluid" id="enlaces">
             </div>
             <div class="container-fluid" id="explicacion" style="margin: 0%;">
             </div>
-        
-    
-         <div class="container-fluid" id="tabla">    
+          
+         
+           <div class="container-fluid" id="tabla">    
             <div class="container-fluid" id="inicio">
               
                 
@@ -983,75 +1006,157 @@ $("div#myModal").modal("hide");
     
     
               
-                <div class="container-fluid"><form class="form-inline" style="text-align:center; " id="formato-enlinea-dos" autocomplete="off">
-                    <div class="row justify-content-md-center" >
-                        <div class="col-sm-4 col-md-2" >
-                            <input id="cota_unica" name="cota" type="text" class="tooltips-general material-control"   maxlength="25" pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" 
-                            placeholder="Cota"  data-toggle="tooltip" data-placement="top"
-                            title="Ej. cota_1, cota 2">
-                            <label>Cota</label>
+               
+                <div class="container-fluid">
+                  <form class="form-inline" style="text-align:center; " id="formato-enlinea-dos" autocomplete="off">
+                    <div class="row justify-content-md-center">
+                      <div class="row">
+                                    <div class="col-sm-4 col-md-3">
+                        <input id="cota" name="cota" type="text" class="tooltips-general material-control"
+                          pattern="(^([a-zA-Zá-ú0-9]{1,})(_)?([a-zA-Zá-ú0-9]{1,})$)|^([a-zA-Zá-ú0-9]{1,})$" placeholder="Cota"
+                          maxlength="25" data-toggle="tooltip" data-placement="top" title="Ej. cota_1 Sin espacios">
+                        <label>Cota</label>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <select  id="suscription" name="suscription"
+                        class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                        title="Elige la categoría del libro">
+                        <option disabled="" selected="">Suscripción</option>
+                        <option>Basica</option>
+                        <option>Estandar</option>
+                        <option>Premium</option>
+                        </select>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <select  id="type" name="type"
+                        class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                        title="Elige la categoría del libro" onclick="categorias('type')" >
+                        <option disabled="" selected="">Categoría</option>
+                        </select>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <select  id="core" name="core" 
+                            class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                            title="Elige el nucleo">
+                            <option disabled="" selected="">Núcleo</option>
+                            <option>charallave</option>
+                            <option>carora</option>
+                            <option>caracas</option>
+        
+                          </select>
+                      </div> 
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-4 col-md-3">
+                         <select  id="format" name="format" 
+                            class="tooltips-general material-control" data-toggle="tooltip" data-placement="top"
+                            title="Elige el nucleo">
+                            <option disabled="" selected="">Formato</option>
+                            <option>PDF</option>
+                            <option>Solo en fisico</option>
+        
+                          </select>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <input id="title" name="title" type="text" class="tooltips-general material-control"
+                        placeholder="Título" pattern="[a-zA-Zá-ú ]{1,200}"
+                        maxlength="200" data-toggle="tooltip" data-placement="top"
+                        title="Título del libro">
+                      <label>Título</label>
+                      </div>
+        
+                      <div class="col-sm-4 col-md-3">
+                        <input name="creator" type="text" id="creator" class="tooltips-general material-control"
+                        placeholder="Autor" pattern="[a-zA-Zá-ú ]{1,100}"
+                        maxlength="100" data-toggle="tooltip" data-placement="top"
+                        title="Autor del libro">
+                      <label>Autor</label>
+                       
+                      </div>
+        
+                      <div class="col-sm-4 col-md-3">
+                        <input name="contributor" type="text" id="contributor" class="tooltips-general material-control"
+                          placeholder="Colaboradores" pattern="[a-zA-Zá-ú ]{1,100}"
+                          maxlength="100" data-toggle="tooltip" data-placement="top"
+                          title="Colaboradores">
+                        <label>Colaborador</label>
+                      </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-4 col-md-3">
+                          <input id="rights" name="rights" type="text" class="material-control tooltips-general"
+                          placeholder="Derechos" pattern="[a-zA-Zá-ú ]{1,100}"
+                          maxlength="100" data-toggle="tooltip" data-placement="top" title="Derechos del material">
+                        <label>Derechos del material</label>
                         </div>
-                        <div class="col-sm-4 col-md-2">
-                            
-                        <input id="tipo_libro" name="tipo_l" type="text" class="tooltips-general material-control"
-                            placeholder="Tipo de libro" maxlength="25" data-toggle="tooltip" data-placement="top"
-                            title="EL tipo de libro" readonly>
-                            <label > </label>
-                        </div>
-                        <div class="col-sm-4 col-md-2"> 
-                            <input id="ejemplar_unico" name="ejemplar" type="number"
-                            class="tooltips-general material-control" placeholder="Ejemplar" maxlength="4"
-                            data-toggle="tooltip" pattern="^[0-9]+" min="1" data-placement="top"
-                            title="Numero de ejemplares">
-                            <label>Ejemplar</label>
-                        </div>
-                        <div class="col-sm-4 col-md-2">
-                            <input id="titulo_unico" name="titulo" type="text" class="tooltips-general material-control"
-                            placeholder="Titulo" pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                            data-placement="top" title="Escribe el título o nombre del libro">
-                            <label >Título</label>
-                        </div>
-                        <div class="col-sm-4 col-md-2">
-                            <input id="autor_unico" name="autor" type="text" class="tooltips-general material-control"
-                            placeholder="Autor"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                            data-placement="top" title="Escribe el nombre del autor del libro">
-                            <label>Autor</label>
-                        </div>
-                         
-                        <div class="col-sm-4 col-md-2" id="div-contenedor">
-    
-                             <input id="tutor_unico" name="tutor" type="text" class="tooltips-general material-control"
-                            placeholder="Tutor"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip"
-                            data-placement="top" title="Escribe el nombre del tutor del libro">
-                            <label>Tutor</label>
-                        </div>
-                    
-                    <div class="col-sm-4 col-md-2"> 
-                        <input id="volumen_unico" name="volumen" type="number" class="tooltips-general material-control"
-                        placeholder="Volumen" maxlength="50" pattern="^[0-9]+" min="1" data-toggle="tooltip"
-                        data-placement="top" title="Escribe el volumen del libro">
-                        <label>Volumen</label>
-                    </div>
-                        <div class="col-sm-4 col-md-2">  
-                            <input id="año_unico" name="año" type="text" class="material-control tooltips-general"
-                            placeholder="Año" pattern="[0-9]{4}" maxlength="4" minlength="4" data-toggle="tooltip"
-                            data-placement="top" title="Solamente números, sin espacios">
-                            <label>Año</label>
-                        </div>
-                            <div class="col-sm-4 col-md-2">
-                                <input id="editorial_unico" name="editorial" type="text"
-                                class="material-control tooltips-general" placeholder="Editorial"  pattern="[a-zA-Zá-ú ]{1,30}" maxlength="30" data-toggle="tooltip" data-placement="top" title="Editorial del libro">
-                                <label>Editorial</label>
-                            </div>
-                            <div class="col-sm-4 col-md-2">
-                              
-                                <button id="limpiarButton2"  type="reset" class="btn btn-light">Limpiar</button>
-                            </div>
-                           
                         
-                        </div>
-                </form></div>
-              
+                      <div class="col-sm-4 col-md-3">
+                        <input id="publisher" name="publisher" type="text" class="material-control tooltips-general"
+                            placeholder="Editorial"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Editorial">
+                          <label>Editorial</label>
+                      </div>
+                      
+                      <div class="col-sm-4 col-md-3">
+                        <input id="source" name="source" type="text" class="material-control tooltips-general"
+                            placeholder="Fuente"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Fuente del material">
+                          <label>Fuente</label>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <input id="language" name="language" type="text" class="material-control tooltips-general"
+                            placeholder="Lenguaje"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Lenguaje del material">
+                      
+                          <label>Lenguaje</label>
+                      </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-4 col-md-3">
+                        <input id="coverage" name="coverage" type="text" class="material-control tooltips-general"
+                            placeholder="Ámbito"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Ámbito del contenido">
+                          <label>Ámbito del contenido</label>
+                      </div>
+        
+                      <div class="col-sm-4 col-md-3">
+                     <input id="relation" name="relation" type="text" class="material-control tooltips-general"
+                      placeholder="Recurso relacionado"  pattern="[a-zA-Zá-ú ]{1,100}"
+                      maxlength="100" data-toggle="tooltip" data-placement="top" title="Referencia a otro recurso">
+                    <label>Referencia</label>
+                    </div>
+                      <div class="col-sm-4 col-md-3">
+                        <input id="subject" name="subject" type="text" class="material-control tooltips-general"
+                            placeholder="Palabras relaionadas"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Palabras relacionadas">
+                          <label>Palabras relacionadas</label>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+                        <input id="description" name="description" type="text" class="material-control tooltips-general"
+                            placeholder="Descripción"  pattern="[a-zA-Zá-ú ]{1,100}"
+                            maxlength="100" data-toggle="tooltip" data-placement="top" title="Descripción">
+                          <label>Descripción</label>
+                      </div> 
+                      </div>
+                     <div class="row">
+                        
+                      <div class="col-sm-4 col-md-3">
+                        <input id="date" name="date" type="date" class="material-control tooltips-general"
+                          data-toggle="tooltip" data-placement="top" title="Fecha de publicación"  placeholder="Fecha" >
+                     <label>Fecha</label>
+                      </div>
+                      <div class="col-sm-4 col-md-3">
+        
+                        <button id="limpiarButton2" style="margin-block: 10px;" type="reset"
+                          class="btn btn-light">Limpiar</button>
+                      </div>
+                     
+                     </div>
+                     
+                    </div>
+                  </form>
+                </div>
+          
                 <div class="container-fluid">
                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     

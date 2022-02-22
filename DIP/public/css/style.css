@@ -313,25 +313,32 @@ span.label-mhover {
               }
         }
 
+
+
+        
 .fullscreen-modal .modal-dialog {
     margin: 0;
     margin-right: auto;
     margin-left: auto;
     width: 100%;
+    height: 100%;
 }
 @media (min-width: 768px) {
     .fullscreen-modal .modal-dialog {
         width: 750px;
+        height: 100%;
     }
 }
 @media (min-width: 992px) {
     .fullscreen-modal .modal-dialog {
         width: 970px;
+        height: 100%;
     }
 }
 @media (min-width: 1200px) {
     .fullscreen-modal .modal-dialog {
         width: 1170px;
+        height: 100%;
     }
 }
 
@@ -742,6 +749,25 @@ input.material-control:invalid~label {
     font-weight: normal;
 }
 
+ .viewer
+      {
+      width: 768px;
+      height: 573px;
+      border: 1px solid black;
+      position: relative;
+      }
+      .wrapper
+      {
+      overflow: hidden;
+      }
+
+.modal-recarga { 
+    border: none;
+    position: fixed;
+    left: 30%;
+    top: 30%;
+}
+
 input.material-control:focus:invalid~label:after {
     content: "Formato no válido";
     margin: 0 5px;
@@ -1026,6 +1052,8 @@ input.material-control:focus~.highlight {
     .modal-body {
         max-height: 300px;
     }
+    
+    
 }
 
 

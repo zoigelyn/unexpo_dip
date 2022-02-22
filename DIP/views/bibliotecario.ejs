@@ -28,7 +28,7 @@
                 <%= mensajeRegistro %>
             </div> 
                <% } %> <br> <br>
-           <form  action="/signupConfig" method="POST" autocomplete="off">
+           <form  action="/signupConfigB" method="POST" autocomplete="off">
                <div class=" col-xs-16 col-sm-14 col-sm-offset-1 ">
                    <div class="group-material">
                        <input name="nombres" type="text" onclick="limpiarMsj()" class="material-control material-control-login" placeholder="Nombres" required="" maxlength="35" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,35}" data-toggle="tooltip" data-placement="top" title="Escribe el nombre del administrador">
@@ -51,16 +51,15 @@
                    </div>
                    <div class="group-material">
                        <div class="div-table-row-list" >
-                           <div class="div-table-cell" style="width: 6%;">
-                               <select name="nacionalidad" class="material-control-login">
-                               <option value="" disabled="" selected="">Nacionalidad </option>
-                               <option >V</option>
-                               <option >E</option>
+                           <div class="div-table-cell" style="width: 10%;">
+                               <select name="tipoCarnet" class="material-control-login" required="">
+                               <option value="" disabled="" selected="">Tipo de identificación </option>
+                               <option >Carnet de identidad</option>
                                <label > </label>
                            </select>
                         </div>
-                           <div class="div-table-cell" style="width: 11%;">
-                               <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="8" pattern="^[0-9]{1,8}$" data-toggle="tooltip" data-placement="top" >
+                           <div class="div-table-cell" style="width: 10%;">
+                               <input name="cedula" class="material-control material-control-login input-check-user" placeholder="Cédula" required="" maxlength="11" pattern="^[0-9]{1,11}$" data-toggle="tooltip" data-placement="top" >
                        <span class="highlight"></span>
                        <span class="bar"></span>
                        <label > </label>

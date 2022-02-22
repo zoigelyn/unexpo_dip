@@ -1,13 +1,184 @@
 <!DOCTYPE html>
-  <html lang="es">
+<html lang="es">
 <%- include ("partes/cabecera2") %>
+<script>
+function añadirNucleo() {
+    let inputEjemplar = $("input#nNucleo");
+  
+    if (inputEjemplar.val() >= 1) {
+      $("table#tb").html("");
+      for (var i = 1; i <= inputEjemplar.val(); i++) {
+        $("table#tb").append(`
+        <tr>
+                      <td style="width: 30px; overflow: hidden; border: none;">
+                        <input id="nucleo${i}" name="nucleo${i}" type="number"  class="material-control material-control-login" 
+                          placeholder="Núcleo.${i}" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                           value="${i}">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Núcleo</label>
+                      </td>
+                      <td style="width: 150px; overflow: hidden; border: none;">
+                        <input id="nucleo-${i}"  name="nucleo_${i}" type="text"
+                        class="material-control material-control-login" onchange="comp(this)" placeholder="Escribe aquí el núcleo"
+                          required="" maxlength="100"
+                          pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}"
+                          data-toggle="tooltip" data-placement="top" >
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label> </label>
+  
+                      </td>
+                      <td id="imgs-cota${i}" style="width: 20px; overflow: hidden; border: none;">
+                        <div  class="material-control" id="img-cota-${i}"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="width: 30px; overflow: hidden; border: none;"></td>
+                      <td id="mensaje-cota${i}" style="width: 150px; border: none; overflow: hidden;">
+                        <div id="cota-unica-${i}"></div>
+                      </td>
+                      <td style="width: 20px; border: none; overflow: hidden;"></td>
+                    </tr>
+                              
+                  `);
+        
+      }
+    } else {
+      $("table#tb").html("");
+      $("table#tb").append(`
+      <tr>
+                      <td style="width: 40px; overflow: hidden; border: none;">
+                        <input id="nucleo1" name="nucleo1" type="number"  class="material-control material-control-login" 
+                          placeholder="Núcleo.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                           value="1">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Núcleo</label>
+                      </td>
+                      <td style="width: 150px; overflow: hidden; border: none;">
+                        <input id="nucleo-1"  name="nucleo_1" type="text"
+                        class="material-control material-control-login"  placeholder="Escribe aquí el núcleo"
+                          required="" maxlength="100"
+                          pattern="(^([a-zA-Zá-ú]{1,})$"
+                          data-toggle="tooltip" data-placement="top" >
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label></label>
+  
+                      </td>
+                      <td id="imgs-cota" style="width: 20px; overflow: hidden; border: none;">
+                        <div  class="material-control " id="img-cota-1"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="width: 40px; overflow: hidden; border: none;"></td>
+                      <td id="mensaje-cota" style="width: 150px; border: none; overflow: hidden;">
+                        <div id="cota-unica-1"></div>
+                      </td>
+                      <td style="width: 20px; border: none; overflow: hidden;"></td>
+                    </tr>
+  
+                              
+                  `);
+    }
+}; 
+
+    //funcion que comprueba que cada cota sea unica
+
+ //se muestra el icono formato correcto
+ function formatoCI(id1, id2) {
+    $(id1).html("");
+    $(id2).html(
+      `<img src="/assets/img/satisfactorio.png" width= "20" height= "20">`
+    );
+  }
+  //se muestra el icono de formato incorrecto
+  function formatoII(id1, id2) {
+    $(id1).html(`<p>Debe ser formato jpg, png ó jpeg</p>`);
+    $(id2).html(
+      `<img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">`
+    );
+  }
+ 
+function comp(input) {
+    
+    var cota1, cota2, cota, i, m;
+
+    
+    var elementos = document.getElementsByTagName('input');
+
+    var tamaño = elementos.length;
+
+    
+    var elemento1;
+    var matrizElementos = new Array();
+
+    var matrizIndice = new Array();
+
+    
+    for (var j = 0; j < tamaño; j++) {
+
+     cota1 = elementos[j].value.toLowerCase();
+      cota2 = $(input).val().toLowerCase();
+      let resl = elementos[j].getAttribute('id');
+
+      if (resl) {
+        elemento1 = elementos[j].getAttribute('id').charAt(0);
+        if (elemento1 === 'n') {
+
+          matrizIndice.push(elementos[j].getAttribute('id').split('-').pop());
+          matrizElementos.push(elementos[j].value);
+
+
+          if (cota1 === cota2) {
+            i = elementos[j].getAttribute('id').split('-').pop();
+
+            cota = cota2;
+
+          }
+        }
+      }
+    }
+
+    var tamañoM = matrizElementos.length;
+    for (var f = 0; f <= tamañoM; f++) {
+      if (cota === matrizElementos[f] && i !== matrizIndice[f]) {
+        
+        $(`div#img-cota-${i}`).html(`<br>
+             <img src="/assets/icons/notificacion-error.ico" width= "20" height= "20">
+             <br>
+             <br>`);
+        $(`div#cota-unica-${i}`).html(`<br>Núcleo repetido con el núcleo ${matrizIndice[f]}`);
+      }
+    }
+
+  };
+
+  //se evalua el formato de la img de la noticia
+  function comprobarFI(img) {
+    var i = $(img).attr("id").split("-").pop();
+    var ext = $(img).val().split(".").pop().toLowerCase();
+
+    var id1 = "p#formato-img-" + i;
+    var id2 = "td#ico-" + i;
+    if ($(img).val() != "") {
+      if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+        formatoCI(id1, id2);
+      } else {
+        formatoII(id1, id2);
+      }
+    }
+  }
+
+</script>
+
 
 <body class="full-cover-background" >
     
     <div class="form-container ">
-       
-
-        <form action="/conf-dias" method="POST" autocomplete="off">
+        <% if (mensaje == 'Configuración de días') { %>
+           <form action="/conf-dias" enctype="multipart/form-data" method="post" autocomplete="off">
            <p class="text-center" style="margin-top: 20px;">
                 <i class="zmdi zmdi-book  zmdi-hc-4x"></i>
             </p>
@@ -16,35 +187,127 @@
              
 
             <div class="group-material">
-                <input name="dias" type="text" class="material-control material-control-login" placeholder="Días de préstamo" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                <input name="dias" type="text" class="material-control material-control-login" placeholder="Días de préstamo" required="" id="dias" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Días de préstamo</label>
             </div>
             <div class="group-material">
-                <input name="cantidad" type="text" class="material-control material-control-login" placeholder="Cantidad de libros" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                <input name="cantidad" id="cantidad" type="text" class="material-control material-control-login" placeholder="Cantidad de libros" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Cantidad de libros</label>
             </div>
             <div class="group-material">
-                <input name="multa" type="text" class="material-control material-control-login" placeholder="Cantidad de multa" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                <input name="multa" type="text" id="multa" class="material-control material-control-login" placeholder="Cantidad de multa" required="" minlength="1" pattern="[0-9]{1,}" data-toggle="tooltip" data-placement="top" title="Sólo números">
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>cantidad de multa</label>
             </div>
             <div class="group-material">
-                <input name="Unidad" type="text" class="material-control material-control-login" placeholder="Unidad" required="" minlength="1" pattern="[a-zA-Aá-ú]{1,30}" data-toggle="tooltip" data-placement="top" title="Sólo letras">
+                <input name="unidad" id="unidad" type="text" class="material-control material-control-login" placeholder="Unidad" required="" minlength="1" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}" data-toggle="tooltip" data-placement="top" title="Sólo letras">
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Unidad</label>
             </div>
+            <div class="group-material">
+            <p class="text-center" style="margin-top: 20px;">Sube una imagen que contenga los datos de pago</p>
+            <br>
+                         
+                         <table class="table table-responsive " style="table-layout: fixed; border: none;">
+                           <tr id="tr-img-1" style="border: none;">
+                             <td style="width: 200px;  border: none;">
+                               <input onchange="comprobarFI(this)" id="img-1" name="img" type="file" required=""
+                                 class="material-control tooltips-general" data-toggle="tooltip" data-placement="top"
+                                 title="Imagen">
+                               <span class="highlight"></span>
+                               <span class="bar"></span>
+                               <label></label>
+       
+                             </td>
+                             <td style="width: 30px;  border: none;" id="ico-1">
+       
+                             </td>
+                           </tr>
+                           <tr id="tr2-img-1">
+                             <td style="width: 200px; border: none;">
+                               <p class="text-center" id="formato-img-1"></p>
+       
+                             </td>
+                             <td style="width: 30px;  border: none;">
+                             </td>
+                           </tr>
+                         </table>
+              </div>
             <br>
             <button class="btn-login" type="submit"> Guardar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
             
         </form>
-        
+          <% } %>
 
+        
+        <% if (mensaje == 'Configuración de núcleos') { %>
+            <form action="/conf-nucleos" method="post" autocomplete="off">
+                <p class="text-center" style="margin-top: 20px;">
+                     <i class="zmdi zmdi-book  zmdi-hc-4x"></i>
+                 </p>
+                
+                  <h4 class="text-center all-tittles" style="margin-bottom: 10px;">Configuración</h4>
+                  <p class="text-center" style="margin-top: 20px;"> Añade tanto núcleos como existan</p>
+     <br>
+                  <div class="group-material">
+                    <input id="nNucleo" onchange="añadirNucleo()" name="nucleos" type="number"
+                    class="material-control material-control-login" placeholder="Escribe aquí el numero de nucleos"
+                      required="" maxlength="4"  pattern="^[0-9]+" min="1" data-toggle="tooltip" data-placement="top" title="Sólo números">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Cantidad de núcleos</label>
+  
+                  </div>
+
+                  
+                  <table class="table table-responsive " style="table-layout: fixed; border: none;" id="tb">
+                    <tr>
+                      <td style="width: 40px; overflow: hidden; border: none;">
+                        <input id="nucleo1" name="nucleo1" type="number"  class="material-control material-control-login" 
+                          placeholder="Núcleo.1" required="" maxlength="4" data-toggle="tooltip" data-placement="top"
+                           value="1">
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label>Núcleo</label>
+                      </td>
+                      <td style="width: 150px; overflow: hidden; border: none;">
+                        <input id="nucleo-1"  name="nucleo_1" type="text"
+                        class="material-control material-control-login"  placeholder="Escribe aquí el núcleo"
+                          required="" maxlength="100"
+                          pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{1,70}"
+                          data-toggle="tooltip" data-placement="top" >
+                        <span class="highlight"></span>
+                        <span class="bar"></span>
+                        <label></label>
+  
+                      </td>
+                      <td id="imgs-cota" style="width: 20px; overflow: hidden; border: none;">
+                        <div  class="material-control " id="img-cota-1"></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="width: 30px; overflow: hidden; border: none;"></td>
+                      <td id="mensaje-cota" style="width: 200px; border: none; overflow: hidden;">
+                        <div id="cota-unica-1"></div>
+                      </td>
+                      <td style="width: 20px; border: none; overflow: hidden;"></td>
+                    </tr>
+  
+                  </table>
+                  <br>
+                 <br>
+                 <button class="btn-login" type="submit"> Guardar &nbsp;<i class="zmdi zmdi-arrow-right"></i></button>
+                 
+             </form> 
+          <% } %>
+         
+         
     </div>
 </body>
 

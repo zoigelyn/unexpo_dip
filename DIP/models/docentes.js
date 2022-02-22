@@ -2,50 +2,36 @@ const Sequelize = require ('sequelize');
 const sequelize = require ('../database/database');
 
 const Docentes = sequelize.define('docentes', {
-    cedula_d: {
-        type: Sequelize.STRING(10),
+    iddocente: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false,
-        validate: {
-            is: /^([VE]-)[0-9]{1,8}$/i,
-            len: [3,10]
-        }
+        autoIncrement:true,
+        allowNull: false
     },
-    nombres_d: {
-        type: Sequelize.STRING(35),
-        allowNull:false,
-        validate: {
-           max: 35,
-           isAlpha: true 
-        }
-        
+    ceddoc: {
+        type: Sequelize.INTEGER(11)
     },
-    apellidos_d:{
-        type: Sequelize.STRING(35),
-        allowNull:false,
-       validate: {
-          max: 35,
-        isAlpha: true 
-       } 
+    apedoc: {
+        type: Sequelize.TEXT
     },
-    materia: {
-        type: Sequelize.STRING(50),
-        allowNull:false,
-       validate: {
-          max: 50,
-        isAlpha: true 
-       } 
+    nomdoc: {
+        type: Sequelize.TEXT
     },
-    createdAt:{
-        type: Sequelize.DATE,
-        field: 'created_at'
+    fecnacdoc: {
+        type: Sequelize.STRING(10)
     },
-    updatedAt:{
-        type: Sequelize.DATE,
-        field: 'updated_at'
+    teldoc: {
+        type: Sequelize.STRING(12)
+    },
+    movdoc: {
+        type: Sequelize.STRING(12)
+    },
+    emadoc: {
+        type: Sequelize.STRING(40)
+    },
+    titdoc: {
+        type: Sequelize.TEXT
     }
-}, {
-    timestamps: true
 });
 
 

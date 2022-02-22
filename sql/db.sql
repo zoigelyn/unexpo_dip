@@ -7,6 +7,15 @@ create table tipo_libro (
 
 );
 
+create table tipo_suscripcion (
+    id_ts serial primary key,
+    tipo_ts varchar(20) unique not null check (tipo_ts <> ''),
+    descripcion_ts varchar(100),
+    created_at date,
+    updated_at date
+
+);
+
 create table estado_prestamo (
     id_ep serial primary key,
     estado_ep varchar(20) unique not null check (estado_ep <> ''),

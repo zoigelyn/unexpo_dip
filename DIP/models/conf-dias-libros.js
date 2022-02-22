@@ -32,6 +32,9 @@ const ConfDiasLibros = sequelize.define('conf_dias_libros', {
            isInt: true   
         }
     },
+    datos: {
+        type: Sequelize.TEXT
+    },
     createdAt:{
         type: Sequelize.DATE,
         field: 'created_at'

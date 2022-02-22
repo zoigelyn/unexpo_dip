@@ -1,5 +1,5 @@
 const sequelize = require('../database/database');
-//const Sequelize = require ('sequelize');
+
 const Fichas = require('../models/fichas');
 const Libros = require('../models/libros');
 const ConfDiasLibros = require('../models/conf-dias-libros');
@@ -8,6 +8,7 @@ const { QueryTypes } = require('sequelize');
 const { Op } = require("sequelize");
 
 const nodemailer = require('nodemailer');
+const Suscripciones = require('../models/suscripciones');
 function sumarDias(dia, fecha_emision) {
   var dias = Number(dia);
   var fecha = fecha_emision;
@@ -84,8 +85,7 @@ module.exports.prestamosVVAjax = async function (req, res, next) {
 module.exports.reservarLibro = async function (req, res, next) {
 
   const { cota, fecha_e } = req.body;
-  console.log('1');
-  let reservas = {};
+  console.log('1');  let reservas = {};
   let fecha_emision;
 
   reservas = await Fichas.findAll({
@@ -470,7 +470,45 @@ module.exports.actualizarEstadoF = async function (req, res, next) {
   } catch (error) {
     console.log(error);
   }
-}; //Funcion que envia correo electrónicos a préstamos vigentes y vencidos
+};
+//función que actualice el estado de las suscripciones
+module.exports.actualizarEstadoS = async function (req, res, next) {
+  try {
+    const suscripciones = await Suscripciones.findAll({
+      where: {
+        estado_s: 'vigente'
+      }
+    });
+    if (suscripciones.length > 0) {
+      for (var i = 0; i < suscripciones.length; i++) {
+         let fecha_c = suscripciones[i].fecha_c;
+        let dia = fecha_c.split('-')[2];
+        let mes = fecha_c.split('-')[1] - 1;
+        let año = fecha_c.split('-')[0];
+        let fecha_culminacion = new Date(año, mes, dia);
+        let resultado1 = fecha_culminacion < new Date();
+        let resultado2 = fecha_culminacion.getDate() === new Date().getDate();
+        
+        if (resultado1 && !resultado2) {
+        
+           await Suscripciones.update({
+          estado_s: "vencido",
+        }, {
+          where: {
+            id: suscripciones[i].id
+          }
+        });
+        }
+       
+      }
+    }
+   
+    
+  } catch (error) {
+    console.log(error);
+  }
+};
+//Funcion que envia correo electrónicos a préstamos vigentes y vencidos
 module.exports.envioCorreo = async function (req, res, next) {
   try {
     const conf = await ConfDiasLibros.findOne();
@@ -729,7 +767,7 @@ let resultado2 = fecha_emi.getDate() === new Date().getDate();
         });
         if (eliminadas) {
           await Libros.update({
-            estado_l: 'disponible',
+            statusBook: 'disponible',
           }, {
             where: {
               cota: reservaciones[j].cota_f
@@ -850,7 +888,7 @@ let resultado2 = fecha_emi.getDate() === new Date().getDate();
         for (var l = 0; l < fichasVencidas.length; l++) {
          
           let multaTotal = parseInt(fichasVencidas[l].multa) + parseInt(conf.multa);
-          console.log(multaTotal);
+         
           await Fichas.update({
             multa: multaTotal,
           }, {

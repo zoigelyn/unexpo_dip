@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 
 
 var CronJob = require("cron").CronJob;
-const {actualizarEstadoF, actualizarR, multas, envioCorreo} = require("./controllers/fichas.controller");
+const {actualizarEstadoF, actualizarR, multas, envioCorreo, actualizarEstadoS} = require("./controllers/fichas.controller");
 
 var cronJob1 = new CronJob({
   cronTime: '01 00 02 * * *',
@@ -75,7 +75,7 @@ var cronJob1 = new CronJob({
     console.log('Actualzando fichas del  '+ new Date()); 
     await actualizarR();
     await actualizarEstadoF();
-   
+   await actualizarEstadoS();
     await multas();
     await envioCorreo();
     
@@ -94,6 +94,8 @@ app.use(require('./routes/inicio.routes'));
 app.use(require('./routes/noticias.routes'));
 app.use(require('./routes/excel.routes'));
 app.use(require('./routes/preguntasFrecuentes.routes'));
+app.use(require('./routes/protocolo.routes'));
+app.use(require('./routes/suscripciones.routes'));
 
 app.use(function(req, res, next) {
   res.status(404);

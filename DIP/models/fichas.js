@@ -12,7 +12,7 @@ const Fichas = sequelize.define('fichas', {
         autoIncrement:true
         },
     cota_f: {
-        type: Sequelize.STRING(25),
+        type: Sequelize.STRING,
         allowNull: false
     },
     correo_f: {

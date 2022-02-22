@@ -1,56 +1,108 @@
 'use strict';
 var Sequelize = require ('sequelize');
 var sequelize = require ('../database/database');
-const Tipo_Libro = require ('./tipoLibro');
+const Tipo_Nucleo= require ('./tipoNucleo');
 const Estado_Libro = require('./estadoLibro');
-
+const Tipo_Suscripcion = require('./tipoSuscripcion');
 
 const Libros = sequelize.define('libros', {
+    
+    title: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'no aplica'
+    },
     cota: {
-        type: Sequelize.STRING(25),
-        primaryKey: true,
-        allowNull: false
+        type: Sequelize.STRING,
+        allowNull: false,
+        primaryKey: true
     },
-    tipo_l: {
-        type: Sequelize.STRING(20),
-        allowNull: false
+    contributor: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'no aplica'
     },
-    autor: {
-        type: Sequelize.STRING(100),
+    subject: {
+        type: Sequelize.STRING,
+    allowNull: false,
+        defaultValue: 'no aplica'
+},
+    creator: {
+        type: Sequelize.STRING,
     allowNull: false,
     defaultValue: 'no aplica'
 },
-    tutor: {
-        type: Sequelize.STRING(100),
+    description: {
+        type: Sequelize.STRING,
     allowNull: false,
     defaultValue: 'no aplica'
 },
-    editorial: {
-        type: Sequelize.STRING(100),
-    allowNull: false,
-    defaultValue: 'no aplica'
-},
-    titulo:{
-        type: Sequelize.STRING(200),
-        allowNull:false
-    },
-    año:{
-        type: Sequelize.INTEGER,
-        allowNull:false
-    },
-    volumen:{
-        type: Sequelize.INTEGER,
+    publisher:{
+        type: Sequelize.STRING,
         allowNull:false,
-        defaultValue: 1
+        defaultValue: 'no aplica'
     },
-    ejemplar:{
-        type: Sequelize.INTEGER,
+    date:{
+        type: Sequelize.DATEONLY,
         allowNull:false
     },
-    destino: {
+    format:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'solo en fisico'
+    },
+    identifier:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    relation:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    coverage:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    rights:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    type:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    source:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    language:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        defaultValue: 'no aplica'
+    },
+    url: {
         type: Sequelize.TEXT,
         allowNull: false,
         defaultValue: 'no aplica'
+    },
+    core:{
+        type: Sequelize.STRING,
+        allowNull:false
+    },
+    statusBook: {
+        type: Sequelize.STRING,
+        allowNull: false
+
+    },
+    tipo_s: {
+       type: Sequelize.STRING,
+       allowNull: false,
     },
     createdAt:{
         type: Sequelize.DATE,
@@ -64,14 +116,18 @@ const Libros = sequelize.define('libros', {
         timestamps: true
     });
 
-    Tipo_Libro.hasMany(Libros,{
-        sourceKey: 'tipo_tl', 
-        foreignKey: 'tipo_l'});
-    Libros.belongsTo(Tipo_Libro,{targetKey: 'tipo_tl', foreignKey: 'tipo_l'});
+    Tipo_Suscripcion.hasMany(Libros,{
+        sourceKey: 'tipo_ts', 
+        foreignKey: 'tipo_s'});
+    Libros.belongsTo(Tipo_Suscripcion,{targetKey: 'tipo_ts', foreignKey: 'tipo_s'});
     Estado_Libro.hasMany(Libros,{
         sourceKey: 'estado_el', 
-        foreignKey: 'estado_l'});
-    Libros.belongsTo(Estado_Libro,{targetKey: 'estado_el', foreignKey: 'estado_l'});
-
+        foreignKey: 'statusBook'});
+    Libros.belongsTo(Estado_Libro,{targetKey: 'estado_el', foreignKey: 'statusBook'});
+    Tipo_Nucleo.hasMany(Libros,{
+        sourceKey: 'nucleo', 
+        foreignKey: 'core'});
+    Libros.belongsTo(Tipo_Nucleo,{targetKey: 'nucleo', foreignKey: 'core'});
+    
 
 module.exports = Libros;
